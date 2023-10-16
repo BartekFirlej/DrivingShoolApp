@@ -6,9 +6,9 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ICustomerRepository
     {
-        public Task<ICollection<UserGetDTO>> GetCustomers();
-        public Task<UserGetDTO> GetCustomer(int customerId);
-        public Task<Customer> AddCustomer(UserPostDTO customerDetails);
+        public Task<ICollection<CustomerGetDTO>> GetCustomers();
+        public Task<CustomerGetDTO> GetCustomer(int customerId);
+        public Task<Customer> AddCustomer(CustomerPostDTO customerDetails);
     }
     public class CustomerRepository : ICustomerRepository
     {
@@ -19,10 +19,10 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<UserGetDTO>> GetCustomers()
+        public async Task<ICollection<CustomerGetDTO>> GetCustomers()
         {
             return await _dbContext.Customers
-                            .Select(u => new UserGetDTO
+                            .Select(u => new CustomerGetDTO
                             {
                                 Id = u.Id,
                                 Name = u.Name,
@@ -32,11 +32,11 @@ namespace DrivingSchoolApp.Repositories
                             .ToListAsync();
         }
 
-        public async Task<UserGetDTO> GetCustomer(int customerId)
+        public async Task<CustomerGetDTO> GetCustomer(int customerId)
         {
             return await _dbContext.Customers
                             .Where(u => u.Id == customerId)
-                            .Select(u => new UserGetDTO
+                            .Select(u => new CustomerGetDTO
                             {
                                 Id = u.Id,
                                 Name = u.Name,
@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Repositories
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<Customer> AddCustomer(UserPostDTO customerDetails)
+        public async Task<Customer> AddCustomer(CustomerPostDTO customerDetails)
         {
             var customerToAdd = new Customer
             {

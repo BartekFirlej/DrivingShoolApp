@@ -22,12 +22,12 @@ namespace DrivingSchoolApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCustomers()
         {
-            ICollection<UserGetDTO> customers;
+            ICollection<CustomerGetDTO> customers;
             try
             {
                 customers = await _customerService.GetCustomers();
             }
-            catch(NotFoundUsersException e)
+            catch(NotFoundCustomersException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -37,12 +37,12 @@ namespace DrivingSchoolApp.Controllers
         [HttpGet("{customerid}")]
         public async Task<IActionResult> GetCustomer(int customerid)
         {
-            UserGetDTO customer;
+            CustomerGetDTO customer;
             try
             {
                 customer = await _customerService.GetCustomer(customerid);
             }
-            catch(NotFoundUserException e)
+            catch(NotFoundCustomerException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -57,7 +57,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 customerRegistrations = await _registrationService.GetUserRegistrations(customerid);
             }
-            catch(NotFoundUserRegistrationsException e)
+            catch(NotFoundCustomerRegistrationException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -65,7 +65,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCustomer(UserPostDTO customerDetails)
+        public async Task<IActionResult> AddCustomer(CustomerPostDTO customerDetails)
         {
             var addedCustomer = await _customerService.AddCustomer(customerDetails);
             return CreatedAtAction(nameof(AddCustomer), addedCustomer);
@@ -79,7 +79,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 customerRegistration = await _registrationService.PostRegistration(registrationDetails);
             }
-            catch(NotFoundUserException e)
+            catch(NotFoundCustomerException e)
             {
                 return NotFound(e.ToJson());
             }

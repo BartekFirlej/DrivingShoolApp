@@ -7,6 +7,6 @@
         public DateTime BeginDate {  get; set; }
         public int Limit {  get; set; }
         public int AssignedUserseCount {  get; set; }
-        public List<UserGetDTO> AssignedUsers { get; set; }
+        public List<CustomerGetDTO> AssignedUsers { get; set; }
     }
 }

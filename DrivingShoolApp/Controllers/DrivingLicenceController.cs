@@ -54,7 +54,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 addedDrivingLicence = await _drivingLicenceService.PostDrivingLicence(drivingLicenceDetails);
             }
-            catch(NotFoundUserException e)
+            catch(NotFoundCustomerException e)
             {
                 return NotFound(e.ToJson());
             }

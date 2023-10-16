@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class UserPostDTO
+    public class CustomerPostDTO
     {
         public string Name { get; set; }
         public string SecondName { get; set; }
