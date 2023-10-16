@@ -13,12 +13,14 @@ builder.Services.AddScoped<ICourseTypeRepository, CourseTypeRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IDrivingLicenceRepository, DrivingLicenceRepository>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ILicenceCategoryService, LicenceCategoryService>();
 builder.Services.AddScoped<ICourseTypeService, CourseTypeService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IDrivingLicenceService, DrivingLicenceService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();  
 
 builder.Services.AddDbContext<DrivingSchoolDbContext>();
 
