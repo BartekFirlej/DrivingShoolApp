@@ -54,7 +54,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Address");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.City)
                 .HasMaxLength(40)
@@ -74,7 +73,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Classroom");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.AddressId).HasColumnName("Address_ID");
 
@@ -91,7 +89,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Course");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.BeginDate).HasColumnType("datetime");
             entity.Property(e => e.CourseTypeId).HasColumnName("CourseType_ID");
@@ -130,7 +127,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("CourseType");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.LicenceCategoryId).HasColumnName("LicenceCategory_ID");
             entity.Property(e => e.Name)
@@ -150,7 +146,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Customer");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.BirthDate).HasColumnType("date");
             entity.Property(e => e.Name)
@@ -187,7 +182,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("DrivingLesson");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.AddressId).HasColumnName("Address_ID");
             entity.Property(e => e.LecturerId).HasColumnName("Lecturer_ID");
@@ -211,7 +205,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("DrivingLicence");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.ExpirationDate).HasColumnType("date");
@@ -236,7 +229,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Lecture");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.ClassroomId).HasColumnName("Classroom_ID");
             entity.Property(e => e.CourseSubjectsCourseId).HasColumnName("CourseSubjects_Course_ID");
@@ -267,7 +259,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Lecturer");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.Name)
                 .HasMaxLength(40)
@@ -284,7 +275,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("LicenceCategory");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.Name)
                 .HasMaxLength(40)
@@ -337,7 +327,6 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.ToTable("Subject");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
                 .HasColumnName("ID");
             entity.Property(e => e.Code)
                 .HasMaxLength(5)

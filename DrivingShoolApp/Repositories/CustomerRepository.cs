@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolApp.Repositories
 {
-    public interface IUserRepository
+    public interface ICustomerRepository
     {
-        public Task<ICollection<UserGetDTO>> GetUsers();
-        public Task<UserGetDTO> GetUser(int userId);
-        public Task<Customer> AddUser(UserPostDTO userDetails);
+        public Task<ICollection<UserGetDTO>> GetCustomers();
+        public Task<UserGetDTO> GetCustomer(int customerId);
+        public Task<Customer> AddCustomer(UserPostDTO customerDetails);
     }
-    public class UserRepository : IUserRepository
+    public class CustomerRepository : ICustomerRepository
     {
         private readonly DrivingSchoolDbContext _dbContext;
 
-        public UserRepository(DrivingSchoolDbContext dbContext)
+        public CustomerRepository(DrivingSchoolDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<UserGetDTO>> GetUsers()
+        public async Task<ICollection<UserGetDTO>> GetCustomers()
         {
             return await _dbContext.Customers
                             .Select(u => new UserGetDTO
@@ -32,10 +32,10 @@ namespace DrivingSchoolApp.Repositories
                             .ToListAsync();
         }
 
-        public async Task<UserGetDTO> GetUser(int userId)
+        public async Task<UserGetDTO> GetCustomer(int customerId)
         {
             return await _dbContext.Customers
-                            .Where(u => u.Id == userId)
+                            .Where(u => u.Id == customerId)
                             .Select(u => new UserGetDTO
                             {
                                 Id = u.Id,
@@ -46,17 +46,17 @@ namespace DrivingSchoolApp.Repositories
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<Customer> AddUser(UserPostDTO userDetails)
+        public async Task<Customer> AddCustomer(UserPostDTO customerDetails)
         {
-            var userToAdd = new Customer
+            var customerToAdd = new Customer
             {
-                Name = userDetails.Name,
-                SecondName = userDetails.SecondName,
-                BirthDate = userDetails.BirthDate
+                Name = customerDetails.Name,
+                SecondName = customerDetails.SecondName,
+                BirthDate = customerDetails.BirthDate
             };
-            await _dbContext.Customers.AddAsync(userToAdd);
+            await _dbContext.Customers.AddAsync(customerToAdd);
             await _dbContext.SaveChangesAsync();
-            return userToAdd;
+            return customerToAdd;
         }
     }
 }

@@ -15,10 +15,10 @@ namespace DrivingSchoolApp.Repositories
     public class RegistrationService : IRegistrationService
     {
         private readonly IRegistrationRepository _registrationRepository;
-        private readonly IUserService _userService;
+        private readonly ICustomerService _userService;
         private readonly ICourseService _courseService;
 
-        public RegistrationService(IRegistrationRepository registrationRepository, IUserService userService, ICourseService courseService)
+        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService userService, ICourseService courseService)
         {
             _registrationRepository = registrationRepository;
             _userService = userService;
@@ -43,7 +43,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<RegistrationGetDTO>> GetUserRegistrations(int userId)
         {
-            await _userService.GetUser(userId);
+            await _userService.GetCustomer(userId);
             var registrations = await _registrationRepository.GetUserRegistrations(userId);
             if (!registrations.Any())
                 throw new NotFoundRegistrationsException();
@@ -59,7 +59,7 @@ namespace DrivingSchoolApp.Repositories
         }
         public async Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails)
         {
-            await _userService.GetUser(registrationDetails.UserId);
+            await _userService.GetCustomer(registrationDetails.UserId);
             await _courseService.GetCourse(registrationDetails.CourseId);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails);
             return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);

@@ -15,12 +15,12 @@ namespace DrivingSchoolApp.Services
     public class DrivingLicenceService : IDrivingLicenceService
     {
         private readonly IDrivingLicenceRepository _drivingLicenceRepository;
-        private readonly IUserService _userService;
+        private readonly ICustomerService _userService;
         private readonly ILicenceCategoryService _licenceCategoryService;
 
 
         public DrivingLicenceService(IDrivingLicenceRepository drivingLicenceRepository,
-                                     IUserService userService,
+                                     ICustomerService userService,
                                      ILicenceCategoryService licenceCategoryService)
         {
             _drivingLicenceRepository = drivingLicenceRepository;
@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
         {
-            await _userService.GetUser(drivingLicenceDetails.UserId);
+            await _userService.GetCustomer(drivingLicenceDetails.UserId);
             await _licenceCategoryService.GetLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
             var addedDrivingLicence = await _drivingLicenceRepository.PostDrivingLicence(drivingLicenceDetails);
             return await _drivingLicenceRepository.GetDrivingLicence(addedDrivingLicence.Id);
