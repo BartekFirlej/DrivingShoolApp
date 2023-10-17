@@ -31,7 +31,7 @@ namespace DrivingSchoolApp.Controllers
             return Ok(addresses);
         }
 
-        [HttpGet("{courseId}")]
+        [HttpGet("{addressId}")]
         public async Task<IActionResult> GetAddress(int addressId)
         {
             AddressGetDTO address;
