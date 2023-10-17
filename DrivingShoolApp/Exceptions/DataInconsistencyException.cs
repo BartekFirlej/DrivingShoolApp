@@ -1,4 +1,4 @@
-﻿namespace ExamCalendar.Web.Exceptions
+﻿namespace DrivingSchoolApp.Exceptions
 {
     public class DataInconsistencyException : Exception
     {

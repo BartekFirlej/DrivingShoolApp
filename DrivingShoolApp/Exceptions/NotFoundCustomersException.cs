@@ -1,6 +1,4 @@
-﻿using ExamCalendar.Web.Exceptions;
-
-namespace DrivingSchoolApp.Exceptions
+﻿namespace DrivingSchoolApp.Exceptions
 {
     public class NotFoundCustomersException : DataInconsistencyException
     {

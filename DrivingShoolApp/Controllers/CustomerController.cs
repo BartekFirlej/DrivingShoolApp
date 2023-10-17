@@ -57,7 +57,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 customerRegistrations = await _registrationService.GetUserRegistrations(customerid);
             }
-            catch(NotFoundCustomerRegistrationException e)
+            catch(NotFoundCustomerRegistrationsException e)
             {
                 return NotFound(e.ToJson());
             }

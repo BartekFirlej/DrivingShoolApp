@@ -1,14 +1,14 @@
 ﻿using AutoFixture;
-using DrivingSchool.Controllers;
-using DrivingSchool.DTOs;
-using DrivingSchool.Exceptions;
-using DrivingSchool.Services;
+using DrivingSchoolApp.Controllers;
+using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace DrivingSchoolTests.Controllers
+namespace DrivingSchoolAppTests.Controllers
 {
     [TestClass]
     public class CourseTypeControllerTests
