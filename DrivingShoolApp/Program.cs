@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ILicenceCategoryRepository, LicenceCategoryRepository>();
 builder.Services.AddScoped<ICourseTypeRepository, CourseTypeRepository>();
@@ -16,6 +17,7 @@ builder.Services.AddScoped<ILecturerRepository, LecturerRepository>();
 builder.Services.AddScoped<IDrivingLicenceRepository, DrivingLicenceRepository>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ILicenceCategoryService, LicenceCategoryService>();
 builder.Services.AddScoped<ICourseTypeService, CourseTypeService>();
