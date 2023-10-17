@@ -2,6 +2,7 @@
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -10,10 +11,12 @@ namespace DrivingSchoolApp.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
+        private readonly ICourseSubjectService _courseSubjectService;
 
-        public CourseController(ICourseService courseService)
+        public CourseController(ICourseService courseService, ICourseSubjectService courseSubjectService)
         {
             _courseService = courseService;
+            _courseSubjectService = courseSubjectService;
         }
 
         [HttpGet]
@@ -59,6 +62,29 @@ namespace DrivingSchoolApp.Controllers
                 return NotFound(e.ToJson());
             }
             return CreatedAtAction(nameof(PostCourse), addedCourse);
+        }
+
+        [HttpPost("{courseId}")]
+        public async Task<IActionResult> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
+        {
+            CourseSubjectGetDTO addedCourseSubject;
+            try
+            {
+                addedCourseSubject = await _courseSubjectService.PostCourseSubject(courseSubjectDetails);
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+            return CreatedAtAction(nameof(PostCourse), addedCourseSubject);
         }
     }
 }
