@@ -185,6 +185,7 @@ public partial class DrivingSchoolDbContext : DbContext
                 .HasColumnName("ID");
             entity.Property(e => e.AddressId).HasColumnName("Address_ID");
             entity.Property(e => e.LecturerId).HasColumnName("Lecturer_ID");
+            entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.LessonDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Address).WithMany(p => p.DrivingLessons)
@@ -196,6 +197,11 @@ public partial class DrivingSchoolDbContext : DbContext
                 .HasForeignKey(d => d.LecturerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("DrivingLesson_Lecturer_FK");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.DrivingLessons)
+            .HasForeignKey(d => d.CustomerId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("DrivingLesson_Customer_FK");
         });
 
         modelBuilder.Entity<DrivingLicence>(entity =>
