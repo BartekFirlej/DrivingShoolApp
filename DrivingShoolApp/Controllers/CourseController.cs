@@ -2,7 +2,6 @@
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace DrivingSchoolApp.Controllers
 {
