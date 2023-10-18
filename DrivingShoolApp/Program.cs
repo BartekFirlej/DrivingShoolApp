@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerLectureRepository, CustomerLectureRepository>();
 builder.Services.AddScoped<ILicenceCategoryRepository, LicenceCategoryRepository>();
 builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
 builder.Services.AddScoped<ICourseTypeRepository, CourseTypeRepository>();
@@ -22,6 +23,7 @@ builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerLectureService, CustomerLectureService>();
 builder.Services.AddScoped<ILicenceCategoryService, LicenceCategoryService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<ICourseTypeService, CourseTypeService>();
