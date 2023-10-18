@@ -1,6 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
 {
@@ -12,14 +12,14 @@ namespace DrivingSchoolApp.Services
     }
     public class DrivingLessonService : IDrivingLessonService
     {
-        private readonly IDrivingLessonService _drivingLessonService;
+        private readonly IDrivingLessonRepository _drivingLessonRepository;
         private readonly ICustomerService _customerService;
         private readonly ILecturerService _lecturerService;
         private readonly IAddressService _addressService;
 
-        public DrivingLessonService(IDrivingLessonService drivingLessonService, ICustomerService customerService, ILecturerService lecturerService, IAddressService addressService)
+        public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, ILecturerService lecturerService, IAddressService addressService)
         {
-            _drivingLessonService = drivingLessonService;
+            _drivingLessonRepository = drivingLessonRepository;
             _customerService = customerService;
             _lecturerService = lecturerService;
             _addressService = addressService;
@@ -27,7 +27,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<DrivingLessonGetDTO>> GetDrivingLessons()
         {
-            var drivingLessons = await _drivingLessonService.GetDrivingLessons();
+            var drivingLessons = await _drivingLessonRepository.GetDrivingLessons();
             if (!drivingLessons.Any())
                 throw new NotFoundDrivingLessonsException();
             return drivingLessons;
@@ -35,7 +35,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId)
         {
-            var drivingLesson = await _drivingLessonService.GetDrivingLesson(drivingLessonId);
+            var drivingLesson = await _drivingLessonRepository.GetDrivingLesson(drivingLessonId);
             if (drivingLesson == null)
                 throw new NotFoundDrivingLessonException(drivingLessonId);
             return drivingLesson;
@@ -46,8 +46,8 @@ namespace DrivingSchoolApp.Services
             var customer = await _customerService.GetCustomer(drivingLessonDetails.CustomerId);
             var lecturer = await _lecturerService.GetLecturer(drivingLessonDetails.LecturerId);
             var address = await _addressService.GetAddress(drivingLessonDetails.AddressId);
-            var addedDrivingLesson = await _drivingLessonService.PostDrivingLesson(drivingLessonDetails);
-            return await _drivingLessonService.GetDrivingLesson(addedDrivingLesson.Id);
+            var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
+            return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace DrivingSchoolApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerPostDTO customerDetails)
         {
-            var addedCustomer = await _customerService.AddCustomer(customerDetails);
+            var addedCustomer = await _customerService.PostCustomer(customerDetails);
             return CreatedAtAction(nameof(AddCustomer), addedCustomer);
         }
 

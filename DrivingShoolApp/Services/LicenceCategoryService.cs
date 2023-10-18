@@ -38,7 +38,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory)
         {
-            var createdCategory = await _licenceCategoryRepository.AddLicenceCategory(newCategory);
+            var createdCategory = await _licenceCategoryRepository.PostLicenceCategory(newCategory);
             return await _licenceCategoryRepository.GetLicenceCategory(createdCategory.Id);
         }
     }

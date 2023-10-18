@@ -7,3 +7,4 @@
             this.HResult = 404;
         }
     }
+}
