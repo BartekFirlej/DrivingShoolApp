@@ -63,7 +63,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostCourse), addedCourse);
         }
 
-        [HttpPost("{courseId}")]
+        [HttpPost("courseId")]
         public async Task<IActionResult> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
         {
             CourseSubjectGetDTO addedCourseSubject;

@@ -9,7 +9,7 @@ namespace DrivingSchoolApp.Services
     public interface ICourseSubjectService
     {
         public Task<ICollection<CourseSubjectGetDTO>> GetCourseSubjects();
-        public Task<CourseSubjectGetDTO> GetCourseSubjects(int courseId, int subjectId);
+        public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectGetDTO> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
     }
     public class CourseSubjectService : ICourseSubjectService
@@ -33,8 +33,10 @@ namespace DrivingSchoolApp.Services
             return courseSubjects;
         }
 
-        public async Task<CourseSubjectGetDTO> GetCourseSubjects(int courseId, int subjectId)
+        public async Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId)
         {
+            var course = await _courseService.GetCourse(courseId);
+            var subject = await _subjectService.GetSubject(subjectId);
             var courseSubject = await _courseSubjectRepository.GetCourseSubject(courseId, subjectId);
             if (courseSubject == null)
                 throw new NotFoundCourseSubjectException(courseId, subjectId);
