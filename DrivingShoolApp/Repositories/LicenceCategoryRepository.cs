@@ -8,7 +8,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories();
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int id);
-        public Task<LicenceCategory> AddLicenceCategory(LicenceCategoryPostDTO newCategory);
+        public Task<LicenceCategory> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
     }
     public class LicenceCategoryRepository : ILicenceCategoryRepository
     {
@@ -35,7 +35,7 @@ namespace DrivingSchoolApp.Repositories
 
         }
 
-        public async Task<LicenceCategory> AddLicenceCategory(LicenceCategoryPostDTO licenceCategoryDetails)
+        public async Task<LicenceCategory> PostLicenceCategory(LicenceCategoryPostDTO licenceCategoryDetails)
         {
             var licenceCategoryToAdd = new LicenceCategory { Name = licenceCategoryDetails.Name };
             await _dbContext.LicenceCategories.AddAsync(licenceCategoryToAdd);

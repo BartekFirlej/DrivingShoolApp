@@ -8,7 +8,7 @@ namespace DrivingSchoolApp.Services
     {
         public Task<ICollection<CustomerGetDTO>> GetCustomers();
         public Task<CustomerGetDTO> GetCustomer(int customerId);
-        public Task<CustomerGetDTO> AddCustomer(CustomerPostDTO newCustomer);
+        public Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer);
     }
     public class CustomerService : ICustomerService
     {
@@ -35,9 +35,9 @@ namespace DrivingSchoolApp.Services
             return customer;
         }
 
-        public async Task<CustomerGetDTO> AddCustomer(CustomerPostDTO newCustomer)
+        public async Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer)
         {
-            var createdCustomer = await _customerRepository.AddCustomer(newCustomer);
+            var createdCustomer = await _customerRepository.PostCustomer(newCustomer);
             return await _customerRepository.GetCustomer(createdCustomer.Id);
         }
     }

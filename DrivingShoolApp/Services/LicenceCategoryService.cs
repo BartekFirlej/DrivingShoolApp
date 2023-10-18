@@ -9,7 +9,7 @@ namespace DrivingSchoolApp.Services
     {
         public Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories();
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int licenceCategoryId);
-        public Task<LicenceCategoryGetDTO> AddLicenceCategory(LicenceCategoryPostDTO newCategory);
+        public Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
     }
     public class LicenceCategoryService : ILicenceCategoryService
     {
@@ -36,7 +36,7 @@ namespace DrivingSchoolApp.Services
             return licenceCategory;
         }
 
-        public async Task<LicenceCategoryGetDTO> AddLicenceCategory(LicenceCategoryPostDTO newCategory)
+        public async Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory)
         {
             var createdCategory = await _licenceCategoryRepository.AddLicenceCategory(newCategory);
             return await _licenceCategoryRepository.GetLicenceCategory(createdCategory.Id);

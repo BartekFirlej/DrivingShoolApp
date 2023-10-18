@@ -8,7 +8,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<CustomerGetDTO>> GetCustomers();
         public Task<CustomerGetDTO> GetCustomer(int customerId);
-        public Task<Customer> AddCustomer(CustomerPostDTO customerDetails);
+        public Task<Customer> PostCustomer(CustomerPostDTO customerDetails);
     }
     public class CustomerRepository : ICustomerRepository
     {
@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Repositories
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<Customer> AddCustomer(CustomerPostDTO customerDetails)
+        public async Task<Customer> PostCustomer(CustomerPostDTO customerDetails)
         {
             var customerToAdd = new Customer
             {

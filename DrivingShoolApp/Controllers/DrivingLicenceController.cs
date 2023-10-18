@@ -47,7 +47,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
+        public async Task<IActionResult> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
         {
             DrivingLicenceGetDTO addedDrivingLicence;
             try
@@ -62,7 +62,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            return CreatedAtAction(nameof(AddDrivingLicence), addedDrivingLicence);
+            return CreatedAtAction(nameof(PostDrivingLicence), addedDrivingLicence);
         }
     }
 }

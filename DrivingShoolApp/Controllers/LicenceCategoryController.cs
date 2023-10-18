@@ -47,10 +47,10 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddLicenceCategory(LicenceCategoryPostDTO licenceCategoryDetails)
+        public async Task<IActionResult> PostLicenceCategory(LicenceCategoryPostDTO licenceCategoryDetails)
         {
-            var addedLicenceCategory = await _licenceCategoryService.AddLicenceCategory(licenceCategoryDetails);
-            return CreatedAtAction(nameof(AddLicenceCategory), addedLicenceCategory);
+            var addedLicenceCategory = await _licenceCategoryService.PostLicenceCategory(licenceCategoryDetails);
+            return CreatedAtAction(nameof(PostLicenceCategory), addedLicenceCategory);
         }
     }
 }
