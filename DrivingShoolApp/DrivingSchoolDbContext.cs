@@ -37,7 +37,7 @@ public partial class DrivingSchoolDbContext : DbContext
 
     public virtual DbSet<Registration> Registrations { get; set; }
 
-    public virtual DbSet<RequiredDrivingLicence> RequiredDrivingLicences { get; set; }
+    public virtual DbSet<RequiredLicenceCategory> RequiredDrivingLicences { get; set; }
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
@@ -308,22 +308,22 @@ public partial class DrivingSchoolDbContext : DbContext
                 .HasConstraintName("Registration_Customer_FK");
         });
 
-        modelBuilder.Entity<RequiredDrivingLicence>(entity =>
+        modelBuilder.Entity<RequiredLicenceCategory>(entity =>
         {
-            entity.HasKey(e => new { e.DrivingLicenceId, e.RequiredDrivingLicenceId }).HasName("RequiredDrivingLicences_PK");
+            entity.HasKey(e => new { e.LicenceCategoryId, e.RequiredLicenceCategoryId }).HasName("RequiredDrivingLicences_PK");
 
-            entity.Property(e => e.DrivingLicenceId).HasColumnName("DrivingLicence_ID");
-            entity.Property(e => e.RequiredDrivingLicenceId).HasColumnName("RequiredDrivingLicence_ID");
+            entity.Property(e => e.LicenceCategoryId).HasColumnName("LicenceCategory_ID");
+            entity.Property(e => e.RequiredLicenceCategoryId).HasColumnName("RequiredLicenceCategory_ID");
 
-            entity.HasOne(d => d.DrivingLicence).WithMany(p => p.RequiredDrivingLicenceDrivingLicences)
-                .HasForeignKey(d => d.DrivingLicenceId)
+            entity.HasOne(d => d.LicenceCategory).WithMany(p => p.RequiredDrivingLicenceDrivingLicences)
+                .HasForeignKey(d => d.LicenceCategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RequiredDrivingLicences_DrivingLicence_FK");
+                .HasConstraintName("RequiredLicenceCategory_LicenceCategory_FK");
 
-            entity.HasOne(d => d.RequiredDrivingLicenceNavigation).WithMany(p => p.RequiredDrivingLicenceRequiredDrivingLicenceNavigations)
-                .HasForeignKey(d => d.RequiredDrivingLicenceId)
+            entity.HasOne(d => d.RequiredLicenceCategories).WithMany(p => p.RequiredDrivingLicenceRequiredDrivingLicenceNavigations)
+                .HasForeignKey(d => d.LicenceCategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RequiredDrivingLicences_DrivingLicence_FKv2");
+                .HasConstraintName("RequiredLicenceCategory_RequiredLicenceCategory_FK");
         });
 
         modelBuilder.Entity<Subject>(entity =>

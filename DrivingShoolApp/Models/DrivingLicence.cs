@@ -16,7 +16,4 @@ public partial class DrivingLicence
 
     public virtual LicenceCategory LicenceCategory { get; set; } = null!;
 
-    public virtual ICollection<RequiredDrivingLicence> RequiredDrivingLicenceDrivingLicences { get; set; } = new List<RequiredDrivingLicence>();
-
-    public virtual ICollection<RequiredDrivingLicence> RequiredDrivingLicenceRequiredDrivingLicenceNavigations { get; set; } = new List<RequiredDrivingLicence>();
 }
