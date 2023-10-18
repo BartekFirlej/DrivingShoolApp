@@ -20,6 +20,7 @@ builder.Services.AddScoped<ILectureRepository, LectureRepository>();
 builder.Services.AddScoped<IDrivingLicenceRepository, DrivingLicenceRepository>();
 builder.Services.AddScoped<IDrivingLessonRepository, DrivingLessonRepository>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
+builder.Services.AddScoped<IRequiredLicenceCategoryRepository, RequiredLicenceCategoryRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -34,6 +35,7 @@ builder.Services.AddScoped<ILectureService, LectureService>();
 builder.Services.AddScoped<IDrivingLicenceService, DrivingLicenceService>();
 builder.Services.AddScoped<IDrivingLessonService, DrivingLessonService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<IRequiredLicenceCategoryService, RequiredLicenceCategoryService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();  
 
 builder.Services.AddDbContext<DrivingSchoolDbContext>();
