@@ -29,7 +29,7 @@ namespace DrivingSchoolApp.Repositories
         {
             var registrations = await _registrationRepository.GetRegistrations();
             if (!registrations.Any())
-                throw new NotFoundRegistrationsException();
+                throw new NotFoundRegistrationException();
             return registrations;
         }
 
@@ -37,7 +37,7 @@ namespace DrivingSchoolApp.Repositories
         {
             var registration = await _registrationRepository.GetCourseRegistrations(courseId);
             if (!registration.Any())
-                throw new NotFoundRegistrationsException();
+                throw new NotFoundRegistrationException();
             return registration;
         }
 
@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Repositories
             await _userService.GetCustomer(userId);
             var registrations = await _registrationRepository.GetUserRegistrations(userId);
             if (!registrations.Any())
-                throw new NotFoundRegistrationsException();
+                throw new NotFoundRegistrationException();
             return registrations;
         }
 

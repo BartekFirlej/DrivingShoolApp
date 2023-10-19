@@ -24,7 +24,7 @@ namespace DrivingSchoolApp.Services
         {
             var licenceCategories = await _licenceCategoryRepository.GetLicenceCategories();
             if(!licenceCategories.Any())
-                throw new NotFoundLicenceCategoriesException();
+                throw new NotFoundLicenceCategoryException();
             return licenceCategories;
         }
 

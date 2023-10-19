@@ -27,7 +27,7 @@ namespace DrivingSchoolApp.Services
         {
             var courses = await _courseRepository.GetCourses();
             if(!courses.Any())
-                throw new NotFoundCoursesException();
+                throw new NotFoundCourseException();
             return courses;
         }
 

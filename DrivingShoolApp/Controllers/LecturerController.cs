@@ -24,7 +24,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 lecturers = await _lecturerService.GetLecturers();
             }
-            catch (NotFoundLecturersException e)
+            catch (NotFoundLecturerException e)
             {
                 return NotFound(e.ToJson());
             }

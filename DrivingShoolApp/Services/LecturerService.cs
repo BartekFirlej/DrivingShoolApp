@@ -24,7 +24,7 @@ namespace DrivingSchoolApp.Services
         {
             var lecturers = await _lecturerRepository.GetLecturers();
             if (!lecturers.Any())
-                throw new NotFoundLecturersException();
+                throw new NotFoundLecturerException();
             return lecturers;
         }
 

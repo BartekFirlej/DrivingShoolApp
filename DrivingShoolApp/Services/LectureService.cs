@@ -30,7 +30,7 @@ namespace DrivingSchoolApp.Services
         {
             var lectures = await _lectureRepository.GetLectures();
             if (!lectures.Any())
-                throw new NotFoundLecturesException();
+                throw new NotFoundLectureException();
             return lectures;
         }
 

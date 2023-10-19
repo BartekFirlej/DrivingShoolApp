@@ -24,7 +24,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 addresses = await _addressService.GetAddresses();
             }
-            catch (NotFoundAddressesException e)
+            catch (NotFoundAddressException e)
             {
                 return NotFound(e.ToJson());
             }

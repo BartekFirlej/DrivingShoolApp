@@ -25,7 +25,7 @@ namespace DrivingSchoolApp.Services
         {
             var subjects = await _subjectRepository.GetSubjects();
             if (!subjects.Any())
-                throw new NotFoundSubjectsException();
+                throw new NotFoundSubjectException();
             return subjects;
         }
 

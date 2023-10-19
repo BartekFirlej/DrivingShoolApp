@@ -26,7 +26,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 courses = await _courseService.GetCourses();
             }
-            catch(NotFoundCoursesException e)
+            catch(NotFoundCourseException e)
             {
                 return NotFound(e.ToJson());
             }

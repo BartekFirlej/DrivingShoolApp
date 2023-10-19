@@ -30,7 +30,7 @@ namespace DrivingSchoolApp.Services
         {
             var customerLectures = await _customerLectureRepository.GetCustomersLectures();
             if (!customerLectures.Any())
-                throw new NotFoundCustomersLecturesException();
+                throw new NotFoundCustomerLectureException();
             return customerLectures;
         }
 
@@ -38,7 +38,7 @@ namespace DrivingSchoolApp.Services
         {
             var customerLectures = await _customerLectureRepository.GetCustomerLectures(customerId);
             if (!customerLectures.Any())
-                throw new NotFoundCustomerLecturesException(customerId);
+                throw new NotFoundCustomerLectureException(customerId);
             return customerLectures;
         }
 

@@ -23,7 +23,7 @@ namespace DrivingSchoolApp.Services
         {
             var customers = await _customerRepository.GetCustomers();
             if(!customers.Any())
-                throw new NotFoundCustomersException();
+                throw new NotFoundCustomerException();
             return customers;
         }
 

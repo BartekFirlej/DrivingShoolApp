@@ -27,7 +27,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 lectures = await _lectureService.GetLectures();
             }
-            catch (NotFoundLecturesException e)
+            catch (NotFoundLectureException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -57,7 +57,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 customersLectures = await _customerLectureService.GetCustomersLectures();
             }
-            catch (NotFoundCustomersLecturesException e)
+            catch (NotFoundCustomersLectureException e)
             {
                 return NotFound(e.ToJson());
             }

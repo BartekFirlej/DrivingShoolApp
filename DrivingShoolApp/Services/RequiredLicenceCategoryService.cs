@@ -27,7 +27,7 @@ namespace DrivingSchoolApp.Services
         {
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements();
             if (!requiredLicenceCategories.Any())
-                throw new NotFoundRequiredLicenceCategoriesException();
+                throw new NotFoundRequiredLicenceCategoryException();
             return requiredLicenceCategories;
         }
 
@@ -35,7 +35,7 @@ namespace DrivingSchoolApp.Services
         {
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirement(licenceCategoryId, requiredLicenceCategoryId);
             if (requiredLicenceCategories == null)
-                throw new NotFoundRequiredLicenceCategoriesException(licenceCategoryId, requiredLicenceCategoryId);
+                throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId, requiredLicenceCategoryId);
             return requiredLicenceCategories;
         }
 
@@ -43,7 +43,7 @@ namespace DrivingSchoolApp.Services
         {
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
             if (!requiredLicenceCategories.Any())
-                throw new NotFoundRequiredLicenceCategoriesException(licenceCategoryId);
+                throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId);
             return requiredLicenceCategories;
         }
 

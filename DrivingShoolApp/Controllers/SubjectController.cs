@@ -25,7 +25,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 subjects = await _subjectService.GetSubjects();
             }
-            catch (NotFoundSubjectsException e)
+            catch (NotFoundSubjectException e)
             {
                 return NotFound(e.ToJson());
             }

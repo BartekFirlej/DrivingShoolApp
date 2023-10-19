@@ -23,7 +23,7 @@ namespace DrivingSchoolApp.Services
         {
             var addresses = await _addressRepository.GetAddresses();
             if (!addresses.Any())
-                throw new NotFoundAddressesException();
+                throw new NotFoundAddressException();
             return addresses;
         }
 

@@ -32,7 +32,7 @@ namespace DrivingSchoolApp.Services
         {
             var drivingLicences = await _drivingLicenceRepository.GetDrivingLicences();
             if(!drivingLicences.Any())
-                throw new NotFoundDrivingLicencesException();
+                throw new NotFoundDrivingLicenceException();
             return drivingLicences;
         }
 
