@@ -71,12 +71,12 @@ namespace DrivingSchoolApp.Repositories
             return drivingLicenceToAdd;
         }
 
-        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId)
+        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
         {
             return await _dbContext.DrivingLicences
                                    .Include(d => d.LicenceCategory)
                                    .Include(d => d.Customer)
-                                   .Where(d => d.CustomerId == customerId)
+                                   .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= date || d.ExpirationDate == null))
                                    .Select(d => new DrivingLicenceGetDTO
                                    {
                                        Id = d.Id,
@@ -85,7 +85,6 @@ namespace DrivingSchoolApp.Repositories
                                        UserSecondName = d.Customer.SecondName,
                                        LicenceCategoryId = d.LicenceCategoryId,
                                        LicenceCategoryName = d.LicenceCategory.Name,
-                                       ExpirationDate = (DateTime)d.ExpirationDate,
                                        ReceivedDate = d.ReceivedDate
                                    }).ToListAsync();
         }

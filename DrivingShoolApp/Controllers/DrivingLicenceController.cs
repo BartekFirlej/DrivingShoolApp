@@ -10,7 +10,6 @@ namespace DrivingSchoolApp.Controllers
     public class DrivingLicenceController : ControllerBase
     {
         private readonly IDrivingLicenceService _drivingLicenceService;
-        private readonly IRequiredLicenceCategoryService _requiredLicenceCategoryService;
 
         public DrivingLicenceController(IDrivingLicenceService drivingLicenceService)
         {

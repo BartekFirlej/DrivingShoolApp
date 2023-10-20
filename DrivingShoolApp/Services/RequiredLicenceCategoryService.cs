@@ -12,19 +12,17 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
-        public Task<bool> MeetRequirements(int customerId, int licenceCategoryId, DateTime receiveDate);
+        public Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate);
     }
     public class RequiredLicenceCategoryService : IRequiredLicenceCategoryService
     {
         private readonly IRequiredLicenceCategoryRepository _requiredLicenceCategoryRepository;
         private readonly ILicenceCategoryService _licenceCategoryService;
-        private readonly IDrivingLicenceService _drivingLicenceService;
 
-        public RequiredLicenceCategoryService(IRequiredLicenceCategoryRepository requiredLicenceCategoryRepository, ILicenceCategoryService licenceCategoryService, IDrivingLicenceService drivingLicenceService)
+        public RequiredLicenceCategoryService(IRequiredLicenceCategoryRepository requiredLicenceCategoryRepository, ILicenceCategoryService licenceCategoryService)
         {
             _requiredLicenceCategoryRepository = requiredLicenceCategoryRepository;
             _licenceCategoryService = licenceCategoryService;
-            _drivingLicenceService = drivingLicenceService;
         }
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements()
@@ -59,32 +57,27 @@ namespace DrivingSchoolApp.Services
             return await _requiredLicenceCategoryRepository.GetRequirement(addedRequiredLicenceCategory.LicenceCategoryId, addedRequiredLicenceCategory.RequiredLicenceCategoryId);
         }
 
-        public async Task<bool> MeetRequirements(int customerId, int licenceCategoryId, DateTime receiveDate)
+        public async Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate)
         {
             ICollection<RequiredLicenceCategoryGetDTO> requiredDrivingLicenceCategories = new List<RequiredLicenceCategoryGetDTO>();
-            ICollection<DrivingLicenceGetDTO> drivingLicences = new List<DrivingLicenceGetDTO>();
             try
             {
                 requiredDrivingLicenceCategories = await GetRequirements(licenceCategoryId);
-                drivingLicences = await _drivingLicenceService.GetCustomerDrivingLicences(customerId);
             }
             catch(NotFoundRequiredLicenceCategoryException e)
             {
                 return true;
             }
-            catch(NotFoundDrivingLicenceException e)
-            {
-                if (requiredDrivingLicenceCategories.Any())
-                    return false;
-            }
+            if (requiredDrivingLicenceCategories.Any() && !drivingLicences.Any())
+                return false;
             foreach(var requiredDrivingLicenceCategory in requiredDrivingLicenceCategories)
             {
                 DrivingLicenceGetDTO drivingLicence = drivingLicences.Where(d => d.LicenceCategoryId == requiredDrivingLicenceCategory.LicenceCategoryId).FirstOrDefault();
+                if (drivingLicence == null)
+                    return false;
                 DateTime StartDate = drivingLicence.ReceivedDate;
                 DateTime RequiredTime = StartDate.AddYears(requiredDrivingLicenceCategory.RequiredYears);
-                if (receiveDate >= RequiredTime)
-                    continue;
-                else
+                if (receiveDate < RequiredTime)
                     return false;
             }
             return true;

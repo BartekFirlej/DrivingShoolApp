@@ -8,7 +8,7 @@ namespace DrivingSchoolApp.Services
     public interface IDrivingLicenceService
     {
         public Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences();
-        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
+        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
 
@@ -16,18 +16,18 @@ namespace DrivingSchoolApp.Services
     public class DrivingLicenceService : IDrivingLicenceService
     {
         private readonly IDrivingLicenceRepository _drivingLicenceRepository;
-        private readonly ICustomerService _userService;
+        private readonly ICustomerService _customerService;
         private readonly ILicenceCategoryService _licenceCategoryService;
         private readonly IRequiredLicenceCategoryService _requiredLicenceCategoryService;
 
 
         public DrivingLicenceService(IDrivingLicenceRepository drivingLicenceRepository,
-                                     ICustomerService userService,
+                                     ICustomerService customerService,
                                      ILicenceCategoryService licenceCategoryService,
                                      IRequiredLicenceCategoryService requiredLicenceCategoryService)
         {
             _drivingLicenceRepository = drivingLicenceRepository;
-            _userService = userService;
+            _customerService = customerService;
             _licenceCategoryService = licenceCategoryService;
             _requiredLicenceCategoryService = requiredLicenceCategoryService;
         }
@@ -40,9 +40,9 @@ namespace DrivingSchoolApp.Services
             return drivingLicences;
         }
 
-        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId)
+        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
         {
-            var drivingLicences = await _drivingLicenceRepository.GetCustomerDrivingLicences(customerId);
+            var drivingLicences = await _drivingLicenceRepository.GetCustomerDrivingLicences(customerId, date);
             if (!drivingLicences.Any())
                 throw new NotFoundDrivingLicenceException();
             return drivingLicences;
@@ -58,9 +58,18 @@ namespace DrivingSchoolApp.Services
 
         public async Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
         {
-            await _userService.GetCustomer(drivingLicenceDetails.UserId);
-            await _licenceCategoryService.GetLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
-            var meetsRequirements = await _requiredLicenceCategoryService.MeetRequirements(drivingLicenceDetails.UserId, drivingLicenceDetails.LicenceCategoryId, drivingLicenceDetails.ReceivedDate);
+            var customer = await _customerService.GetCustomer(drivingLicenceDetails.UserId);
+            var licenceCategory = await _licenceCategoryService.GetLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
+            ICollection<DrivingLicenceGetDTO> customerDrivingLicences;
+            try
+            {
+                customerDrivingLicences = await GetCustomerDrivingLicences(drivingLicenceDetails.UserId, drivingLicenceDetails.ReceivedDate);
+            }
+            catch(NotFoundDrivingLicenceException)
+            {
+                customerDrivingLicences = new List<DrivingLicenceGetDTO>();
+            }
+            var meetsRequirements = await _requiredLicenceCategoryService.MeetRequirements(customerDrivingLicences, drivingLicenceDetails.LicenceCategoryId, drivingLicenceDetails.ReceivedDate);
             if (!meetsRequirements)
                 throw new CustomerDoesntMeetRequirementsException(drivingLicenceDetails.UserId, drivingLicenceDetails.LicenceCategoryId);
             var addedDrivingLicence = await _drivingLicenceRepository.PostDrivingLicence(drivingLicenceDetails);

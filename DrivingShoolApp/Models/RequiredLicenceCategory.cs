@@ -10,5 +10,5 @@ public partial class RequiredLicenceCategory
 
     public virtual LicenceCategory LicenceCategory { get; set; } = null!;
 
-    public virtual LicenceCategory RequiredLicenceCategories { get; set; } = null!;
+    public virtual LicenceCategory ReqLicenceCategory { get; set; } = null!;
 }

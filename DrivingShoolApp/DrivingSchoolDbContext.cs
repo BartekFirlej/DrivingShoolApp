@@ -37,7 +37,7 @@ public partial class DrivingSchoolDbContext : DbContext
 
     public virtual DbSet<Registration> Registrations { get; set; }
 
-    public virtual DbSet<RequiredLicenceCategory> RequiredDrivingLicences { get; set; }
+    public virtual DbSet<RequiredLicenceCategory> RequiredLicenceCategories { get; set; }
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
@@ -312,6 +312,8 @@ public partial class DrivingSchoolDbContext : DbContext
         {
             entity.HasKey(e => new { e.LicenceCategoryId, e.RequiredLicenceCategoryId }).HasName("RequiredDrivingLicences_PK");
 
+            entity.ToTable("RequiredLicenceCategory");
+
             entity.Property(e => e.LicenceCategoryId).HasColumnName("LicenceCategory_ID");
             entity.Property(e => e.RequiredLicenceCategoryId).HasColumnName("RequiredLicenceCategory_ID");
 
@@ -320,7 +322,7 @@ public partial class DrivingSchoolDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RequiredLicenceCategory_LicenceCategory_FK");
 
-            entity.HasOne(d => d.RequiredLicenceCategories).WithMany(p => p.RequiredDrivingLicenceRequiredDrivingLicenceNavigations)
+            entity.HasOne(d => d.ReqLicenceCategory).WithMany(p => p.RequiredDrivingLicenceRequiredDrivingLicenceNavigations)
                 .HasForeignKey(d => d.LicenceCategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RequiredLicenceCategory_RequiredLicenceCategory_FK");

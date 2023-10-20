@@ -22,48 +22,51 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements()
         {
-            return await _dbContext.RequiredDrivingLicences.Include(l => l.LicenceCategory)
-                                                           .Include(l => l.RequiredLicenceCategories)
-                                                           .Select(l => new RequiredLicenceCategoryGetDTO
-                                                           {
-                                                               LicenceCategoryId = l.LicenceCategoryId,
-                                                               LicenceCategoryName = l.LicenceCategory.Name,
-                                                               RequiredLicenceCategoryId = l.RequiredLicenceCategoryId,
-                                                               RequiredLicenceCategoryName = l.RequiredLicenceCategories.Name,
-                                                               RequiredYears = l.RequiredYears
-                                                           }).ToListAsync();
+            return await (from rlc in _dbContext.RequiredLicenceCategories
+                    join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
+                    join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
+                    select new RequiredLicenceCategoryGetDTO
+                    {
+                        LicenceCategoryId = lc.Id,
+                        LicenceCategoryName = lc.Name,
+                        RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
+                        RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                        RequiredYears = rlc.RequiredYears
+                    }).ToListAsync();
         }
 
         public async Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
         {
-            return await _dbContext.RequiredDrivingLicences.Include(l => l.LicenceCategory)
-                                               .Include(l => l.RequiredLicenceCategories)
-                                               .Where(l => l.LicenceCategoryId == licenceCategoryId && l.RequiredLicenceCategoryId==requiredLicenceCategoryId)
-                                               .Select(l => new RequiredLicenceCategoryGetDTO
-                                               {
-                                                   LicenceCategoryId = l.LicenceCategoryId,
-                                                   LicenceCategoryName = l.LicenceCategory.Name,
-                                                   RequiredLicenceCategoryId = l.RequiredLicenceCategoryId,
-                                                   RequiredLicenceCategoryName = l.RequiredLicenceCategories.Name,
-                                                   RequiredYears = l.RequiredYears
-                                               }).FirstOrDefaultAsync();
+            return await (from rlc in _dbContext.RequiredLicenceCategories
+                          join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
+                          join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
+                          where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
+                          select new RequiredLicenceCategoryGetDTO
+                          {
+                              LicenceCategoryId = lc.Id,
+                              LicenceCategoryName = lc.Name,
+                              RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
+                              RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                              RequiredYears = rlc.RequiredYears
+                          }).FirstOrDefaultAsync();
         }
 
 
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId)
         {
-            return await _dbContext.RequiredDrivingLicences.Include(l => l.LicenceCategory)
-                                               .Include(l => l.RequiredLicenceCategories)
-                                               .Where(l => l.LicenceCategoryId == licenceCategoryId)
-                                               .Select(l => new RequiredLicenceCategoryGetDTO
-                                               {
-                                                   LicenceCategoryId = l.LicenceCategoryId,
-                                                   LicenceCategoryName = l.LicenceCategory.Name,
-                                                   RequiredLicenceCategoryId = l.RequiredLicenceCategoryId,
-                                                   RequiredLicenceCategoryName = l.RequiredLicenceCategories.Name,
-                                                   RequiredYears = l.RequiredYears
-                                               }).ToListAsync();
+            return await (from rlc in _dbContext.RequiredLicenceCategories
+                   join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
+                   join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
+                   where rlc.LicenceCategoryId == licenceCategoryId
+                   select new RequiredLicenceCategoryGetDTO
+                   {
+                       LicenceCategoryId = lc.Id,
+                       LicenceCategoryName = lc.Name,
+                       RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
+                       RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                       RequiredYears = rlc.RequiredYears
+                   }).ToListAsync();
         }
 
         public async Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails)
@@ -74,7 +77,7 @@ namespace DrivingSchoolApp.Repositories
                 RequiredLicenceCategoryId = requirementDetails.RequiredLicenceCategoryId,
                 RequiredYears = requirementDetails.RequiredYears
             };
-            await _dbContext.AddAsync(requirementToAdd);
+            await _dbContext.RequiredLicenceCategories.AddAsync(requirementToAdd);
             await _dbContext.SaveChangesAsync();
             return requirementToAdd;
         }
