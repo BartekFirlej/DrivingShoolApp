@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Repositories
     public interface IDrivingLicenceRepository
     {
         public Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences();
-        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
+        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
     }
