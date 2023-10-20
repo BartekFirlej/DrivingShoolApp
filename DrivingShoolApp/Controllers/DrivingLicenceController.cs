@@ -10,6 +10,7 @@ namespace DrivingSchoolApp.Controllers
     public class DrivingLicenceController : ControllerBase
     {
         private readonly IDrivingLicenceService _drivingLicenceService;
+        private readonly IRequiredLicenceCategoryService _requiredLicenceCategoryService;
 
         public DrivingLicenceController(IDrivingLicenceService drivingLicenceService)
         {
@@ -61,6 +62,10 @@ namespace DrivingSchoolApp.Controllers
             catch(NotFoundLicenceCategoryException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch(CustomerDoesntMeetRequirementsException e)
+            {
+                return Conflict(e.ToJson());
             }
             return CreatedAtAction(nameof(PostDrivingLicence), addedDrivingLicence);
         }

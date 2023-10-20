@@ -6,7 +6,8 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface IDrivingLicenceRepository
     {
-        public Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences(); 
+        public Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences();
+        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
     }
@@ -68,6 +69,25 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.DrivingLicences.AddAsync(drivingLicenceToAdd);
             await _dbContext.SaveChangesAsync();
             return drivingLicenceToAdd;
+        }
+
+        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId)
+        {
+            return await _dbContext.DrivingLicences
+                                   .Include(d => d.LicenceCategory)
+                                   .Include(d => d.Customer)
+                                   .Where(d => d.CustomerId == customerId)
+                                   .Select(d => new DrivingLicenceGetDTO
+                                   {
+                                       Id = d.Id,
+                                       UserId = d.CustomerId,
+                                       UserName = d.Customer.Name,
+                                       UserSecondName = d.Customer.SecondName,
+                                       LicenceCategoryId = d.LicenceCategoryId,
+                                       LicenceCategoryName = d.LicenceCategory.Name,
+                                       ExpirationDate = (DateTime)d.ExpirationDate,
+                                       ReceivedDate = d.ReceivedDate
+                                   }).ToListAsync();
         }
     }
 }
