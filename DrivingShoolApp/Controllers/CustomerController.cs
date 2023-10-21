@@ -91,6 +91,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return Conflict(e.ToJson());
             }
+            catch(CustomerDoesntMeetRequirementsException e)
+            {
+                return Conflict(e.ToJson());
+            }
             return CreatedAtAction(nameof(RegisterCustomerForCourse), customerRegistration);
         }
     }

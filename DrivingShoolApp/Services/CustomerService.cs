@@ -1,6 +1,7 @@
 ﻿using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {
@@ -9,6 +10,7 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<CustomerGetDTO>> GetCustomers();
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer);
+        public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
     }
     public class CustomerService : ICustomerService
     {
@@ -39,6 +41,14 @@ namespace DrivingSchoolApp.Services
         {
             var createdCustomer = await _customerRepository.PostCustomer(newCustomer);
             return await _customerRepository.GetCustomer(createdCustomer.Id);
+        }
+
+        public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate)
+        {
+            DateTime RequiredDate = customerBirthDay.AddYears(requiredAge);
+            if (assignDate >= RequiredDate)
+                return true;
+            return false;
         }
     }
 }

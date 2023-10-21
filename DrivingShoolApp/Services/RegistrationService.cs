@@ -15,13 +15,13 @@ namespace DrivingSchoolApp.Repositories
     public class RegistrationService : IRegistrationService
     {
         private readonly IRegistrationRepository _registrationRepository;
-        private readonly ICustomerService _userService;
+        private readonly ICustomerService _customerService;
         private readonly ICourseService _courseService;
 
-        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService userService, ICourseService courseService)
+        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService customerService, ICourseService courseService)
         {
             _registrationRepository = registrationRepository;
-            _userService = userService;
+            _customerService = customerService;
             _courseService = courseService;
         }
 
@@ -43,7 +43,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<RegistrationGetDTO>> GetUserRegistrations(int userId)
         {
-            await _userService.GetCustomer(userId);
+            await _customerService.GetCustomer(userId);
             var registrations = await _registrationRepository.GetUserRegistrations(userId);
             if (!registrations.Any())
                 throw new NotFoundRegistrationException();
@@ -59,11 +59,14 @@ namespace DrivingSchoolApp.Repositories
         }
         public async Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails)
         {
-            await _userService.GetCustomer(registrationDetails.UserId);
-            await _courseService.GetCourse(registrationDetails.CourseId);
+            var customer = await _customerService.GetCustomer(registrationDetails.UserId);
+            var course = await _courseService.GetCourse(registrationDetails.CourseId);
             var registration = await _registrationRepository.GetRegistration(registrationDetails.UserId, registrationDetails.CourseId);
             if (registration != null)
                 throw new CustomerAlreadyAssignedToCourseException(registrationDetails.UserId, registrationDetails.CourseId);
+            var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, DateTime.Now);
+            if (meetAgeRequirement == false)
+                throw new CustomerDoesntMeetRequirementsException(customer.Id);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails);
             return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);
         }
