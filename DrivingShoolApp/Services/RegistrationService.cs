@@ -61,6 +61,9 @@ namespace DrivingSchoolApp.Repositories
         {
             await _userService.GetCustomer(registrationDetails.UserId);
             await _courseService.GetCourse(registrationDetails.CourseId);
+            var registration = await _registrationRepository.GetRegistration(registrationDetails.UserId, registrationDetails.CourseId);
+            if (registration != null)
+                throw new CustomerAlreadyAssignedToCourseException(registrationDetails.UserId, registrationDetails.CourseId);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails);
             return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);
         }

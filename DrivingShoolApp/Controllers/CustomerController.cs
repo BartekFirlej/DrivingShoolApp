@@ -87,6 +87,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch(CustomerAlreadyAssignedToCourseException e)
+            {
+                return Conflict(e.ToJson());
+            }
             return CreatedAtAction(nameof(RegisterCustomerForCourse), customerRegistration);
         }
     }
