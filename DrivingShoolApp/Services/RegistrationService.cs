@@ -59,14 +59,14 @@ namespace DrivingSchoolApp.Repositories
         }
         public async Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails)
         {
-            var customer = await _customerService.GetCustomer(registrationDetails.UserId);
+            var customer = await _customerService.GetCustomer(registrationDetails.CustomerId);
             var course = await _courseService.GetCourse(registrationDetails.CourseId);
             var assignedPeopleCount = await _courseService.GetCourseAssignedPeopleCount(registrationDetails.CourseId);
             if (assignedPeopleCount >= course.Limit)
                 throw new AssignLimitReachedException(course.Id);
-            var registration = await _registrationRepository.GetRegistration(registrationDetails.UserId, registrationDetails.CourseId);
+            var registration = await _registrationRepository.GetRegistration(registrationDetails.CustomerId, registrationDetails.CourseId);
             if (registration != null)
-                throw new CustomerAlreadyAssignedToCourseException(registrationDetails.UserId, registrationDetails.CourseId);
+                throw new CustomerAlreadyAssignedToCourseException(registrationDetails.CustomerId, registrationDetails.CourseId);
             var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, DateTime.Now);
             if (meetAgeRequirement == false)
                 throw new CustomerDoesntMeetRequirementsException(customer.Id);

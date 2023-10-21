@@ -28,7 +28,7 @@ namespace DrivingSchoolApp.Repositories
                                    .Select(r => new RegistrationGetDTO
                                    {
                                        RegistrationDate = r.RegistrationDate,
-                                       UserId = r.CustomerId,
+                                       CustomerId = r.CustomerId,
                                        CourseId = r.CourseId
                                    }).ToListAsync();
 
@@ -41,7 +41,7 @@ namespace DrivingSchoolApp.Repositories
                        .Select(r => new RegistrationGetDTO
                        {
                            RegistrationDate = r.RegistrationDate,
-                           UserId = r.CustomerId,
+                           CustomerId = r.CustomerId,
                            CourseId = r.CourseId
                        }).ToListAsync();
         }
@@ -53,7 +53,7 @@ namespace DrivingSchoolApp.Repositories
                        .Select(r => new RegistrationGetDTO
                        {
                            RegistrationDate = r.RegistrationDate,
-                           UserId = r.CustomerId,
+                           CustomerId = r.CustomerId,
                            CourseId = r.CourseId
                        }).ToListAsync();
         }
@@ -65,7 +65,7 @@ namespace DrivingSchoolApp.Repositories
                        .Select(r => new RegistrationGetDTO
                        {
                            RegistrationDate = r.RegistrationDate,
-                           UserId = r.CustomerId,
+                           CustomerId = r.CustomerId,
                            CourseId = r.CourseId
                        }).FirstOrDefaultAsync();
         }
@@ -75,7 +75,7 @@ namespace DrivingSchoolApp.Repositories
             var registrationToAdd = new Registration
             {
                 RegistrationDate = DateTime.Now,
-                CustomerId = registrationDetails.UserId,
+                CustomerId = registrationDetails.CustomerId,
                 CourseId = registrationDetails.CourseId
             };
             await _dbContext.Registrations.AddAsync(registrationToAdd);

@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Services
     public interface ICourseService
     {
         public Task<ICollection<CourseGetDTO>> GetCourses();
-        public Task<ICollection<CourseWithUsersGetDTO>> GetCoursesWithUsers();
+        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers();
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
@@ -32,7 +32,7 @@ namespace DrivingSchoolApp.Services
             return courses;
         }
 
-        public Task<ICollection<CourseWithUsersGetDTO>> GetCoursesWithUsers()
+        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers()
         {
             throw new NotImplementedException();
         }
