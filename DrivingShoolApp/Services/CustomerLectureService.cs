@@ -62,6 +62,9 @@ namespace DrivingSchoolApp.Services
         {
             await _customerService.GetCustomer(customerLectureDetails.CustomerId);
             await _lectureService.GetLecture(customerLectureDetails.LectureId);
+            var customerLecture = await _customerLectureRepository.GetCustomerLecture(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
+            if (customerLecture != null)
+                throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             return await _customerLectureRepository.PostCustomerLecture(customerLectureDetails);
         }
     }
