@@ -47,6 +47,9 @@ namespace DrivingSchoolApp.Services
         {
             var course = await _courseService.GetCourse(courseSubjectDetails.CourseId);
             var subject = await _subjectService.GetSubject(courseSubjectDetails.SubjectId);
+            var courseSubject = await _courseSubjectRepository.GetCourseSubject(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
+            if (courseSubject != null)
+                throw new SubjectAlreadyAssignedToCourseException(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
             var addedSubjectService = await _courseSubjectRepository.PostCourseSubject(courseSubjectDetails);
             return await _courseSubjectRepository.GetCourseSubject(addedSubjectService.CourseId, courseSubjectDetails.SubjectId);
         }

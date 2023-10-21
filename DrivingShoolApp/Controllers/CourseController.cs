@@ -79,6 +79,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch (SubjectAlreadyAssignedToCourseException e)
+            {
+                return Conflict(e.ToJson());
+            }
             catch (Exception e)
             {
                 return BadRequest();
