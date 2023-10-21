@@ -9,6 +9,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<CourseWithUsersGetDTO>> GetCoursesWithUsers();
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<Course> PostCourse(CoursePostDTO courseDetails);
+        public Task<int> GetCourseAssignedPeopleCount(int courseId);
     }
     public class CourseRepository : ICourseRepository
     {
@@ -71,6 +72,11 @@ namespace DrivingSchoolApp.Repositories
                                                    LicenceCategoryName = c.CourseType.LicenceCategory.Name
                                                }
                                            }).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetCourseAssignedPeopleCount(int courseId)
+        {
+            return await _dbContext.Courses.Where(c => c.Id == courseId).Select(c => c.Registrations.Count()).FirstOrDefaultAsync();  
         }
 
         public async Task<Course> PostCourse(CoursePostDTO courseDetails)

@@ -95,6 +95,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return Conflict(e.ToJson());
             }
+            catch(AssignLimitReachedException e)
+            {
+                return Conflict(e.ToJson());
+            }
             return CreatedAtAction(nameof(RegisterCustomerForCourse), customerRegistration);
         }
     }

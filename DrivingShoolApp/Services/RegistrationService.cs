@@ -61,6 +61,9 @@ namespace DrivingSchoolApp.Repositories
         {
             var customer = await _customerService.GetCustomer(registrationDetails.UserId);
             var course = await _courseService.GetCourse(registrationDetails.CourseId);
+            var assignedPeopleCount = await _courseService.GetCourseAssignedPeopleCount(registrationDetails.CourseId);
+            if (assignedPeopleCount >= course.Limit)
+                throw new AssignLimitReachedException(course.Id);
             var registration = await _registrationRepository.GetRegistration(registrationDetails.UserId, registrationDetails.CourseId);
             if (registration != null)
                 throw new CustomerAlreadyAssignedToCourseException(registrationDetails.UserId, registrationDetails.CourseId);
