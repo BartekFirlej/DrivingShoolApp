@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 namespace DrivingSchoolApp.Controllers
 {
     [ApiController]
-    [Route("lecture")]
+    [Route("lectures")]
     public class LectureController : ControllerBase
     {
         private readonly ILectureService _lectureService;
@@ -50,12 +50,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet("{lectureid}/customers")]
-        public async Task<IActionResult> GetCustomersLectures(int lectureId)
+        public async Task<IActionResult> GetCustomersLectures(int lectureid)
         {
             ICollection<CustomerLectureGetDTO> customersLectures;
             try
             {
-                customersLectures = await _customerLectureService.GetCustomersLecture(lectureId);
+                customersLectures = await _customerLectureService.GetCustomersLecture(lectureid);
             }
             catch (NotFoundCustomersLectureException e)
             {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DrivingSchoolApp.Controllers
 {
     [ApiController]
-    [Route("subject")]
+    [Route("subjects")]
     public class SubjectController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
@@ -32,13 +32,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(subjects);
         }
 
-        [HttpGet("{subjectId}")]
-        public async Task<IActionResult> GetSubject(int subjectId)
+        [HttpGet("{subjectid}")]
+        public async Task<IActionResult> GetSubject(int subjectid)
         {
             SubjectGetDTO subject;
             try
             {
-                subject = await _subjectService.GetSubject(subjectId);
+                subject = await _subjectService.GetSubject(subjectid);
             }
             catch (NotFoundSubjectException e)
             {

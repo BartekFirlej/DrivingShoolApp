@@ -30,13 +30,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(courseTypes);
         }
 
-        [HttpGet("{courseTypeId}")]
-        public async Task<IActionResult> GetCourseType(int courseTypeId)
+        [HttpGet("{coursetypeid}")]
+        public async Task<IActionResult> GetCourseType(int coursetypeid)
         {
             CourseTypeGetDTO courseType;
             try
             {
-                courseType = await _courseTypeService.GetCourseType(courseTypeId);
+                courseType = await _courseTypeService.GetCourseType(coursetypeid);
             }
             catch(NotFoundCourseTypeException e)
             {

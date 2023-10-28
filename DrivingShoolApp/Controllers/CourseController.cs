@@ -36,13 +36,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(courses);
         }
 
-        [HttpGet("{courseId}")]
-        public async Task<IActionResult> GetCourse(int courseId)
+        [HttpGet("{courseid}")]
+        public async Task<IActionResult> GetCourse(int courseid)
         {
             CourseGetDTO course;
             try
             {
-                course = await _courseService.GetCourse(courseId);
+                course = await _courseService.GetCourse(courseid);
             }
             catch(NotFoundCourseException e)
             {
@@ -51,13 +51,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(course);
         }
 
-        [HttpGet("{courseId}/customers")]
-        public async Task<IActionResult> GetCourseRegistrations(int courseId)
+        [HttpGet("{courseid}/customers")]
+        public async Task<IActionResult> GetCourseRegistrations(int courseid)
         {
             ICollection<RegistrationGetDTO> courseRegistrations;
             try
             {
-                courseRegistrations = await _registrationService.GetCourseRegistrations(courseId);
+                courseRegistrations = await _registrationService.GetCourseRegistrations(courseid);
             }
             catch (NotFoundRegistrationException e)
             {

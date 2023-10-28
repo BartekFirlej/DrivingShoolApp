@@ -31,13 +31,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(addresses);
         }
 
-        [HttpGet("{addressId}")]
-        public async Task<IActionResult> GetAddress(int addressId)
+        [HttpGet("{addressid}")]
+        public async Task<IActionResult> GetAddress(int addressid)
         {
             AddressGetDTO address;
             try
             {
-                address = await _addressService.GetAddress(addressId);
+                address = await _addressService.GetAddress(addressid);
             }
             catch (NotFoundAddressException e)
             {

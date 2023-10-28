@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DrivingSchoolApp.Controllers
 {
     [ApiController]
-    [Route("lecturer")]
+    [Route("lecturers")]
     public class LecturerController : ControllerBase
     {
         private readonly ILecturerService _lecturerService;

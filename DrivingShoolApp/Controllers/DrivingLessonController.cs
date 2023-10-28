@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DrivingSchoolApp.Controllers
 {
     [ApiController]
-    [Route("drivinglesson")]
+    [Route("drivinglessons")]
     public class DrivingLessonController : ControllerBase
     {
         private readonly IDrivingLessonService _drivingLessonService;

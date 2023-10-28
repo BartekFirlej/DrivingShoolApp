@@ -31,13 +31,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(classrooms);
         }
 
-        [HttpGet("{classroomId}")]
-        public async Task<IActionResult> GetClassroom(int classroomId)
+        [HttpGet("{classroomid}")]
+        public async Task<IActionResult> GetClassroom(int classroomid)
         {
             ClassroomGetDTO classroom;
             try
             {
-                classroom = await _classroomService.GetClassroom(classroomId);
+                classroom = await _classroomService.GetClassroom(classroomid);
             }
             catch (NotFoundClassroomException e)
             {

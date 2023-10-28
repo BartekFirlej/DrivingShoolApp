@@ -31,13 +31,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(licenceCategories);
         }
 
-        [HttpGet("{licenceCategoryId}")]
-        public async Task<IActionResult> GetLicenceCategory(int licenceCategoryId)
+        [HttpGet("{licencecategoryid}")]
+        public async Task<IActionResult> GetLicenceCategory(int licencecategoryid)
         {
             LicenceCategoryGetDTO licenceCategory;
             try
             {
-                licenceCategory = await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
+                licenceCategory = await _licenceCategoryService.GetLicenceCategory(licencecategoryid);
             }
             catch(NotFoundLicenceCategoryException e)
             {
