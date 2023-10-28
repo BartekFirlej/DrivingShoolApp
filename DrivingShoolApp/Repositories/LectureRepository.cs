@@ -9,6 +9,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<LectureGetDTO>> GetLectures();
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<Lecture> PostLecture(LecturePostDTO lectureDetails);
+        public Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId);
     }
     public class LectureRepository : ILectureRepository
     {
@@ -85,6 +86,11 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Lectures.AddAsync(lectureToAdd);
             await _dbContext.SaveChangesAsync();
             return lectureToAdd;
+        }
+
+        public async Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId)
+        {
+            return await _dbContext.Lectures.FirstOrDefaultAsync(l => l.CourseSubjectsCourseId == courseId && l.CourseSubjectsSubjectId == subjectId);
         }
     }
 }

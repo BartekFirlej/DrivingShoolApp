@@ -10,6 +10,7 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<LectureGetDTO>> GetLectures();
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails);
+        public Task<bool> GetCourseLectureSubject(int courseId, int subjectId);
     }
     public class LectureService : ILectureService
     {
@@ -42,6 +43,14 @@ namespace DrivingSchoolApp.Services
             return lecture;
         }
 
+        public async Task<bool> GetCourseLectureSubject(int courseId, int subjectId)
+        {
+            var lecture = await _lectureRepository.GetCourseLectureSubject(courseId, subjectId);
+            if (lecture == null)
+                return false;
+            return true;
+        }
+
         public async Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails)
         {
             if (lectureDetails.LectureDate == DateTime.MinValue)
@@ -49,6 +58,8 @@ namespace DrivingSchoolApp.Services
             var lecturer = await _lecturerService.GetLecturer(lectureDetails.LecturerId);
             var courseSubject = await _courseSubjectService.GetCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
             var classroom = await _classroomService.GetClassroom(lectureDetails.ClassroomId);
+            if (!GetCourseLectureSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
+                throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);
             return await _lectureRepository.GetLecture(addedLecture.Id);
         }

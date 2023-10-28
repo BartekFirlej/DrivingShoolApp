@@ -96,6 +96,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
+            catch (SubjectAlreadyConductedLectureException e)
+            {
+                return Conflict(e.ToJson());
+            }
             return CreatedAtAction(nameof(PostLecture), addedLecture);
         }
 
