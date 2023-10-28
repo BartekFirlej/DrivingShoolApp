@@ -49,13 +49,13 @@ namespace DrivingSchoolApp.Controllers
             return Ok(lecture);
         }
 
-        [HttpGet("customer")]
-        public async Task<IActionResult> GetCustomersLectures()
+        [HttpGet("{lectureid}/customers")]
+        public async Task<IActionResult> GetCustomersLectures(int lectureId)
         {
             ICollection<CustomerLectureGetDTO> customersLectures;
             try
             {
-                customersLectures = await _customerLectureService.GetCustomersLectures();
+                customersLectures = await _customerLectureService.GetCustomersLecture(lectureId);
             }
             catch (NotFoundCustomersLectureException e)
             {
