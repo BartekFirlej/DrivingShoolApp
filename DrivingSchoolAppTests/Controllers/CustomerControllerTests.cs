@@ -79,7 +79,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetUserRegistrations(idOfCustomerToFindHisRegistrations)).Returns(Task.FromResult(customerRegistrations));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Returns(Task.FromResult(customerRegistrations));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
@@ -92,7 +92,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetUserRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundCustomerRegistrationsException(1));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundCustomerRegistrationsException(1));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);

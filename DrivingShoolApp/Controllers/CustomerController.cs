@@ -55,9 +55,13 @@ namespace DrivingSchoolApp.Controllers
             ICollection<RegistrationGetDTO> customerRegistrations; 
             try
             {
-                customerRegistrations = await _registrationService.GetUserRegistrations(customerid);
+                customerRegistrations = await _registrationService.GetCustomerRegistrations(customerid);
             }
             catch(NotFoundRegistrationException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(NotFoundCustomerException e)
             {
                 return NotFound(e.ToJson());
             }

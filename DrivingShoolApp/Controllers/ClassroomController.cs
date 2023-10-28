@@ -31,7 +31,7 @@ namespace DrivingSchoolApp.Controllers
             return Ok(classrooms);
         }
 
-        [HttpGet("{clasroomId}")]
+        [HttpGet("{classroomId}")]
         public async Task<IActionResult> GetClassroom(int classroomId)
         {
             ClassroomGetDTO classroom;

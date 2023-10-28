@@ -9,7 +9,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<RegistrationGetDTO>> GetRegistrations();
         public Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId);
-        public Task<ICollection<RegistrationGetDTO>> GetUserRegistrations(int userId);
+        public Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails);
     }
@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Repositories
                        }).ToListAsync();
         }
 
-        public async Task<ICollection<RegistrationGetDTO>> GetUserRegistrations(int userId)
+        public async Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId)
         {
             return await _dbContext.Registrations
                        .Where(r => r.CustomerId == userId)

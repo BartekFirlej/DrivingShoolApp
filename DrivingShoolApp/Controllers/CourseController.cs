@@ -2,6 +2,7 @@
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -11,11 +12,13 @@ namespace DrivingSchoolApp.Controllers
     {
         private readonly ICourseService _courseService;
         private readonly ICourseSubjectService _courseSubjectService;
+        private readonly IRegistrationService _registrationService;
 
-        public CourseController(ICourseService courseService, ICourseSubjectService courseSubjectService)
+        public CourseController(ICourseService courseService, ICourseSubjectService courseSubjectService, IRegistrationService registrationService)
         {
             _courseService = courseService;
             _courseSubjectService = courseSubjectService;
+            _registrationService = registrationService;
         }
 
         [HttpGet]
@@ -71,7 +74,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostCourse), addedCourse);
         }
 
-        [HttpPost("courseId")]
+        [HttpPost("subject")]
         public async Task<IActionResult> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
         {
             CourseSubjectGetDTO addedCourseSubject;
