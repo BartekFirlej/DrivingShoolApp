@@ -111,6 +111,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return Conflict(e.ToJson());
             }
+            catch(NotFoundRegistrationException e)
+            {
+                return NotFound(e.ToJson());
+            }
             return CreatedAtAction(nameof(PostCustomerLecture), customerLectureDetails);
         }
     }

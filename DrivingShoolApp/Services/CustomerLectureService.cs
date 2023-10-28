@@ -18,12 +18,14 @@ namespace DrivingSchoolApp.Services
         private readonly ICustomerLectureRepository _customerLectureRepository;
         private readonly ICustomerService _customerService;
         private readonly ILectureService _lectureService;
+        private readonly IRegistrationService _registrationService;
 
-        public CustomerLectureService(ICustomerLectureRepository customerLectureRepository, ICustomerService customerService, ILectureService lectureService)
+        public CustomerLectureService(ICustomerLectureRepository customerLectureRepository, ICustomerService customerService, ILectureService lectureService, IRegistrationService registrationService)
         {
             _customerLectureRepository = customerLectureRepository;
             _customerService = customerService;
             _lectureService = lectureService;
+            _registrationService = registrationService;
         }
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLectures()
@@ -60,11 +62,14 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
         {
-            await _customerService.GetCustomer(customerLectureDetails.CustomerId);
-            await _lectureService.GetLecture(customerLectureDetails.LectureId);
+            var customer = await _customerService.GetCustomer(customerLectureDetails.CustomerId);
+            var lecture = await _lectureService.GetLecture(customerLectureDetails.LectureId);
             var customerLecture = await _customerLectureRepository.GetCustomerLecture(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             if (customerLecture != null)
                 throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
+            var registration = await _registrationService.GetRegistration(customer.Id, lecture.CourseId);
+            if (registration == null)
+                throw new NotFoundRegistrationException(customer.Id, lecture.CourseId);
             return await _customerLectureRepository.PostCustomerLecture(customerLectureDetails);
         }
     }
