@@ -75,18 +75,26 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundCourseException e)
             {
                 return NotFound(e.ToJson());
-            }
+            }            
             catch (NotFoundSubjectException e)
             {
                 return NotFound(e.ToJson());
             }
-            catch (NotFoundAddressException e)
+            catch (NotFoundClassroomException e)
             {
                 return NotFound(e.ToJson());
             }
             catch (NotFoundCourseSubjectException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch (NotFoundLecturerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostLecture), addedLecture);
         }

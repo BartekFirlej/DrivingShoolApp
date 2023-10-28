@@ -44,6 +44,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails)
         {
+            if (lectureDetails.LectureDate == DateTime.MinValue)
+                throw new DateTimeException("lecture date");
             var lecturer = await _lecturerService.GetLecturer(lectureDetails.LecturerId);
             var courseSubject = await _courseSubjectService.GetCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
             var classroom = await _classroomService.GetClassroom(lectureDetails.ClassroomId);
