@@ -48,13 +48,19 @@ namespace DrivingSchoolApp.Services
         public async Task<int> GetCourseAssignedPeopleCount(int courseId)
         {
             var course = await _courseRepository.GetCourse(courseId);
-            if (course == null)
+            if(course == null)
                 throw new NotFoundCourseException(courseId);
             return await _courseRepository.GetCourseAssignedPeopleCount(courseId);
         }
 
         public async Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails)
         {
+            if(courseDetails.Price <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Price");
+            if (courseDetails.BeginDate == DateTime.MinValue)
+                throw new DateTimeException("begin date");
+            if (courseDetails.Limit <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Limit");
             await _courseTypeService.GetCourseType(courseDetails.CourseTypeId);
             var addedCourse = await _courseRepository.PostCourse(courseDetails);
             return await _courseRepository.GetCourse(addedCourse.Id);
