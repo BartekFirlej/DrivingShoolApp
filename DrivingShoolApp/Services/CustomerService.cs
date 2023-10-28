@@ -39,6 +39,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer)
         {
+            if (newCustomer.BirthDate == DateTime.MinValue)
+                throw new DateTimeException("birth");
             var createdCustomer = await _customerRepository.PostCustomer(newCustomer);
             return await _customerRepository.GetCustomer(createdCustomer.Id);
         }

@@ -19,7 +19,7 @@ namespace DrivingSchoolApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDrivingLicences()
         {
-            ICollection<DrivingLicenceGetDTO> drivingLicences; 
+            ICollection<DrivingLicenceGetDTO> drivingLicences;
             try
             {
                 drivingLicences = await _drivingLicenceService.GetDrivingLicences();

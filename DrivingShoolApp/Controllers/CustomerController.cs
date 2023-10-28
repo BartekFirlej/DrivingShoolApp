@@ -67,7 +67,15 @@ namespace DrivingSchoolApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerPostDTO customerDetails)
         {
-            var addedCustomer = await _customerService.PostCustomer(customerDetails);
+            CustomerGetDTO addedCustomer;
+            try
+            {
+                addedCustomer = await _customerService.PostCustomer(customerDetails);
+            }
+            catch(DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
             return CreatedAtAction(nameof(AddCustomer), addedCustomer);
         }
 
