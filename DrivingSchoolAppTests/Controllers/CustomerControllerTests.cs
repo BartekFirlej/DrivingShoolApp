@@ -39,7 +39,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_Customers_ThrowsNotFoundUsers()
+        public async Task Get_Customers_ThrowsNotFoundCustomersException()
         {
             _customerServiceMock.Setup(service => service.GetCustomers()).Throws(new NotFoundCustomerException());
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
@@ -63,7 +63,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_Customer_ThrowsNotFoundUser()
+        public async Task Get_Customer_ThrowsNotFoundCustomerException()
         {
             var idOfCustomerToFind = 1;
             _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).Throws(new NotFoundCustomerException(1));
@@ -88,7 +88,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CustomerRegistrations_ThrowsNotFoundRegistration()
+        public async Task Get_CustomerRegistrations_ThrowsNotFoundRegistrationException()
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
@@ -101,7 +101,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CustomerRegistrations_ThrowsNotFoundCustomer()
+        public async Task Get_CustomerRegistrations_ThrowsNotFoundCustomerException()
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
@@ -130,7 +130,6 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Post_Customer_ThrowsDateTimeException()
         {
             var customerToAdd = new CustomerPostDTO();
-            var addedCustomer = new CustomerGetDTO();
             var wrongDate = "begin date";
             _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).Throws(new DateTimeException(wrongDate));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
