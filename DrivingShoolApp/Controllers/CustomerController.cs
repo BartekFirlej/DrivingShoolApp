@@ -49,7 +49,7 @@ namespace DrivingSchoolApp.Controllers
             return Ok(customer);
         }
 
-        [HttpGet("{customerid}/course")]
+        [HttpGet("{customerid}/courses")]
         public async Task<IActionResult> GetCustomerRegistrations(int customerid)
         {
             ICollection<RegistrationGetDTO> customerRegistrations; 

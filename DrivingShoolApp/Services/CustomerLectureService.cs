@@ -38,6 +38,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomerLectures(int customerId)
         {
+            var customer = await _customerService.GetCustomer(customerId);
             var customerLectures = await _customerLectureRepository.GetCustomerLectures(customerId);
             if (!customerLectures.Any())
                 throw new NotFoundCustomerLectureException(customerId);
@@ -46,6 +47,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLecture(int lectureId)
         {
+            var lecture = await _lectureService.GetLecture(lectureId);
             var customersLecture = await _customerLectureRepository.GetCustomersLecture(lectureId);
             if (!customersLecture.Any())
                 throw new NotFoundCustomersLectureException(lectureId);
@@ -54,6 +56,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId)
         {
+            var lecture = await _lectureService.GetLecture(lectureId);
+            var customer = await _customerService.GetCustomer(customerId);
             var customerLecture = await _customerLectureRepository.GetCustomerLecture(customerId, lectureId);
             if (customerLecture == null)
                 throw new NotFoundCustomerLectureException(customerId, lectureId);
