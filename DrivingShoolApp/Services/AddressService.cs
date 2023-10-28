@@ -1,6 +1,7 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
+using System.Text.RegularExpressions;
 
 namespace DrivingSchoolApp.Services
 {
@@ -37,6 +38,11 @@ namespace DrivingSchoolApp.Services
 
         public async Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails)
         {
+            string postalCodePattern = @"^\d{2}-\d{3}$";
+            if (!Regex.IsMatch(addressDetails.PostalCode, postalCodePattern))
+                throw new WrongPostalCodeFormatException(addressDetails.PostalCode);
+            if (addressDetails.Number <= 0)
+                throw new ValueMustBeGreaterThanZeroException("number");
             var addedAddress = await _addressRepository.PostAddress(addressDetails);
             return await _addressRepository.GetAddress(addedAddress.Id);
         }

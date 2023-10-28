@@ -54,9 +54,13 @@ namespace DrivingSchoolApp.Controllers
             {
                 addedAddress = await _addressService.PostAddress(addressDetails);
             }
-            catch (NotFoundCourseTypeException e)
+            catch (ValueMustBeGreaterThanZeroException e)
             {
-                return NotFound(e.ToJson());
+                return BadRequest(e.ToJson());
+            }
+            catch(WrongPostalCodeFormatException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostAddress), addedAddress);
         }
