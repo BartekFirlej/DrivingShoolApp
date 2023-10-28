@@ -40,6 +40,12 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseTypeGetDTO> PostCourseType(CourseTypePostDTO newCourseType)
         {
+            if (newCourseType.LecturesHours <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Lecture hours");
+            if(newCourseType.DrivingHours <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Driving hours");
+            if (newCourseType.MinimumAge <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Minimum age");
             await _licenceCategoryService.GetLicenceCategory(newCourseType.LicenceCategoryId);
             var addedCourseType = await _courseTypeRepository.PostCourseType(newCourseType);
             return await _courseTypeRepository.GetCourseType(addedCourseType.Id);

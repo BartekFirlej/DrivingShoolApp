@@ -57,6 +57,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
             return CreatedAtAction(nameof(PostCourseType), addedCourseType);
         }
     }
