@@ -24,7 +24,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CourseTypes_ReturnOk()
+        public async Task Get_CourseTypes_ReturnsOk()
         {
             ICollection<CourseTypeGetDTO> courseTypesList = new List<CourseTypeGetDTO>();
             _courseTypeServiceMock.Setup(service => service.GetCourseTypes()).Returns(Task.FromResult(courseTypesList));
@@ -36,9 +36,9 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CourseTypes_ThrowsNotFoundCourseTypes()
+        public async Task Get_CourseTypes_ThrowsNotFoundCourseTypeException()
         {
-            _courseTypeServiceMock.Setup(service => service.GetCourseTypes()).Throws(new NotFoundCourseTypesException());
+            _courseTypeServiceMock.Setup(service => service.GetCourseTypes()).Throws(new NotFoundCourseTypeException());
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCourseTypes();
@@ -47,7 +47,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CourseType_ReturnOk()
+        public async Task Get_CourseType_ReturnsOk()
         {
             var foundCourseType = new CourseTypeGetDTO();
             var idOfCourseTypeToFind = 1;
@@ -60,7 +60,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CourseType_ThrowsNotFoundCourseType()
+        public async Task Get_CourseType_ThrowsNotFoundCourseTypeException()
         {
             var idOfCourseTypeToFind = 1;
             _courseTypeServiceMock.Setup(service => service.GetCourseType(idOfCourseTypeToFind)).Throws(new NotFoundCourseTypeException(idOfCourseTypeToFind));
@@ -85,7 +85,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Post_CourseType_ThrowsNotFoundLicenceCategory()
+        public async Task Post_CourseType_ThrowsNotFoundLicenceCategoryException()
         {
             var courseTypeToAdd = new CourseTypePostDTO();
             var idOfLicenceCategory = 1;
@@ -95,6 +95,19 @@ namespace DrivingSchoolAppTests.Controllers
             var result = (NotFoundObjectResult)await _controller.PostCourseType(courseTypeToAdd);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Post_CourseType_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var courseTypeToAdd = new CourseTypePostDTO();
+            var nameOfProperty = "age";
+            _courseTypeServiceMock.Setup(service => service.PostCourseType(courseTypeToAdd)).Throws(new ValueMustBeGreaterThanZeroException(nameOfProperty));
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.PostCourseType(courseTypeToAdd);
+
+            result.StatusCode.Should().Be(400);
         }
     }
 }

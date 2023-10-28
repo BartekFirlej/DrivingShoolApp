@@ -27,7 +27,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_Customers_ReturnOk()
+        public async Task Get_Customers_ReturnsOk()
         {
             ICollection<CustomerGetDTO> usersList = new List<CustomerGetDTO>();
             _customerServiceMock.Setup(service => service.GetCustomers()).Returns(Task.FromResult(usersList));
@@ -41,7 +41,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Customers_ThrowsNotFoundUsers()
         {
-            _customerServiceMock.Setup(service => service.GetCustomers()).Throws(new NotFoundCustomersException());
+            _customerServiceMock.Setup(service => service.GetCustomers()).Throws(new NotFoundCustomerException());
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomers();
@@ -50,7 +50,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_Customer_ReturnOk()
+        public async Task Get_Customer_ReturnsOk()
         {
             var foundCustomer = new CustomerGetDTO();
             var idOfCustomerToFind = 1;
@@ -75,7 +75,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CustomerRegistrations_ReturnOk()
+        public async Task Get_CustomerRegistrations_ReturnsOk()
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
@@ -88,11 +88,11 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_CustomerRegistrations_ThrowsNotFoundUser()
+        public async Task Get_CustomerRegistrations_ThrowsNotFoundRegistration()
         {
             ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundCustomerRegistrationsException(1));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundRegistrationException(idOfCustomerToFindHisRegistrations));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
@@ -101,20 +101,47 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Post_Customer_ReturnCreatedAtAction()
+        public async Task Get_CustomerRegistrations_ThrowsNotFoundCustomer()
+        {
+            ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
+            var idOfCustomerToFindHisRegistrations = 1;
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundCustomerException(idOfCustomerToFindHisRegistrations));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Post_Customer_ReturnsCreatedAtAction()
         {
             var customerToAdd = new CustomerPostDTO();
             var addedCustomer = new CustomerGetDTO();
-            _customerServiceMock.Setup(service => service.AddCustomer(customerToAdd)).Returns(Task.FromResult(addedCustomer));
+            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).Returns(Task.FromResult(addedCustomer));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (CreatedAtActionResult)await _controller.AddCustomer(customerToAdd);
+            var result = (CreatedAtActionResult)await _controller.PostCustomer(customerToAdd);
 
             result.StatusCode.Should().Be(201);
         }
 
         [TestMethod]
-        public async Task Post_CustomerForCourse_ReturnCreatedAtAction()
+        public async Task Post_Customer_ThrowsDateTimeException()
+        {
+            var customerToAdd = new CustomerPostDTO();
+            var addedCustomer = new CustomerGetDTO();
+            var wrongDate = "begin date";
+            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).Throws(new DateTimeException(wrongDate));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.PostCustomer(customerToAdd);
+
+            result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task RegisterCustomerForCourse_ReturnsCreatedAtAction()
         {
             var registrationToAdd = new RegistrationPostDTO();
             var addedRegistration = new RegistrationGetDTO();
@@ -127,10 +154,11 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Post_CustomerForCourse_ThrowsNotFoundUserException()
+        public async Task Register_CustomerForCourse_ThrowsNotFoundCustomerException()
         {
             var registrationToAdd = new RegistrationPostDTO();
-            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new NotFoundCustomerException(1));
+            var idOfCustomer = 1;
+            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new NotFoundCustomerException(idOfCustomer));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
@@ -139,15 +167,57 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Post_CustomerForCourse_ThrowsNotFoundCourseException()
+        public async Task Register_CustomerForCourse_ThrowsNotFoundCourseException()
         {
             var registrationToAdd = new RegistrationPostDTO();
-            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new NotFoundCourseException(1));
+            var idOfCourse = 1;
+            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new NotFoundCourseException(idOfCourse));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
 
             result.StatusCode.Should().Be(404);
         }
+
+        [TestMethod]
+        public async Task Register_CustomerForCourse_ThrowsCustomerAlreadyAssignedToCourseException()
+        {
+            var registrationToAdd = new RegistrationPostDTO();
+            var idOfCourse = 1;
+            var idOfCustomer = 1;
+            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new CustomerAlreadyAssignedToCourseException(idOfCustomer, idOfCourse));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ConflictObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
+
+            result.StatusCode.Should().Be(409);
+        }
+
+        [TestMethod]
+        public async Task Register_CustomerForCourse_ThrowsCustomerDoesntMeetRequirementsException()
+        {
+            var registrationToAdd = new RegistrationPostDTO();
+            var idOfLicenceCategory = 1;
+            var idOfCustomer = 1;
+            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new CustomerDoesntMeetRequirementsException(idOfCustomer, idOfLicenceCategory));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ConflictObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
+
+            result.StatusCode.Should().Be(409);
+        }
+
+        [TestMethod]
+        public async Task Register_CustomerForCourse_ThrowsAssignLimitReachedException()
+        {
+            var registrationToAdd = new RegistrationPostDTO();
+            var idOfCourse = 1;
+            _registrationServiceMock.Setup(service => service.PostRegistration(registrationToAdd)).Throws(new AssignLimitReachedException(idOfCourse));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ConflictObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
+
+            result.StatusCode.Should().Be(409);
+        }
     }
-}
+} 

@@ -69,7 +69,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCustomer(CustomerPostDTO customerDetails)
+        public async Task<IActionResult> PostCustomer(CustomerPostDTO customerDetails)
         {
             CustomerGetDTO addedCustomer;
             try
@@ -80,7 +80,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
-            return CreatedAtAction(nameof(AddCustomer), addedCustomer);
+            return CreatedAtAction(nameof(PostCustomer), addedCustomer);
         }
 
         [HttpPost("course")]
