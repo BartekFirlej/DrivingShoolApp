@@ -41,6 +41,10 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails)
         {
+            if (classroomDetails.Number <= 0)
+                throw new ValueMustBeGreaterThanZeroException("number");
+            if (classroomDetails.Size <=0)
+                throw new ValueMustBeGreaterThanZeroException("size");
             var address = await _addressRepository.GetAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
             return await _classroomRepository.GetClassroom(addedClassroom.Id);
