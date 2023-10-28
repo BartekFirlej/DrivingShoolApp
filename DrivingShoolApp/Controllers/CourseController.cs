@@ -51,6 +51,25 @@ namespace DrivingSchoolApp.Controllers
             return Ok(course);
         }
 
+        [HttpGet("{courseId}/customers")]
+        public async Task<IActionResult> GetCourseRegistrations(int courseId)
+        {
+            ICollection<RegistrationGetDTO> courseRegistrations;
+            try
+            {
+                courseRegistrations = await _registrationService.GetCourseRegistrations(courseId);
+            }
+            catch (NotFoundRegistrationException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(courseRegistrations);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostCourse(CoursePostDTO courseDetails)
         {
