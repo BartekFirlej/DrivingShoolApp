@@ -66,6 +66,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch(DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
             return CreatedAtAction(nameof(PostDrivingLesson), addedDrivingLesson);
         }
     }
