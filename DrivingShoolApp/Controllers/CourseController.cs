@@ -91,9 +91,13 @@ namespace DrivingSchoolApp.Controllers
             {
                 return Conflict(e.ToJson());
             }
-            catch (Exception e)
+            catch (TakenSequenceNumberException e)
             {
-                return BadRequest();
+                return Conflict(e.ToJson());
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostCourse), addedCourseSubject);
         }

@@ -45,11 +45,15 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseSubjectGetDTO> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
         {
+            if (courseSubjectDetails.SequenceNumber <= 0)
+                throw new ValueMustBeGreaterThanZeroException("sequnce number");
             var course = await _courseService.GetCourse(courseSubjectDetails.CourseId);
             var subject = await _subjectService.GetSubject(courseSubjectDetails.SubjectId);
             var courseSubject = await _courseSubjectRepository.GetCourseSubject(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
             if (courseSubject != null)
                 throw new SubjectAlreadyAssignedToCourseException(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
+            if (await _courseSubjectRepository.TakenSeqNumber(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber))
+                throw new TakenSequenceNumberException(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber);
             var addedSubjectService = await _courseSubjectRepository.PostCourseSubject(courseSubjectDetails);
             return await _courseSubjectRepository.GetCourseSubject(addedSubjectService.CourseId, courseSubjectDetails.SubjectId);
         }

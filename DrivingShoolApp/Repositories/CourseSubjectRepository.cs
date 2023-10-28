@@ -9,6 +9,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<CourseSubjectGetDTO>> GetCourseSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
+        public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
         public Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
     }
     public class CourseSubjectRepository : ICourseSubjectRepository
@@ -103,6 +104,14 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.CourseSubjects.AddAsync(courseSubjectToAdd);
             await _dbContext.SaveChangesAsync();
             return courseSubjectToAdd;
+        }
+
+        public async Task<bool> TakenSeqNumber(int courseId, int seqNumber)
+        {
+            var courseSubject = await _dbContext.CourseSubjects.SingleOrDefaultAsync(p => p.CourseId == courseId && p.SequenceNumber == seqNumber);
+            if (courseSubject == null)
+                return false;
+            return true;
         }
     }
     
