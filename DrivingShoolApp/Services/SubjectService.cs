@@ -39,6 +39,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<SubjectGetDTO> PostSubject(SubjectPostDTO subjectDetails)
         {
+            if (subjectDetails.Duration <= 0)
+                throw new ValueMustBeGreaterThanZeroException("duration");
             var addedSubject = await _subjectRepository.PostSubject(subjectDetails);
             return await _subjectRepository.GetSubject(addedSubject.Id);
         }

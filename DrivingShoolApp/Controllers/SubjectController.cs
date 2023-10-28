@@ -50,7 +50,15 @@ namespace DrivingSchoolApp.Controllers
         [HttpPost]
         public async Task<IActionResult> PostSubject(SubjectPostDTO subjectDetails)
         {
-            var subject = await _subjectService.PostSubject(subjectDetails);
+            SubjectGetDTO subject;
+            try
+            {
+                subject = await _subjectService.PostSubject(subjectDetails);
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
             return Ok(subject);
         }
     }
