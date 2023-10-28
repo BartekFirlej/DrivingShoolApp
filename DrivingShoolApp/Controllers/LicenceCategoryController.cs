@@ -2,6 +2,7 @@
 using DrivingSchoolApp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using DrivingSchoolApp.Exceptions;
+using System.Collections.Generic;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -10,10 +11,12 @@ namespace DrivingSchoolApp.Controllers
     public class LicenceCategoryController : ControllerBase
     {
         private readonly ILicenceCategoryService _licenceCategoryService;
+        private readonly IRequiredLicenceCategoryService _requirededLicenceCategoryService;
 
-        public LicenceCategoryController(ILicenceCategoryService licenceCategoryService)
+        public LicenceCategoryController(ILicenceCategoryService licenceCategoryService, IRequiredLicenceCategoryService requirededLicenceCategoryService)
         {
             _licenceCategoryService = licenceCategoryService;
+            _requirededLicenceCategoryService = requirededLicenceCategoryService;
         }
 
         [HttpGet]
@@ -25,6 +28,10 @@ namespace DrivingSchoolApp.Controllers
                 licenceCategories = await _licenceCategoryService.GetLicenceCategories();
             }
             catch(NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(NotFoundRequiredLicenceCategoryException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -44,6 +51,25 @@ namespace DrivingSchoolApp.Controllers
                 return NotFound(e.ToJson());
             }
             return Ok(licenceCategory);
+        }
+
+        [HttpGet("{licencecategoryid}/requirements")]
+        public async Task<IActionResult> GetLicenceCategoryRequirements(int licencecategoryid)
+        {
+            ICollection<RequiredLicenceCategoryGetDTO> requiredLicences;
+            try
+            {
+                requiredLicences = await _requirededLicenceCategoryService.GetRequirements(licencecategoryid);
+            }
+            catch (NotFoundRequiredLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(requiredLicences);
         }
 
         [HttpPost]

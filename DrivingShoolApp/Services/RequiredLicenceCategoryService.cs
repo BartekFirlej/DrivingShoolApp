@@ -35,6 +35,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
         {
+            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
+            await _licenceCategoryService.GetLicenceCategory(requiredLicenceCategoryId);
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirement(licenceCategoryId, requiredLicenceCategoryId);
             if (requiredLicenceCategories == null)
                 throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId, requiredLicenceCategoryId);
@@ -43,6 +45,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId)
         {
+            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
             if (!requiredLicenceCategories.Any())
                 throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId);
