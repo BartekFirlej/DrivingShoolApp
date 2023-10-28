@@ -58,6 +58,12 @@ namespace DrivingSchoolApp.Services
 
         public async Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
         {
+            if (drivingLicenceDetails.ReceivedDate == DateTime.MinValue)
+                throw new DateTimeException("Received");
+            if (drivingLicenceDetails.ExpirationDate == DateTime.MinValue)
+                throw new DateTimeException("Expiration");
+            if (drivingLicenceDetails.ReceivedDate > drivingLicenceDetails.ExpirationDate)
+                throw new DateTimeException("Received", "Expiration");
             var customer = await _customerService.GetCustomer(drivingLicenceDetails.UserId);
             var licenceCategory = await _licenceCategoryService.GetLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
             ICollection<DrivingLicenceGetDTO> customerDrivingLicences;
