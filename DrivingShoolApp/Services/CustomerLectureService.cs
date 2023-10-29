@@ -72,8 +72,6 @@ namespace DrivingSchoolApp.Services
             if (customerLecture != null)
                 throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             var registration = await _registrationService.GetRegistration(customer.Id, lecture.CourseId);
-            if (registration == null)
-                throw new NotFoundRegistrationException(customer.Id, lecture.CourseId);
             return await _customerLectureRepository.PostCustomerLecture(customerLectureDetails);
         }
     }
