@@ -32,6 +32,8 @@ namespace DrivingSchoolApp.Services
             return courses;
         }
 
+        //TO DO: not tested, not implemented
+
         public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers()
         {
             throw new NotImplementedException();

@@ -1,0 +1,157 @@
+﻿using AutoFixture;
+using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Repositories;
+using DrivingSchoolApp.Services;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DrivingSchoolAppTests.Services
+{
+    [TestClass]
+    public class CourseServiceTests
+    {
+        private Mock<ICourseRepository> _courseRepositoryMock;
+        private Mock<ICourseTypeService> _courseTypeServiceMock;
+        private Fixture _fixture;
+        private CourseService _service;
+
+        public CourseServiceTests()
+        {
+            _fixture = new Fixture();
+            _courseRepositoryMock = new Mock<ICourseRepository>();
+            _courseTypeServiceMock = new Mock<ICourseTypeService>();
+        }
+
+        [TestMethod]
+        public async Task Get_Courses_ReturnsCourses()
+        {
+            var course = new CourseGetDTO();
+            ICollection<CourseGetDTO> coursesList = new List<CourseGetDTO>() { course };
+            _courseRepositoryMock.Setup(repo => repo.GetCourses()).Returns(Task.FromResult(coursesList));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            var result = await _service.GetCourses();
+
+            Assert.AreEqual(coursesList, result);
+        }
+
+        [TestMethod]
+        public async Task Get_Courses_ThrowsNotFoundCoursesException()
+        {
+            ICollection<CourseGetDTO> coursesList = new List<CourseGetDTO>();
+            _courseRepositoryMock.Setup(repo => repo.GetCourses()).Returns(Task.FromResult(coursesList));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourses());
+        }
+
+        [TestMethod]
+        public async Task Get_Course_ReturnsCourse()
+        {
+            var course = new CourseGetDTO();
+            var idOfCourseToFind = 1;
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Returns(Task.FromResult(course));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            var result = await _service.GetCourse(idOfCourseToFind);
+
+            Assert.AreEqual(course, result);
+        }
+
+        [TestMethod]
+        public async Task Get_Course_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToFind = 1;
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Throws(new NotFoundCourseException(idOfCourseToFind));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourse(idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Get_CourseAssignedPeople_ReturnsAssignedPeople()
+        {
+            var assignedPeople = 10;
+            var idOfCourseToFind = 1;
+            var course = new CourseGetDTO();
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Returns(Task.FromResult(course));
+            _courseRepositoryMock.Setup(repo => repo.GetCourseAssignedPeopleCount(idOfCourseToFind)).Returns(Task.FromResult(assignedPeople));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            var result = await _service.GetCourseAssignedPeopleCount(idOfCourseToFind);
+
+            Assert.AreEqual(assignedPeople, result);
+        }
+
+        [TestMethod]
+        public async Task Get_CourseAssignedPeople_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToFind = 1;
+            _courseRepositoryMock.Setup(repo => repo.GetCourseAssignedPeopleCount(idOfCourseToFind)).Throws(new NotFoundCourseException(idOfCourseToFind));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseAssignedPeopleCount(idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Post_Course_ReturnsAddedCourse()
+        {
+            var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
+            var addedCourseDTO = new CourseGetDTO { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseType = courseTypeDTO, BeginDate = new DateTime(2023, 1, 1) };
+            var addedCourse = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", BeginDate = DateTime.Now, CourseTypeId = courseTypeDTO.Id };
+            var courseToAdd = new CoursePostDTO { Limit = 10, Price = 10, BeginDate = new DateTime(2023, 1, 1), Name = "Kurs kat. B", CourseTypeId = 1 };
+            _courseTypeServiceMock.Setup(service => service.GetCourseType(courseToAdd.CourseTypeId)).Returns(Task.FromResult(courseTypeDTO));
+            _courseRepositoryMock.Setup(repo => repo.PostCourse(courseToAdd)).Returns(Task.FromResult(addedCourse));
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(addedCourse.Id)).Returns(Task.FromResult(addedCourseDTO));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            var result = await _service.PostCourse(courseToAdd);
+
+            Assert.AreEqual(addedCourseDTO, result);
+        }
+
+        [TestMethod]
+        public async Task Post_Classroom_ThrowsNotFoundCourseTypeException()
+        {
+            var courseToAdd = new CoursePostDTO { Limit = 10, Price = 10, BeginDate = new DateTime(2023, 1, 1), Name = "Kurs kat. B", CourseTypeId = 1 };
+            _courseTypeServiceMock.Setup(service => service.GetCourseType(courseToAdd.CourseTypeId)).Throws(new NotFoundCourseTypeException(courseToAdd.CourseTypeId));
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.PostCourse(courseToAdd));
+        }
+
+        [TestMethod]
+        public async Task Post_Classroom_ThrowsPriceMustBeGreaterThanZeroException()
+        {
+            var courseToAdd = new CoursePostDTO { Limit = 10, Price = 0, BeginDate = new DateTime(2023, 1, 1), Name = "Kurs kat. B", CourseTypeId = 1 };
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostCourse(courseToAdd));
+        }
+
+        [TestMethod]
+        public async Task Post_Classroom_ThrowsLimitMustBeGreaterThanZeroException()
+        {
+            var courseToAdd = new CoursePostDTO { Limit = 0, Price = 10, BeginDate = new DateTime(2023, 1, 1), Name = "Kurs kat. B", CourseTypeId = 1 };
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostCourse(courseToAdd));
+        }
+
+        [TestMethod]
+        public async Task Post_Classroom_ThrowsNotGivenBeinDateTimeException()
+        {
+            var courseToAdd = new CoursePostDTO { Limit = 0, Price = 10, Name = "Kurs kat. B", CourseTypeId = 1 };
+            _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.PostCourse(courseToAdd));
+        }
+    }
+}
