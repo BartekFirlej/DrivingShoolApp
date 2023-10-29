@@ -15,12 +15,12 @@ namespace DrivingSchoolApp.Services
     public class ClassroomService : IClassroomService
     {
         private readonly IClassroomRepository _classroomRepository;
-        private readonly IAddressRepository _addressRepository;
+        private readonly IAddressService _addressService;
 
-        public ClassroomService(IClassroomRepository classroomRepository, IAddressRepository addressRepository)
+        public ClassroomService(IClassroomRepository classroomRepository, IAddressService addressService)
         {
             _classroomRepository = classroomRepository;
-            _addressRepository = addressRepository;
+            _addressService = addressService;
         }
 
         public async Task<ICollection<ClassroomGetDTO>> GetClassrooms()
@@ -45,7 +45,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("number");
             if (classroomDetails.Size <=0)
                 throw new ValueMustBeGreaterThanZeroException("size");
-            var address = await _addressRepository.GetAddress(classroomDetails.AddressID);
+            var address = await _addressService.GetAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
             return await _classroomRepository.GetClassroom(addedClassroom.Id);
         }
