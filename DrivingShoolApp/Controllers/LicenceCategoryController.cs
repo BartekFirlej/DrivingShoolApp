@@ -31,10 +31,6 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch(NotFoundRequiredLicenceCategoryException e)
-            {
-                return NotFound(e.ToJson());
-            }
             return Ok(licenceCategories);
         }
 
