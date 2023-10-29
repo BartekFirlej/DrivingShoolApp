@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ICourseSubjectRepository
     {
-        public Task<ICollection<CourseSubjectGetDTO>> GetCourseSubjects();
+        public Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
         public Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
@@ -21,7 +21,7 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<CourseSubjectGetDTO>> GetCourseSubjects()
+        public async Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects()
         {
             /*return await _dbContext.CourseSubjects
                                 .Include(c => c.Course)

@@ -32,8 +32,9 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Addresses_ReturnsAddresses()
         {
-            var address = new AddressGetDTO();
-            ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>() { address};
+            var address1 = new AddressGetDTO();
+            var address2 = new AddressGetDTO();
+            ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>() {address1, address2};
             
             _addressRepositoryMock.Setup(repo => repo.GetAddresses()).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
@@ -41,6 +42,7 @@ namespace DrivingSchoolAppTests.Services
             var result = await _service.GetAddresses();
 
             Assert.AreEqual(addressesList, result);
+            Assert.AreEqual(addressesList.Count, result.Count);
         }
 
         [TestMethod]
