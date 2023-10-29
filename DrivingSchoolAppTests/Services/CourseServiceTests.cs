@@ -69,7 +69,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Course_ThrowsNotFoundCourseException()
         {
             var idOfCourseToFind = 1;
-            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Throws(new NotFoundCourseException(idOfCourseToFind));
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Returns(Task.FromResult<CourseGetDTO>(null));
             _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourse(idOfCourseToFind));
@@ -94,7 +94,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_CourseAssignedPeople_ThrowsNotFoundCourseException()
         {
             var idOfCourseToFind = 1;
-            _courseRepositoryMock.Setup(repo => repo.GetCourseAssignedPeopleCount(idOfCourseToFind)).Throws(new NotFoundCourseException(idOfCourseToFind));
+            _courseRepositoryMock.Setup(repo => repo.GetCourse(idOfCourseToFind)).Returns(Task.FromResult<CourseGetDTO>(null));
             _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseAssignedPeopleCount(idOfCourseToFind));

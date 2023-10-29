@@ -72,7 +72,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Classroom_ThrowsNotFoundClassroomException()
         {
             var idOfClassroomToFind = 1;
-            _classroomRepositoryMock.Setup(repo => repo.GetClassroom(idOfClassroomToFind)).Throws(new NotFoundClassroomException(idOfClassroomToFind));
+            _classroomRepositoryMock.Setup(repo => repo.GetClassroom(idOfClassroomToFind)).Returns(Task.FromResult<ClassroomGetDTO>(null));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.GetClassroom(idOfClassroomToFind));
