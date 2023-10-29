@@ -49,15 +49,7 @@ namespace DrivingSchoolApp.Controllers
         [HttpPost]
         public async Task<IActionResult> PostLecturer(LecturerPostDTO lecturerDetails)
         {
-            LecturerGetDTO addedLecturer;
-            try
-            {
-                addedLecturer = await _lecturerService.PostLecturer(lecturerDetails);
-            }
-            catch (NotFoundCourseTypeException e)
-            {
-                return NotFound(e.ToJson());
-            }
+            var addedLecturer = await _lecturerService.PostLecturer(lecturerDetails);
             return CreatedAtAction(nameof(PostLecturer), addedLecturer);
         }
     }
