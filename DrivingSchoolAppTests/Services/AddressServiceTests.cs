@@ -35,7 +35,6 @@ namespace DrivingSchoolAppTests.Services
             var address1 = new AddressGetDTO();
             var address2 = new AddressGetDTO();
             ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>() {address1, address2};
-            
             _addressRepositoryMock.Setup(repo => repo.GetAddresses()).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
 
