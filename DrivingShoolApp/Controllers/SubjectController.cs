@@ -59,7 +59,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
-            return Ok(subject);
+            return CreatedAtAction(nameof(PostSubject),subject);
         }
     }
 }
