@@ -66,7 +66,7 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
-        public async Task Get_Lecturer_ThrowsNotFoundLectNotFoundAddressExceptionurerException()
+        public async Task Get_Lecturer_ThrowsNotFoundLectNotFoundLecturerException()
         {
             var idOfLecturerToFind = 1;
             _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(idOfLecturerToFind)).Returns(Task.FromResult<LecturerGetDTO>(null));
