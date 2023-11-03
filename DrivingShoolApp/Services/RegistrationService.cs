@@ -17,12 +17,14 @@ namespace DrivingSchoolApp.Repositories
         private readonly IRegistrationRepository _registrationRepository;
         private readonly ICustomerService _customerService;
         private readonly ICourseService _courseService;
+        private readonly IDateTimeHelper _dateTimeHelperService;
 
-        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService customerService, ICourseService courseService)
+        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService customerService, ICourseService courseService, IDateTimeHelper dateTimeHelperService)
         {
             _registrationRepository = registrationRepository;
             _customerService = customerService;
             _courseService = courseService;
+            _dateTimeHelperService = dateTimeHelperService;
         }
 
         public async Task<ICollection<RegistrationGetDTO>> GetRegistrations()
@@ -53,6 +55,8 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId)
         {
+            var customer = await _customerService.GetCustomer(customerId);
+            var course = await _courseService.GetCourse(courseId);
             var registration = await _registrationRepository.GetRegistration(customerId, courseId);
             if (registration == null)
                 throw new NotFoundRegistrationException(customerId, courseId);
@@ -68,7 +72,7 @@ namespace DrivingSchoolApp.Repositories
             var registration = await _registrationRepository.GetRegistration(registrationDetails.CustomerId, registrationDetails.CourseId);
             if (registration != null)
                 throw new CustomerAlreadyAssignedToCourseException(registrationDetails.CustomerId, registrationDetails.CourseId);
-            var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, DateTime.Now);
+            var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, _dateTimeHelperService.GetDateTimeNow());
             if (meetAgeRequirement == false)
                 throw new CustomerDoesntMeetRequirementsException(customer.Id);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails);

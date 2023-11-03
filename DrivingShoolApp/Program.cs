@@ -37,6 +37,7 @@ builder.Services.AddScoped<IDrivingLessonService, DrivingLessonService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<IRequiredLicenceCategoryService, RequiredLicenceCategoryService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();  
+builder.Services.AddScoped<IDateTimeHelper, DateTimeHelper>();
 
 builder.Services.AddDbContext<DrivingSchoolDbContext>();
 

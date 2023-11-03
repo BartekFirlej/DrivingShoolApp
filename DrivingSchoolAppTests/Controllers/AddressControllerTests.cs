@@ -28,7 +28,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Addresses_ReturnsOk()
         {
             ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>();
-            _addressServiceMock.Setup(service => service.GetAddresses()).Returns(Task.FromResult(addressesList));
+            _addressServiceMock.Setup(service => service.GetAddresses()).ReturnsAsync(addressesList);
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetAddresses();
@@ -52,7 +52,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var address = new AddressGetDTO();
             var idOfAddressToGet = 1;
-            _addressServiceMock.Setup(service => service.GetAddress(idOfAddressToGet)).Returns(Task.FromResult(address));
+            _addressServiceMock.Setup(service => service.GetAddress(idOfAddressToGet)).ReturnsAsync(address);
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetAddress(idOfAddressToGet);
@@ -77,7 +77,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var addressToAdd = new AddressPostDTO();
             var addedAddress = new AddressGetDTO();
-            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).Returns(Task.FromResult(addedAddress));
+            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ReturnsAsync(addedAddress);
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (CreatedAtActionResult)await _controller.PostAddress(addressToAdd);
