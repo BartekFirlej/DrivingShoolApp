@@ -36,7 +36,7 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
             var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
-            await _dbContext.AddRangeAsync(address1, address2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.SaveChangesAsync();
             _repository = new AddressRepository(_dbContext);
 
@@ -81,7 +81,7 @@ namespace DrivingSchoolAppTests.Repositories
             var idOfAddressToFind = 2;
             var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
             var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
-            await _dbContext.AddRangeAsync(address1, address2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.SaveChangesAsync();
             _repository = new AddressRepository(_dbContext);
 
@@ -105,7 +105,7 @@ namespace DrivingSchoolAppTests.Repositories
             var idOfAddressToFind = 3;
             var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
             var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
-            await _dbContext.AddRangeAsync(address1, address2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.SaveChangesAsync();
             _repository = new AddressRepository(_dbContext);
 
@@ -123,7 +123,7 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
             var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
-            await _dbContext.AddRangeAsync(address1, address2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.SaveChangesAsync();
             var addressToAdd = new AddressPostDTO { City = "TestCity3", Number = 30, PostalCode = "66-666", Street = "TestStreet3" };
             _repository = new AddressRepository(_dbContext);
