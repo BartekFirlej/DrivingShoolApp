@@ -54,28 +54,28 @@ namespace DrivingSchoolApp.Services
 
         public async Task<RequiredLicenceCategoryGetDTO> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails)
         {
+            if (requirementDetails.RequiredYears <= 0)
+                throw new ValueMustBeGreaterThanZeroException("required years");
             var licenceCategory = await _licenceCategoryService.GetLicenceCategory(requirementDetails.LicenceCategoryId);
             var requiredLicenceCategory = await _licenceCategoryService.GetLicenceCategory(requirementDetails.RequiredLicenceCategoryId);
+            var requirementExists = await _requiredLicenceCategoryRepository.GetRequirement(requirementDetails.LicenceCategoryId, requirementDetails.RequiredLicenceCategoryId);
+            if (requirementExists != null)
+                throw new RequirementAlreadyExistsException(requirementDetails.RequiredLicenceCategoryId, requirementDetails.LicenceCategoryId);
             var addedRequiredLicenceCategory = await _requiredLicenceCategoryRepository.PostRequirement(requirementDetails);
             return await _requiredLicenceCategoryRepository.GetRequirement(addedRequiredLicenceCategory.LicenceCategoryId, addedRequiredLicenceCategory.RequiredLicenceCategoryId);
         }
 
         public async Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate)
         {
-            ICollection<RequiredLicenceCategoryGetDTO> requiredDrivingLicenceCategories = new List<RequiredLicenceCategoryGetDTO>();
-            try
-            {
-                requiredDrivingLicenceCategories = await GetRequirements(licenceCategoryId);
-            }
-            catch(NotFoundRequiredLicenceCategoryException e)
-            {
+            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
+            var requiredDrivingLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
+            if (!requiredDrivingLicenceCategories.Any())
                 return true;
-            }
             if (requiredDrivingLicenceCategories.Any() && !drivingLicences.Any())
                 return false;
             foreach(var requiredDrivingLicenceCategory in requiredDrivingLicenceCategories)
             {
-                DrivingLicenceGetDTO drivingLicence = drivingLicences.Where(d => d.LicenceCategoryId == requiredDrivingLicenceCategory.LicenceCategoryId).FirstOrDefault();
+                DrivingLicenceGetDTO drivingLicence = drivingLicences.Where(d => d.LicenceCategoryId == requiredDrivingLicenceCategory.RequiredLicenceCategoryId).FirstOrDefault();
                 if (drivingLicence == null)
                     return false;
                 DateTime StartDate = drivingLicence.ReceivedDate;
