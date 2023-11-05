@@ -9,6 +9,7 @@ namespace DrivingSchoolApp.DTOs
         public int SubjectId {  get; set; }
         public string SubjectName {  get; set; }
         public int Duration { get; set; }
+        public int SequenceNumber { get; set; }
         //public ICollection<CourseSubjectSequenceGetDTO> CourseSubjectsSequence { get; set; }
     }
 }

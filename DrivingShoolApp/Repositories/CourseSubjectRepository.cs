@@ -52,7 +52,8 @@ namespace DrivingSchoolApp.Repositories
                                        CourseName = s.Course.Name,
                                        SubjectId = s.SubjectId,
                                        SubjectName = s.Subject.Name,
-                                       Duration = s.Subject.Duration
+                                       Duration = s.Subject.Duration,
+                                       SequenceNumber = s.SequenceNumber
                                    }).ToListAsync();
         }
 
@@ -89,7 +90,8 @@ namespace DrivingSchoolApp.Repositories
                                        CourseName = s.Course.Name,
                                        SubjectId = s.SubjectId,
                                        SubjectName = s.Subject.Name,
-                                       Duration = s.Subject.Duration
+                                       Duration = s.Subject.Duration,
+                                       SequenceNumber = s.SequenceNumber
                                    }).FirstOrDefaultAsync();
         }
 
