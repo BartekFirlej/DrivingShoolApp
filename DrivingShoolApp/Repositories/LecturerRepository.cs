@@ -23,8 +23,9 @@ namespace DrivingSchoolApp.Repositories
         {
             return await _dbContext.Lecturers.Select(l => new LecturerGetDTO
                                               {
+                                                ID = l.Id,
                                                 Name = l.Name,
-                                                   SecondName = l.SecondName
+                                                SecondName = l.SecondName
                                               }).ToListAsync();
         }
 
@@ -34,6 +35,7 @@ namespace DrivingSchoolApp.Repositories
                              .Where(l => l.Id == lecturerId)
                              .Select(l => new LecturerGetDTO
                                {
+                                ID = l.Id,
                                 Name = l.Name,
                                 SecondName = l.SecondName
                                }).FirstOrDefaultAsync();
