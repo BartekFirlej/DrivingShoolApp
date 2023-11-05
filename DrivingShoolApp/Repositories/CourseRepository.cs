@@ -6,7 +6,6 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ICourseRepository {
         public Task<ICollection<CourseGetDTO>> GetCourses();
-        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers();
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<Course> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
@@ -42,11 +41,6 @@ namespace DrivingSchoolApp.Repositories
                                        LicenceCategoryName = c.CourseType.LicenceCategory.Name
                                    }
                                }).ToListAsync();
-        }
-
-        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<CourseGetDTO> GetCourse(int courseId)

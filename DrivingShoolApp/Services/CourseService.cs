@@ -7,7 +7,6 @@ namespace DrivingSchoolApp.Services
     public interface ICourseService
     {
         public Task<ICollection<CourseGetDTO>> GetCourses();
-        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers();
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
@@ -30,13 +29,6 @@ namespace DrivingSchoolApp.Services
             if(!courses.Any())
                 throw new NotFoundCourseException();
             return courses;
-        }
-
-        //TO DO: not tested, not implemented
-
-        public Task<ICollection<CourseWithCustomersGetDTO>> GetCoursesWithUsers()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<CourseGetDTO> GetCourse(int courseId)
