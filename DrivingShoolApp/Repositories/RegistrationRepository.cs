@@ -11,7 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId);
         public Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
-        public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails);
+        public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate);
     }
     public class RegistrationRepository : IRegistrationRepository
     {
@@ -70,11 +70,11 @@ namespace DrivingSchoolApp.Repositories
                        }).FirstOrDefaultAsync();
         }
 
-        public async Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails)
+        public async Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate)
         {
             var registrationToAdd = new Registration
             {
-                RegistrationDate = DateTime.Now,
+                RegistrationDate = registrationDate,
                 CustomerId = registrationDetails.CustomerId,
                 CourseId = registrationDetails.CourseId
             };

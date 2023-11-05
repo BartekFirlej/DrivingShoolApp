@@ -75,7 +75,7 @@ namespace DrivingSchoolApp.Repositories
             var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, _dateTimeHelperService.GetDateTimeNow());
             if (meetAgeRequirement == false)
                 throw new CustomerDoesntMeetRequirementsException(customer.Id);
-            var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails);
+            var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails, _dateTimeHelperService.GetDateTimeNow());
             return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);
         }
     }

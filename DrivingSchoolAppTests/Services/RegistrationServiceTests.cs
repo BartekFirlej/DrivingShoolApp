@@ -191,7 +191,6 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Registration_ReturnsRegistration()
         {
-            var currentDate = DateTime.Now;
             var customer = new CustomerGetDTO { Id = 1, BirthDate = new DateTime(1990, 1, 1) };
             var course = new CourseGetDTO { Id = 1, Limit = 50, CourseType = new CourseTypeGetDTO { Id = 1, MinimumAge = 18 } };
             var addedRegistrationDTO = new RegistrationGetDTO { RegistrationDate = new DateTime(2022, 1, 1), CourseId = course.Id, CustomerId = customer.Id};
@@ -204,7 +203,7 @@ namespace DrivingSchoolAppTests.Services
             _registrationRepositoryMock.SetupSequence(repo => repo.GetRegistration(registrationToAdd.CustomerId, registrationToAdd.CourseId))
                        .ReturnsAsync((RegistrationGetDTO)null)
                        .ReturnsAsync(addedRegistrationDTO);
-            _registrationRepositoryMock.Setup(repo => repo.PostRegistration(registrationToAdd)).ReturnsAsync(addedRegistration);
+            _registrationRepositoryMock.Setup(repo => repo.PostRegistration(registrationToAdd, _dateTimeHelperServiceMock.Object.GetDateTimeNow())).ReturnsAsync(addedRegistration);
             _customerServiceMock.Setup(service => service.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, _dateTimeHelperServiceMock.Object.GetDateTimeNow())).Returns(true);
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
