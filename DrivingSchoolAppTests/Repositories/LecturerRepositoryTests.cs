@@ -126,7 +126,9 @@ namespace DrivingSchoolAppTests.Repositories
             var addedLecturer = await _repository.PostLecturer(lecturerToAdd);
 
             var retrievedLecturer = await _repository.GetLecturer(addedLecturer.Id);
+            Assert.IsNotNull(addedLecturer);
             Assert.IsNotNull(retrievedLecturer);
+            Assert.AreEqual(addedLecturer.Id, retrievedLecturer.ID);
             Assert.AreEqual(lecturerToAdd.Name, addedLecturer.Name);
             Assert.AreEqual(lecturerToAdd.SecondName, addedLecturer.SecondName);
             Assert.AreEqual(lecturerToAdd.Name, retrievedLecturer.Name);

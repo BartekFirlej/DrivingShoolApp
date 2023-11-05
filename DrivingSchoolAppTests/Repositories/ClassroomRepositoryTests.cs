@@ -148,10 +148,15 @@ namespace DrivingSchoolAppTests.Repositories
             var addedClassroom = await _repository.PostClassroom(classroomToAdd);
 
             var retrievedClassroom = await _repository.GetClassroom(addedClassroom.Id);
+            Assert.IsNotNull(addedClassroom);
             Assert.IsNotNull(retrievedClassroom);
+            Assert.AreEqual(addedClassroom.Id, retrievedClassroom.ClassroomId);
             Assert.AreEqual(classroomToAdd.Number, addedClassroom.Number);
             Assert.AreEqual(classroomToAdd.Size, addedClassroom.Size);
             Assert.AreEqual(classroomToAdd.AddressID, addedClassroom.AddressId);
+            Assert.AreEqual(classroomToAdd.Number, retrievedClassroom.ClassroomNumber);
+            Assert.AreEqual(classroomToAdd.Size, retrievedClassroom.Size);
+            Assert.AreEqual(classroomToAdd.AddressID, retrievedClassroom.Address.ID);
             Assert.AreEqual(address1.Id, retrievedClassroom.Address.ID);
             Assert.AreEqual(address1.City, retrievedClassroom.Address.City);
             Assert.AreEqual(address1.Street, retrievedClassroom.Address.Street);

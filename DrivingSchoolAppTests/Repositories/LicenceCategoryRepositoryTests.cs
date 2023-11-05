@@ -122,7 +122,9 @@ namespace DrivingSchoolAppTests.Repositories
             var addedLicenceCategory = await _repository.PostLicenceCategory(licenceCategoryToAdd);
 
             var retrievedLicenceCategory = await _repository.GetLicenceCategory(addedLicenceCategory.Id);
+            Assert.IsNotNull(addedLicenceCategory);
             Assert.IsNotNull(retrievedLicenceCategory);
+            Assert.AreEqual(addedLicenceCategory.Id, retrievedLicenceCategory.Id);
             Assert.AreEqual(licenceCategoryToAdd.Name, addedLicenceCategory.Name);
             Assert.AreEqual(licenceCategoryToAdd.Name, retrievedLicenceCategory.Name);
         }

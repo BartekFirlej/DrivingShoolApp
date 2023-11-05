@@ -131,11 +131,17 @@ namespace DrivingSchoolAppTests.Repositories
             var addedAddress = await _repository.PostAddress(addressToAdd);
             
             var retrievedAddress = await _repository.GetAddress(addedAddress.Id);
+            Assert.IsNotNull(addedAddress);
             Assert.IsNotNull(retrievedAddress);
+            Assert.AreEqual(addedAddress.Id, retrievedAddress.ID);
             Assert.AreEqual(addressToAdd.City, addedAddress.City);
             Assert.AreEqual(addressToAdd.Street, addedAddress.Street);
             Assert.AreEqual(addressToAdd.Number, addedAddress.Number);
             Assert.AreEqual(addressToAdd.PostalCode, addedAddress.PostalCode);
+            Assert.AreEqual(addressToAdd.City, retrievedAddress.City);
+            Assert.AreEqual(addressToAdd.Street, retrievedAddress.Street);
+            Assert.AreEqual(addressToAdd.Number, retrievedAddress.Number);
+            Assert.AreEqual(addressToAdd.PostalCode, retrievedAddress.PostalCode);
         }
     }
 }
