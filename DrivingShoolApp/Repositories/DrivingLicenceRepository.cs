@@ -28,9 +28,9 @@ namespace DrivingSchoolApp.Repositories
                                    .Select(d => new DrivingLicenceGetDTO
                                    {
                                        Id = d.Id,
-                                       UserId = d.CustomerId,
-                                       UserName = d.Customer.Name,
-                                       UserSecondName = d.Customer.SecondName,
+                                       CustomerId = d.CustomerId,
+                                       CustomerName = d.Customer.Name,
+                                       CutomserSecondName = d.Customer.SecondName,
                                        LicenceCategoryId = d.LicenceCategoryId,
                                        LicenceCategoryName = d.LicenceCategory.Name,
                                        ExpirationDate = (DateTime)d.ExpirationDate,
@@ -47,9 +47,9 @@ namespace DrivingSchoolApp.Repositories
                                    .Select(d => new DrivingLicenceGetDTO
                                    {
                                        Id = d.Id,
-                                       UserId = d.CustomerId,
-                                       UserName = d.Customer.Name,
-                                       UserSecondName = d.Customer.SecondName,
+                                       CustomerId = d.CustomerId,
+                                       CustomerName = d.Customer.Name,
+                                       CutomserSecondName = d.Customer.SecondName,
                                        LicenceCategoryId = d.LicenceCategoryId,
                                        LicenceCategoryName = d.LicenceCategory.Name,
                                        ExpirationDate = (DateTime)d.ExpirationDate,
@@ -59,13 +59,27 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
         {
-            var drivingLicenceToAdd = new DrivingLicence
+
+            DrivingLicence drivingLicenceToAdd;
+            if(drivingLicenceDetails.ExpirationDate == DateTime.MinValue)
             {
-                ExpirationDate = drivingLicenceDetails.ExpirationDate,
-                ReceivedDate = drivingLicenceDetails.ReceivedDate,
-                CustomerId = drivingLicenceDetails.UserId,
-                LicenceCategoryId = drivingLicenceDetails.LicenceCategoryId
-            };
+                drivingLicenceToAdd = new DrivingLicence
+                {
+                    ReceivedDate = drivingLicenceDetails.ReceivedDate,
+                    CustomerId = drivingLicenceDetails.CustomerId,
+                    LicenceCategoryId = drivingLicenceDetails.LicenceCategoryId
+                };
+            }
+            else
+            {
+                drivingLicenceToAdd = new DrivingLicence
+                {
+                    ExpirationDate = drivingLicenceDetails.ExpirationDate,
+                    ReceivedDate = drivingLicenceDetails.ReceivedDate,
+                    CustomerId = drivingLicenceDetails.CustomerId,
+                    LicenceCategoryId = drivingLicenceDetails.LicenceCategoryId
+                };
+            }
             await _dbContext.DrivingLicences.AddAsync(drivingLicenceToAdd);
             await _dbContext.SaveChangesAsync();
             return drivingLicenceToAdd;
@@ -80,12 +94,13 @@ namespace DrivingSchoolApp.Repositories
                                    .Select(d => new DrivingLicenceGetDTO
                                    {
                                        Id = d.Id,
-                                       UserId = d.CustomerId,
-                                       UserName = d.Customer.Name,
-                                       UserSecondName = d.Customer.SecondName,
+                                       CustomerId = d.CustomerId,
+                                       CustomerName = d.Customer.Name,
+                                       CutomserSecondName = d.Customer.SecondName,
                                        LicenceCategoryId = d.LicenceCategoryId,
                                        LicenceCategoryName = d.LicenceCategory.Name,
-                                       ReceivedDate = d.ReceivedDate
+                                       ReceivedDate = d.ReceivedDate,
+                                       ExpirationDate = (DateTime)d.ExpirationDate
                                    }).ToListAsync();
         }
     }

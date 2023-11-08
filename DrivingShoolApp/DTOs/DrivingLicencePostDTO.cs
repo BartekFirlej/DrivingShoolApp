@@ -5,6 +5,6 @@
         public DateTime ReceivedDate {  get; set; }
         public DateTime ExpirationDate { get; set; }
         public int LicenceCategoryId {  get; set; }
-        public int UserId {  get; set; }
+        public int CustomerId {  get; set; }
     }
 }
