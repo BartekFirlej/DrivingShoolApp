@@ -29,8 +29,8 @@ namespace DrivingSchoolApp.Repositories
                     {
                         LicenceCategoryId = lc.Id,
                         LicenceCategoryName = lc.Name,
-                        RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
-                        RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                        RequiredLicenceCategoryId = rlcRequired.Id,
+                        RequiredLicenceCategoryName = rlcRequired.Name,
                         RequiredYears = rlc.RequiredYears
                     }).ToListAsync();
         }
@@ -45,8 +45,8 @@ namespace DrivingSchoolApp.Repositories
                           {
                               LicenceCategoryId = lc.Id,
                               LicenceCategoryName = lc.Name,
-                              RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
-                              RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                              RequiredLicenceCategoryId = rlcRequired.Id,
+                              RequiredLicenceCategoryName = rlcRequired.Name,
                               RequiredYears = rlc.RequiredYears
                           }).FirstOrDefaultAsync();
         }
@@ -63,8 +63,8 @@ namespace DrivingSchoolApp.Repositories
                    {
                        LicenceCategoryId = lc.Id,
                        LicenceCategoryName = lc.Name,
-                       RequiredLicenceCategoryId = rlc.RequiredLicenceCategoryId,
-                       RequiredLicenceCategoryName = rlc.ReqLicenceCategory.Name,
+                       RequiredLicenceCategoryId = rlcRequired.Id,
+                       RequiredLicenceCategoryName = rlcRequired.Name,
                        RequiredYears = rlc.RequiredYears
                    }).ToListAsync();
         }
