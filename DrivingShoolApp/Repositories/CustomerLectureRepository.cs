@@ -23,53 +23,53 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLectures()
         {
-            return await _dbContext.Lectures.Include(l => l.Customers)
-                                   .Select(l => new CustomerLectureGetDTO
-                                   {
-                                       LectureId = l.LecturerId,
-                                       LectureDate = l.LectureDate,
-                                       CustomerId = l.Customers.FirstOrDefault().Id,
-                                       CustomerName = l.Customers.FirstOrDefault().Name
-                                   }).ToListAsync();
+            return await _dbContext.Lectures
+                    .SelectMany(lecture => lecture.Customers, (lecture, customerLecture) => new CustomerLectureGetDTO
+                        {
+                            LectureId = lecture.LecturerId,
+                            LectureDate = lecture.LectureDate,
+                            CustomerId = customerLecture.Id,
+                            CustomerName = customerLecture.Name
+                        }).ToListAsync();
         }
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomerLectures(int customerId)
         {
-            return await _dbContext.Lectures.Include(l => l.Customers)
-                       .Where(l => l.Customers.FirstOrDefault().Id == customerId)
-                       .Select(l => new CustomerLectureGetDTO
-                       {
-                           LectureId = l.LecturerId,
-                           LectureDate = l.LectureDate,
-                           CustomerId = l.Customers.FirstOrDefault().Id,
-                           CustomerName = l.Customers.FirstOrDefault().Name
-                       }).ToListAsync();
+            return await _dbContext.Customers
+                    .Where(customer => customer.Id == customerId)
+                    .SelectMany(customer => customer.Lectures, (customer, lecture) => new CustomerLectureGetDTO
+                    {
+                        LectureId = lecture.LecturerId,
+                        LectureDate = lecture.LectureDate,
+                        CustomerId = customer.Id,
+                        CustomerName = customer.Name
+                    }).ToListAsync();
         }
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLecture(int lectureId)
         {
-            return await _dbContext.Lectures.Include(l => l.Customers)
-                .Where(l => l.Id == lectureId)
-                 .Select(l => new CustomerLectureGetDTO
-                 {
-                     LectureId = l.LecturerId,
-                    LectureDate = l.LectureDate,
-                     CustomerId = l.Customers.FirstOrDefault().Id,
-                     CustomerName = l.Customers.FirstOrDefault().Name
-                 }).ToListAsync();
+            return await _dbContext.Lectures
+                    .Where(lecture => lecture.Id == lectureId)
+                    .SelectMany(lecture => lecture.Customers, (lecture, customer) => new CustomerLectureGetDTO
+                    {
+                        LectureId = lecture.LecturerId,
+                        LectureDate = lecture.LectureDate,
+                        CustomerId = customer.Id,
+                        CustomerName = customer.Name
+                    }).ToListAsync();
         }
 
         public async Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId)
         {
-            return await _dbContext.Lectures.Include(l => l.Customers)
-                .Where(l => l.Id == lectureId && l.Customers.FirstOrDefault().Id == customerId)
-                 .Select(l => new CustomerLectureGetDTO
-                 {
-                     LectureId = l.LecturerId,
-                     LectureDate = l.LectureDate,
-                     CustomerId = l.Customers.FirstOrDefault().Id,
-                     CustomerName = l.Customers.FirstOrDefault().Name
-                 }).FirstOrDefaultAsync();
+            return await _dbContext.Lectures
+                    .Where(lecture => lecture.Id == lectureId)
+                    .SelectMany(lecture => lecture.Customers.Where(customer => customer.Id == customerId), (lecture, customer) => new CustomerLectureGetDTO
+                    {
+                        LectureId = lecture.LecturerId,
+                        LectureDate = lecture.LectureDate,
+                        CustomerId = customer.Id,
+                        CustomerName = customer.Name
+                    }).FirstOrDefaultAsync();
         }
 
         public async Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
