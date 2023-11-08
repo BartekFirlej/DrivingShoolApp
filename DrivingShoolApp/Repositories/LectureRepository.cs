@@ -42,7 +42,7 @@ namespace DrivingSchoolApp.Repositories
                                 City = l.Classroom.Address.City,
                                 Street = l.Classroom.Address.Street,
                                 Number = l.Classroom.Address.Number,
-                                ClassroomNumber = l.Classroom.Address.Number
+                                ClassroomNumber = l.Classroom.Number
                             }).ToListAsync();
         }
 
@@ -69,7 +69,7 @@ namespace DrivingSchoolApp.Repositories
                     City = l.Classroom.Address.City,
                     Street = l.Classroom.Address.Street,
                     Number = l.Classroom.Address.Number,
-                    ClassroomNumber = l.Classroom.Address.Number
+                    ClassroomNumber = l.Classroom.Number
                 }).FirstOrDefaultAsync();
         }
 
