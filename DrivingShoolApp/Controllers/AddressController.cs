@@ -17,14 +17,18 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAddresses()
+        public async Task<IActionResult> GetAddresses([FromQuery(Name = "page")] int page=1, [FromQuery(Name = "size")] int size=10)
         {
-            ICollection<AddressGetDTO> addresses;
+            PagedList<AddressGetDTO> addresses;
             try
             {
-                addresses = await _addressService.GetAddresses();
+                addresses = await _addressService.GetAddresses(page, size);
             }
             catch (NotFoundAddressException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
             {
                 return NotFound(e.ToJson());
             }

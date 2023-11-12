@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface IAddressService
     {
-        public Task<ICollection<AddressGetDTO>> GetAddresses();
+        public Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size);
         public Task<AddressGetDTO> GetAddress(int addressId);
         public Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails);
     }
@@ -20,10 +20,14 @@ namespace DrivingSchoolApp.Services
             _addressRepository = addressRepository;
         }
 
-        public async Task<ICollection<AddressGetDTO>> GetAddresses()
+        public async Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size)
         {
-            var addresses = await _addressRepository.GetAddresses();
-            if (!addresses.Any())
+            if (page <= 0)
+                throw new ValueMustBeGreaterThanZeroException("page number");
+            if (size <= 0)
+                throw new ValueMustBeGreaterThanZeroException("page size");
+            var addresses = await _addressRepository.GetAddresses(page, size);
+            if (!addresses.PagedItems.Any())
                 throw new NotFoundAddressException();
             return addresses;
         }

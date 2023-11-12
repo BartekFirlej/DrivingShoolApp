@@ -26,24 +26,24 @@ namespace DrivingSchoolAppTests.Services
         {
             var address1 = new AddressGetDTO();
             var address2 = new AddressGetDTO();
-            ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>() {address1, address2};
-            _addressRepositoryMock.Setup(repo => repo.GetAddresses()).Returns(Task.FromResult(addressesList));
+            PagedList<AddressGetDTO> addressesList = new PagedList<AddressGetDTO>() { PagedItems = new List<AddressGetDTO> { address1, address2 }, HasNextPage = false, PageIndex = 1, PageSize = 10 };
+            _addressRepositoryMock.Setup(repo => repo.GetAddresses(1,10)).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
 
-            var result = await _service.GetAddresses();
+            var result = await _service.GetAddresses(1,10);
 
             Assert.AreEqual(addressesList, result);
-            Assert.AreEqual(addressesList.Count, result.Count);
+            Assert.AreEqual(addressesList.PagedItems.Count, result.PagedItems.Count);
         }
 
         [TestMethod]
         public async Task Get_Addresses_ThrowsNotFoundAddressesException()
         {
-            ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>();
-            _addressRepositoryMock.Setup(repo => repo.GetAddresses()).Returns(Task.FromResult(addressesList));
+            PagedList<AddressGetDTO> addressesList = new PagedList<AddressGetDTO> { PagedItems = new List<AddressGetDTO>(), HasNextPage = false, PageIndex = 1, PageSize = 10 };
+            _addressRepositoryMock.Setup(repo => repo.GetAddresses(1,10)).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.GetAddresses());
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.GetAddresses(1,10));
         }
 
         [TestMethod]

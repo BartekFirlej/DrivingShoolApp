@@ -25,8 +25,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Addresses_ReturnsOk()
         {
-            ICollection<AddressGetDTO> addressesList = new List<AddressGetDTO>();
-            _addressServiceMock.Setup(service => service.GetAddresses()).ReturnsAsync(addressesList);
+            PagedList<AddressGetDTO> addressesList = new PagedList<AddressGetDTO>();
+            _addressServiceMock.Setup(service => service.GetAddresses(1,10)).ReturnsAsync(addressesList);
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetAddresses();
@@ -37,7 +37,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Addresses_ThrowsNotFoundAddressException()
         {
-            _addressServiceMock.Setup(service => service.GetAddresses()).Throws(new NotFoundAddressException());
+            _addressServiceMock.Setup(service => service.GetAddresses(1,10)).Throws(new NotFoundAddressException());
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetAddresses();

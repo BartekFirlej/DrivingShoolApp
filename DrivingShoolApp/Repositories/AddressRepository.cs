@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface IAddressRepository
     {
-        public Task<ICollection<AddressGetDTO>> GetAddresses();
+        public Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size);
         public Task<AddressGetDTO> GetAddress(int addressId);
         public Task<Address> PostAddress(AddressPostDTO addressDetails);
     }
@@ -19,16 +19,18 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<AddressGetDTO>> GetAddresses()
+        public async Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size)
         {
-            return await _dbContext.Addresses.Select(a => new AddressGetDTO
-                                                {
-                                                    Id = a.Id,
-                                                    City = a.City,
-                                                    Street = a.Street,
-                                                    Number = a.Number,
-                                                    PostalCode = a.PostalCode
-                                                 }).ToListAsync();
+            return await PagedList<AddressGetDTO>.Create(
+                 _dbContext.Addresses.Select(a => new AddressGetDTO
+                    {
+                        Id = a.Id,
+                        City = a.City,
+                        Street = a.Street,
+                        Number = a.Number,
+                        PostalCode = a.PostalCode
+                    }), 
+                page, size);
         }
 
         public async Task<AddressGetDTO> GetAddress(int addressId)

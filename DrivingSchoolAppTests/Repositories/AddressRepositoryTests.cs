@@ -31,21 +31,23 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new AddressRepository(_dbContext);
 
-            var result = await _repository.GetAddresses();
+            var resultList = await _repository.GetAddresses(1,10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual("TestCity1", resultList[0].City);
-            Assert.AreEqual("TestStreet1", resultList[0].Street);
-            Assert.AreEqual(10, resultList[0].Number);
-            Assert.AreEqual("22-222", resultList[0].PostalCode);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual("TestCity2", resultList[1].City);
-            Assert.AreEqual("TestStreet2", resultList[1].Street);
-            Assert.AreEqual(20, resultList[1].Number);
-            Assert.AreEqual("44-444", resultList[1].PostalCode);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual("TestCity1", resultList.PagedItems[0].City);
+            Assert.AreEqual("TestStreet1", resultList.PagedItems[0].Street);
+            Assert.AreEqual(10, resultList.PagedItems[0].Number);
+            Assert.AreEqual("22-222", resultList.PagedItems[0].PostalCode);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual("TestCity2", resultList.PagedItems[1].City);
+            Assert.AreEqual("TestStreet2", resultList.PagedItems[1].Street);
+            Assert.AreEqual(20, resultList.PagedItems[1].Number);
+            Assert.AreEqual("44-444", resultList.PagedItems[1].PostalCode);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -57,9 +59,9 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new AddressRepository(_dbContext);
 
-            var result = await _repository.GetAddresses();
+            var result = await _repository.GetAddresses(2,10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
         }
 
         [TestMethod]
