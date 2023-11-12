@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Subjects_ReturnsSubjects()
         {
             var subject = new SubjectGetDTO();
-            ICollection<SubjectGetDTO> subjectsList = new List<SubjectGetDTO>() { subject };
-            _subjectRepositoryMock.Setup(repo => repo.GetSubjects()).Returns(Task.FromResult(subjectsList));
+            var subjectsList = new PagedList<SubjectGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<SubjectGetDTO> { subject }, HasNextPage = false };
+            _subjectRepositoryMock.Setup(repo => repo.GetSubjects(1, 10)).Returns(Task.FromResult(subjectsList));
             _service = new SubjectService(_subjectRepositoryMock.Object);
 
-            var result = await _service.GetSubjects();
+            var result = await _service.GetSubjects(1, 10);
 
             Assert.AreEqual(subjectsList, result);
         }
@@ -37,11 +37,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Subjects_ThrowsNotFoundSubjectsException()
         {
-            ICollection<SubjectGetDTO> subjectsList = new List<SubjectGetDTO>();
-            _subjectRepositoryMock.Setup(repo => repo.GetSubjects()).Returns(Task.FromResult(subjectsList));
+            var subjectsList = new PagedList<SubjectGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<SubjectGetDTO>(), HasNextPage = false };
+            _subjectRepositoryMock.Setup(repo => repo.GetSubjects(1, 10)).Returns(Task.FromResult(subjectsList));
             _service = new SubjectService(_subjectRepositoryMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetSubjects());
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetSubjects(1, 10));
         }
 
         [TestMethod]

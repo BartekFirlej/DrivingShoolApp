@@ -51,9 +51,9 @@ namespace DrivingSchoolAppTests.Controllers
             _addressServiceMock.Setup(service => service.GetAddresses(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
             _controller = new AddressController(_addressServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetAddresses(-1,10);
+            var result = (BadRequestObjectResult)await _controller.GetAddresses(-1,10);
 
-            result.StatusCode.Should().Be(404);
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ISubjectService
     {
-        public Task<ICollection<SubjectGetDTO>> GetSubjects();
+        public Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size);
         public Task<SubjectGetDTO> GetSubject(int subjectId);
         public Task<SubjectGetDTO> PostSubject(SubjectPostDTO subjectDetails);
 
@@ -20,10 +20,10 @@ namespace DrivingSchoolApp.Services
             _subjectRepository = subjectRepository;
         }
 
-        public async Task<ICollection<SubjectGetDTO>> GetSubjects()
+        public async Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size)
         {
-            var subjects = await _subjectRepository.GetSubjects();
-            if (!subjects.Any())
+            var subjects = await _subjectRepository.GetSubjects(page, size);
+            if (!subjects.PagedItems.Any())
                 throw new NotFoundSubjectException();
             return subjects;
         }

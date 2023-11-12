@@ -51,9 +51,9 @@ namespace DrivingSchoolAppTests.Controllers
             _classroomServiceMock.Setup(service => service.GetClassrooms(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
             _controller = new ClassroomController(_classroomServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetClassrooms(-1, 10);
+            var result = (BadRequestObjectResult)await _controller.GetClassrooms(-1, 10);
 
-            result.StatusCode.Should().Be(404);
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ISubjectRepository
     {
-        public Task<ICollection<SubjectGetDTO>> GetSubjects();
+        public Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size);
         public Task<SubjectGetDTO> GetSubject(int subjectId);
         public Task<Subject> PostSubject(SubjectPostDTO subjectDetails);
     }
@@ -19,16 +19,18 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<SubjectGetDTO>> GetSubjects()
+        public async Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size)
         {
-            return await _dbContext.Subjects
-                            .Select(s => new SubjectGetDTO
-                            {
-                                Id = s.Id,
-                                Name = s.Name,
-                                Code = s.Code,
-                                Duration = s.Duration
-                            }).ToListAsync();
+            return await PagedList<SubjectGetDTO>.Create(
+                _dbContext.Subjects
+                      .Select(s => new SubjectGetDTO
+                      {
+                          Id = s.Id,
+                          Name = s.Name,
+                          Code = s.Code,
+                          Duration = s.Duration
+                      }),
+                page, size);
         }
 
         public async Task<SubjectGetDTO> GetSubject(int subjectId)

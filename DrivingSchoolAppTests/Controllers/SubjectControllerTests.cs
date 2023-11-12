@@ -25,8 +25,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Subjects_ReturnsOk()
         {
-            ICollection<SubjectGetDTO> subjectsList = new List<SubjectGetDTO>();
-            _subjectServiceMock.Setup(service => service.GetSubjects()).Returns(Task.FromResult(subjectsList));
+            var subjectsList = new PagedList<SubjectGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<SubjectGetDTO>(), HasNextPage = false };
+            _subjectServiceMock.Setup(service => service.GetSubjects(1, 10)).Returns(Task.FromResult(subjectsList));
             _controller = new SubjectController(_subjectServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetSubjects();
@@ -35,14 +35,25 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_LicenceCategories_ThrowsNotFoundSubjectException()
+        public async Task Get_Subjects_ThrowsNotFoundSubjectException()
         {
-            _subjectServiceMock.Setup(service => service.GetSubjects()).Throws(new NotFoundSubjectException());
+            _subjectServiceMock.Setup(service => service.GetSubjects(1, 10)).Throws(new NotFoundSubjectException());
             _controller = new SubjectController(_subjectServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetSubjects();
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Subjects_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _subjectServiceMock.Setup(service => service.GetSubjects(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new SubjectController(_subjectServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetSubjects(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

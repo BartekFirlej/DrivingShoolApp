@@ -30,7 +30,7 @@ namespace DrivingSchoolApp.Controllers
             }
             catch(ValueMustBeGreaterThanZeroException e)
             {
-                return NotFound(e.ToJson());
+                return BadRequest(e.ToJson());
             }
             return Ok(addresses);
         }
