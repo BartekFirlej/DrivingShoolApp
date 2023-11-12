@@ -1,14 +1,8 @@
 ﻿using AutoFixture;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolAppTests.Repositories
 {

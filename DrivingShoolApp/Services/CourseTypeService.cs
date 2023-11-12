@@ -1,8 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {

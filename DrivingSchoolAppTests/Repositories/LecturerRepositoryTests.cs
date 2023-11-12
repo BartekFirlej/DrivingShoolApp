@@ -1,17 +1,8 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
 using DrivingSchoolApp.Repositories;
-using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
-using Azure.Core;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -45,10 +36,10 @@ namespace DrivingSchoolAppTests.Repositories
             var resultList = result.ToList();
             Assert.IsNotNull(resultList);
             Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].ID);
+            Assert.AreEqual(1, resultList[0].Id);
             Assert.AreEqual("TestName1", resultList[0].Name);
             Assert.AreEqual("TestSName1", resultList[0].SecondName);
-            Assert.AreEqual(2, resultList[1].ID);
+            Assert.AreEqual(2, resultList[1].Id);
             Assert.AreEqual("TestName2", resultList[1].Name);
             Assert.AreEqual("TestSName2", resultList[1].SecondName);
         }
@@ -84,7 +75,7 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetLecturer(idOfLecturerToFind);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.ID);
+            Assert.AreEqual(2, result.Id);
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
         }
@@ -128,7 +119,7 @@ namespace DrivingSchoolAppTests.Repositories
             var retrievedLecturer = await _repository.GetLecturer(addedLecturer.Id);
             Assert.IsNotNull(addedLecturer);
             Assert.IsNotNull(retrievedLecturer);
-            Assert.AreEqual(addedLecturer.Id, retrievedLecturer.ID);
+            Assert.AreEqual(addedLecturer.Id, retrievedLecturer.Id);
             Assert.AreEqual(lecturerToAdd.Name, addedLecturer.Name);
             Assert.AreEqual(lecturerToAdd.SecondName, addedLecturer.SecondName);
             Assert.AreEqual(lecturerToAdd.Name, retrievedLecturer.Name);

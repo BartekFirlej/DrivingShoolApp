@@ -4,14 +4,7 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrivingSchoolAppTests.Services
 {

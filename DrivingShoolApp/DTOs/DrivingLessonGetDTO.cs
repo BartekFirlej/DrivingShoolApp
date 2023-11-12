@@ -1,6 +1,4 @@
-﻿using Microsoft.Identity.Client;
-
-namespace DrivingSchoolApp.DTOs
+﻿namespace DrivingSchoolApp.DTOs
 {
     public class DrivingLessonGetDTO
     {

@@ -5,7 +5,6 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace DrivingSchoolAppTests.Controllers

@@ -29,7 +29,7 @@ namespace DrivingSchoolApp.Repositories
                                           Size = c.Size,
                                           Address = new AddressGetDTO
                                           {
-                                              ID = c.Address.Id,
+                                              Id = c.Address.Id,
                                               City = c.Address.City,
                                               Street = c.Address.Street,
                                               Number = c.Address.Number,
@@ -49,7 +49,7 @@ namespace DrivingSchoolApp.Repositories
                               Size = c.Size,
                               Address = new AddressGetDTO
                               {
-                                  ID = c.Address.Id,
+                                  Id = c.Address.Id,
                                   City = c.Address.City,
                                   Street = c.Address.Street,
                                   Number = c.Address.Number,

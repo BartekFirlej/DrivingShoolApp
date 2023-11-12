@@ -1,17 +1,8 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
 using DrivingSchoolApp.Repositories;
-using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
-using Azure.Core;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -50,7 +41,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList[0].ClassroomId);
             Assert.AreEqual(1, resultList[0].ClassroomNumber);
             Assert.AreEqual(10, resultList[0].Size);
-            Assert.AreEqual(1, resultList[0].Address.ID);
+            Assert.AreEqual(1, resultList[0].Address.Id);
             Assert.AreEqual(10, resultList[0].Address.Number);
             Assert.AreEqual("22-222", resultList[0].Address.PostalCode);
             Assert.AreEqual("TestStreet1", resultList[0].Address.Street);
@@ -58,7 +49,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, resultList[1].ClassroomId);
             Assert.AreEqual(2, resultList[1].ClassroomNumber);
             Assert.AreEqual(20, resultList[1].Size);
-            Assert.AreEqual(1, resultList[1].Address.ID);
+            Assert.AreEqual(1, resultList[1].Address.Id);
             Assert.AreEqual(10, resultList[1].Address.Number);
             Assert.AreEqual("22-222", resultList[1].Address.PostalCode);
             Assert.AreEqual("TestStreet1", resultList[1].Address.Street);
@@ -101,7 +92,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.ClassroomId);
             Assert.AreEqual(2, result.ClassroomNumber);
             Assert.AreEqual(20, result.Size);
-            Assert.AreEqual(1, result.Address.ID);
+            Assert.AreEqual(1, result.Address.Id);
             Assert.AreEqual(10, result.Address.Number);
             Assert.AreEqual("22-222", result.Address.PostalCode);
             Assert.AreEqual("TestStreet1", result.Address.Street);
@@ -156,8 +147,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(classroomToAdd.AddressID, addedClassroom.AddressId);
             Assert.AreEqual(classroomToAdd.Number, retrievedClassroom.ClassroomNumber);
             Assert.AreEqual(classroomToAdd.Size, retrievedClassroom.Size);
-            Assert.AreEqual(classroomToAdd.AddressID, retrievedClassroom.Address.ID);
-            Assert.AreEqual(address1.Id, retrievedClassroom.Address.ID);
+            Assert.AreEqual(classroomToAdd.AddressID, retrievedClassroom.Address.Id);
+            Assert.AreEqual(address1.Id, retrievedClassroom.Address.Id);
             Assert.AreEqual(address1.City, retrievedClassroom.Address.City);
             Assert.AreEqual(address1.Street, retrievedClassroom.Address.Street);
             Assert.AreEqual(address1.Number, retrievedClassroom.Address.Number);

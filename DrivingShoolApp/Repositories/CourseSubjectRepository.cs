@@ -1,7 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace DrivingSchoolApp.Repositories
 {
@@ -23,26 +22,6 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects()
         {
-            /*return await _dbContext.CourseSubjects
-                                .Include(c => c.Course)
-                                .Include(c => c.Subject)
-                                .GroupBy(c => new { c.CourseId, c.Course.Name })
-                                .Select(c => new CourseSubjectGetDTO
-                                {
-                                    CourseId = c.FirstOrDefault().CourseId,
-                                    CourseName = c.FirstOrDefault().Course.Name,
-                                    CourseSubjectsSequence = new CourseSubjectSequenceGetDTO
-                                    {
-                                        Subject = new SubjectGetDTO
-                                        {
-                                            Id = c.FirstOrDefault().SubjectId,
-                                            Name = c.FirstOrDefault().Subject.Name,
-                                            Code = c.FirstOrDefault().Subject.Code,
-                                            Duration = c.FirstOrDefault().Subject.Duration
-                                        },
-                                        Sequence = c.FirstOrDefault().SequenceNumber
-                                    }
-                                }).ToListAsync();*/
             return await _dbContext.CourseSubjects
                                    .Include(s => s.Course)
                                    .Include(s => s.Subject)
@@ -59,27 +38,6 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId)
         {
-            /*return await _dbContext.CourseSubjects
-                    .Include(c => c.Course)
-                    .Include(c => c.Subject)
-                    .Where(c => c.CourseId == courseId)
-                    .GroupBy(c => new { c.CourseId, c.Course.Name })
-                    .Select(c => new CourseSubjectGetDTO
-                    {
-                        CourseId = c.FirstOrDefault().CourseId,
-                        CourseName = c.FirstOrDefault().Course.Name,
-                        CourseSubjectsSequence = c.Select(c => new CourseSubjectSequenceGetDTO
-                        {
-                            Subject = c.Select(c=> new SubjectGetDTO
-                            {
-                                Id = c.FirstOrDefault().SubjectId,
-                                Name = c.FirstOrDefault().Subject.Name,
-                                Code = c.FirstOrDefault().Subject.Code,
-                                Duration = c.FirstOrDefault().Subject.Duration
-                            }),
-                            Sequence = c.FirstOrDefault().SequenceNumber
-                        }).ToListAsync()
-                    }).FirstOrDefaultAsync();*/
             return await _dbContext.CourseSubjects
                                    .Include(s => s.Course)
                                    .Include(s => s.Subject)

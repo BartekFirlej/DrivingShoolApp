@@ -1,6 +1,4 @@
-﻿using DrivingSchoolApp.Models;
-
-namespace DrivingSchoolApp.DTOs
+﻿namespace DrivingSchoolApp.DTOs
 {
     public class CourseSubjectGetDTO
     {
@@ -10,6 +8,5 @@ namespace DrivingSchoolApp.DTOs
         public string SubjectName {  get; set; }
         public int Duration { get; set; }
         public int SequenceNumber { get; set; }
-        //public ICollection<CourseSubjectSequenceGetDTO> CourseSubjectsSequence { get; set; }
     }
 }

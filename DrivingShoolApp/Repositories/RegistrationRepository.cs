@@ -1,6 +1,5 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Models;
-using DrivingShoolApp;
 using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolApp.Repositories

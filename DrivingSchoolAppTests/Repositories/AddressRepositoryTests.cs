@@ -1,17 +1,8 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
 using DrivingSchoolApp.Repositories;
-using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
-using Azure.Core;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -45,12 +36,12 @@ namespace DrivingSchoolAppTests.Repositories
             var resultList = result.ToList();
             Assert.IsNotNull(resultList);
             Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].ID);
+            Assert.AreEqual(1, resultList[0].Id);
             Assert.AreEqual("TestCity1", resultList[0].City);
             Assert.AreEqual("TestStreet1", resultList[0].Street);
             Assert.AreEqual(10, resultList[0].Number);
             Assert.AreEqual("22-222", resultList[0].PostalCode);
-            Assert.AreEqual(2, resultList[1].ID);
+            Assert.AreEqual(2, resultList[1].Id);
             Assert.AreEqual("TestCity2", resultList[1].City);
             Assert.AreEqual("TestStreet2", resultList[1].Street);
             Assert.AreEqual(20, resultList[1].Number);
@@ -88,7 +79,7 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetAddress(idOfAddressToFind);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.ID);
+            Assert.AreEqual(2, result.Id);
             Assert.AreEqual("TestCity2", result.City);
             Assert.AreEqual("TestStreet2", result.Street);
             Assert.AreEqual(20, result.Number);
@@ -133,7 +124,7 @@ namespace DrivingSchoolAppTests.Repositories
             var retrievedAddress = await _repository.GetAddress(addedAddress.Id);
             Assert.IsNotNull(addedAddress);
             Assert.IsNotNull(retrievedAddress);
-            Assert.AreEqual(addedAddress.Id, retrievedAddress.ID);
+            Assert.AreEqual(addedAddress.Id, retrievedAddress.Id);
             Assert.AreEqual(addressToAdd.City, addedAddress.City);
             Assert.AreEqual(addressToAdd.Street, addedAddress.Street);
             Assert.AreEqual(addressToAdd.Number, addedAddress.Number);

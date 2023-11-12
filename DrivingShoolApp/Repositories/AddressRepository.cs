@@ -23,7 +23,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await _dbContext.Addresses.Select(a => new AddressGetDTO
                                                 {
-                                                    ID = a.Id,
+                                                    Id = a.Id,
                                                     City = a.City,
                                                     Street = a.Street,
                                                     Number = a.Number,
@@ -37,7 +37,7 @@ namespace DrivingSchoolApp.Repositories
                 .Where(a => a.Id == addressId)
                 .Select(a => new AddressGetDTO
                 {
-                    ID = a.Id,
+                    Id = a.Id,
                     City = a.City,
                     Street = a.Street,
                     Number = a.Number,

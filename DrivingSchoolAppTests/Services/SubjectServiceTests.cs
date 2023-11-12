@@ -1,18 +1,10 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrivingSchoolAppTests.Services
 {

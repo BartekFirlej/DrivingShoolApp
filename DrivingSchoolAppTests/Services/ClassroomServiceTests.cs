@@ -1,19 +1,10 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrivingSchoolAppTests.Services
 {
@@ -81,7 +72,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Classroom_ReturnsAdded()
         {
-            var addedAddressDTO = new AddressGetDTO { ID = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
             var addedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
             var addedClassroomGetDTO = new ClassroomGetDTO { Address = addedAddressDTO, Size = 10, ClassroomNumber = 10, ClassroomId = 1 };
             var classroomToAdd = new ClassroomPostDTO { AddressID=1, Size = 10, Number = 10};
@@ -109,7 +100,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_Classroom_ThrowsNumberMustBeGreaterThanZeroExceptionException()
         {
             var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Size = 10, Number = -2 };
-            var addedAddressDTO = new AddressGetDTO { ID = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
             _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).Returns(Task.FromResult(addedAddressDTO));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
@@ -120,7 +111,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_Classroom_ThrowsSizeMustBeGreaterThanZeroExceptionException()
         {
             var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Size = -2, Number = 10 };
-            var addedAddressDTO = new AddressGetDTO { ID = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
             _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).Returns(Task.FromResult(addedAddressDTO));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 

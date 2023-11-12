@@ -1,8 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
-using Microsoft.Identity.Client;
 
 namespace DrivingSchoolApp.Services
 {

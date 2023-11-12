@@ -1,5 +1,4 @@
 ﻿using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
 

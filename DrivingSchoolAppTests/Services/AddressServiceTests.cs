@@ -1,18 +1,10 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrivingSchoolAppTests.Services
 {
@@ -81,7 +73,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_Address_ReturnsAddedAddress()
         {
             var addedAddress = new Address { Id = 1,Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
-            var addedAddressDTO = new AddressGetDTO { ID = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
             var addressToAdd = new AddressPostDTO { Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
             _addressRepositoryMock.Setup(repo => repo.PostAddress(addressToAdd)).Returns(Task.FromResult(addedAddress));
             _addressRepositoryMock.Setup(repo => repo.GetAddress(addedAddress.Id)).Returns(Task.FromResult(addedAddressDTO));

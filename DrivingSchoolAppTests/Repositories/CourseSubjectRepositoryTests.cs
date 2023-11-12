@@ -1,17 +1,8 @@
 ﻿using AutoFixture;
-using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
 using DrivingSchoolApp.Repositories;
-using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
-using Azure.Core;
 
 namespace DrivingSchoolAppTests.Repositories
 {

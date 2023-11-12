@@ -3,11 +3,9 @@ using DrivingSchoolApp.Controllers;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
-using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolAppTests.Controllers
 {

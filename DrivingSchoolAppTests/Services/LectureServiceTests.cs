@@ -5,11 +5,6 @@ using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrivingSchoolAppTests.Services
 {
@@ -108,12 +103,12 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ReturnsAddedLecture()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.GetLecturer(lectureToAdd.LecturerId)).Returns(Task.FromResult(lecturer));
             _courseSubjectServiceMock.Setup(service => service.GetCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).Returns(Task.FromResult(courseSubject));
             _classroomServiceMock.Setup(service => service.GetClassroom(lectureToAdd.ClassroomId)).Returns(Task.FromResult(classroom));
@@ -130,10 +125,10 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ThrowsLectureDateTimeException()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var lectureToAdd = new LecturePostDTO { ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var lectureToAdd = new LecturePostDTO { ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.PostLecture(lectureToAdd));
@@ -142,10 +137,10 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundLecturerException()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.GetLecturer(lectureToAdd.LecturerId)).Throws(new NotFoundLecturerException());
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object);
 
@@ -155,12 +150,12 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundCourseSubjectException()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.GetLecturer(lectureToAdd.LecturerId)).Returns(Task.FromResult(lecturer));
             _courseSubjectServiceMock.Setup(service => service.GetCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).Throws(new NotFoundCourseSubjectException());
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object);
@@ -171,12 +166,12 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundClassroomtException()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.GetLecturer(lectureToAdd.LecturerId)).Returns(Task.FromResult(lecturer));
             _courseSubjectServiceMock.Setup(service => service.GetCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).Returns(Task.FromResult(courseSubject));
             _classroomServiceMock.Setup(service => service.GetClassroom(lectureToAdd.ClassroomId)).Throws(new NotFoundClassroomException());
@@ -188,12 +183,12 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Lecture_ThrowSubjectAlreadyConductedLectureException()
         {
-            var lecturer = new LecturerGetDTO { ID = 1, Name = "Test", SecondName = "Test" };
+            var lecturer = new LecturerGetDTO { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubjectGetDTO { CourseId = 1, SubjectId = 1 };
             var classroom = new ClassroomGetDTO { ClassroomId = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
-            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.ID };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.ClassroomId, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LecturePostDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.ClassroomId, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.GetLecturer(lectureToAdd.LecturerId)).Returns(Task.FromResult(lecturer));
             _courseSubjectServiceMock.Setup(service => service.GetCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).Returns(Task.FromResult(courseSubject));
             _classroomServiceMock.Setup(service => service.GetClassroom(lectureToAdd.ClassroomId)).Returns(Task.FromResult(classroom));

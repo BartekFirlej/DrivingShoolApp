@@ -1,7 +1,6 @@
 ﻿using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.DTOs;
-using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {
