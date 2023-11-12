@@ -27,11 +27,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Classrooms_ReturnsClassrooms()
         {
             var classroom = new ClassroomGetDTO();
-            ICollection<ClassroomGetDTO> classroomsList = new List<ClassroomGetDTO>() { classroom };
-            _classroomRepositoryMock.Setup(repo => repo.GetClassrooms()).Returns(Task.FromResult(classroomsList));
+            var classroomsList = new PagedList<ClassroomGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<ClassroomGetDTO> { classroom }, HasNextPage = false };
+            _classroomRepositoryMock.Setup(repo => repo.GetClassrooms(1,10)).Returns(Task.FromResult(classroomsList));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
-            var result = await _service.GetClassrooms();
+            var result = await _service.GetClassrooms(1,10);
 
             Assert.AreEqual(classroomsList, result);
         }
@@ -39,11 +39,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Classrooms_ThrowsNotFoundClassroomsException()
         {
-            ICollection<ClassroomGetDTO> classroomsList = new List<ClassroomGetDTO>();
-            _classroomRepositoryMock.Setup(repo => repo.GetClassrooms()).Returns(Task.FromResult(classroomsList));
+            var classroomsList = new PagedList<ClassroomGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<ClassroomGetDTO> (), HasNextPage = false };
+            _classroomRepositoryMock.Setup(repo => repo.GetClassrooms(1,10)).Returns(Task.FromResult(classroomsList));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.GetClassrooms());
+            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.GetClassrooms(1,10));
         }
 
         [TestMethod]

@@ -22,10 +22,6 @@ namespace DrivingSchoolApp.Services
 
         public async Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size)
         {
-            if (page <= 0)
-                throw new ValueMustBeGreaterThanZeroException("page number");
-            if (size <= 0)
-                throw new ValueMustBeGreaterThanZeroException("page size");
             var addresses = await _addressRepository.GetAddresses(page, size);
             if (!addresses.PagedItems.Any())
                 throw new NotFoundAddressException();

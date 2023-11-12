@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Classrooms_ReturnsOk()
         {
-            ICollection<ClassroomGetDTO> classroomsList = new List<ClassroomGetDTO>();
-            _classroomServiceMock.Setup(service => service.GetClassrooms()).Returns(Task.FromResult(classroomsList));
+            PagedList<ClassroomGetDTO> classroomsList = new PagedList<ClassroomGetDTO>();
+            _classroomServiceMock.Setup(service => service.GetClassrooms(1,10)).Returns(Task.FromResult(classroomsList));
             _controller = new ClassroomController(_classroomServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetClassrooms();
+            var result = (OkObjectResult)await _controller.GetClassrooms(1,10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -37,11 +37,21 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Classrooms_ThrowsNotFoundClassroomException()
         {
-            _classroomServiceMock.Setup(service => service.GetClassrooms()).Throws(new NotFoundClassroomException());
+            _classroomServiceMock.Setup(service => service.GetClassrooms(1,10)).Throws(new NotFoundClassroomException());
             _controller = new ClassroomController(_classroomServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetClassrooms();
 
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Classrooms_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _classroomServiceMock.Setup(service => service.GetClassrooms(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new ClassroomController(_classroomServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetClassrooms(-1, 10);
 
             result.StatusCode.Should().Be(404);
         }

@@ -17,14 +17,18 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetClassrooms()
+        public async Task<IActionResult> GetClassrooms([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "size")] int size = 10)
         {
-            ICollection<ClassroomGetDTO> classrooms;
+            PagedList<ClassroomGetDTO> classrooms;
             try
             {
-                classrooms = await _classroomService.GetClassrooms();
+                classrooms = await _classroomService.GetClassrooms(page, size);
             }
             catch (NotFoundClassroomException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
             {
                 return NotFound(e.ToJson());
             }

@@ -26,7 +26,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var address1 = new AddressGetDTO();
             var address2 = new AddressGetDTO();
-            PagedList<AddressGetDTO> addressesList = new PagedList<AddressGetDTO>() { PagedItems = new List<AddressGetDTO> { address1, address2 }, HasNextPage = false, PageIndex = 1, PageSize = 10 };
+            var addressesList = new PagedList<AddressGetDTO>() { PagedItems = new List<AddressGetDTO> { address1, address2 }, HasNextPage = false, PageIndex = 1, PageSize = 10 };
             _addressRepositoryMock.Setup(repo => repo.GetAddresses(1,10)).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
 
@@ -39,7 +39,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Addresses_ThrowsNotFoundAddressesException()
         {
-            PagedList<AddressGetDTO> addressesList = new PagedList<AddressGetDTO> { PagedItems = new List<AddressGetDTO>(), HasNextPage = false, PageIndex = 1, PageSize = 10 };
+            var addressesList = new PagedList<AddressGetDTO> { PagedItems = new List<AddressGetDTO>(), HasNextPage = false, PageIndex = 1, PageSize = 10 };
             _addressRepositoryMock.Setup(repo => repo.GetAddresses(1,10)).Returns(Task.FromResult(addressesList));
             _service = new AddressService(_addressRepositoryMock.Object);
 

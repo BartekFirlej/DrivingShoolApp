@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface IClassroomRepository
     {
-        public Task<ICollection<ClassroomGetDTO>> GetClassrooms();
+        public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<Classroom> PostClassroom(ClassroomPostDTO classroomDetails);
     }
@@ -19,23 +19,25 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<ClassroomGetDTO>> GetClassrooms()
+        public async Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size)
         {
-            return await _dbContext.Classrooms.Include(c => c.Address)
-                                      .Select(c => new ClassroomGetDTO
-                                      {
-                                          ClassroomId = c.Id,
-                                          ClassroomNumber = c.Number,
-                                          Size = c.Size,
-                                          Address = new AddressGetDTO
-                                          {
-                                              Id = c.Address.Id,
-                                              City = c.Address.City,
-                                              Street = c.Address.Street,
-                                              Number = c.Address.Number,
-                                              PostalCode = c.Address.PostalCode
-                                          }
-                                      }).ToListAsync();
+            return await PagedList<ClassroomGetDTO>.Create(
+                _dbContext.Classrooms.Include(c => c.Address)
+                .Select(c => new ClassroomGetDTO
+                {
+                    ClassroomId = c.Id,
+                    ClassroomNumber = c.Number,
+                    Size = c.Size,
+                    Address = new AddressGetDTO
+                    {
+                        Id = c.Address.Id,
+                        City = c.Address.City,
+                        Street = c.Address.Street,
+                        Number = c.Address.Number,
+                        PostalCode = c.Address.PostalCode
+                    }
+                }), 
+                page, size);
         }
 
         public async Task<ClassroomGetDTO> GetClassroom(int classroomId)

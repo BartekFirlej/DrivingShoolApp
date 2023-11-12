@@ -3,6 +3,7 @@ using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Exceptions;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -33,27 +34,29 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new ClassroomRepository(_dbContext);
 
-            var result = await _repository.GetClassrooms();
+            var resultList = await _repository.GetClassrooms(1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].ClassroomId);
-            Assert.AreEqual(1, resultList[0].ClassroomNumber);
-            Assert.AreEqual(10, resultList[0].Size);
-            Assert.AreEqual(1, resultList[0].Address.Id);
-            Assert.AreEqual(10, resultList[0].Address.Number);
-            Assert.AreEqual("22-222", resultList[0].Address.PostalCode);
-            Assert.AreEqual("TestStreet1", resultList[0].Address.Street);
-            Assert.AreEqual("TestCity1", resultList[0].Address.City);
-            Assert.AreEqual(2, resultList[1].ClassroomId);
-            Assert.AreEqual(2, resultList[1].ClassroomNumber);
-            Assert.AreEqual(20, resultList[1].Size);
-            Assert.AreEqual(1, resultList[1].Address.Id);
-            Assert.AreEqual(10, resultList[1].Address.Number);
-            Assert.AreEqual("22-222", resultList[1].Address.PostalCode);
-            Assert.AreEqual("TestStreet1", resultList[1].Address.Street);
-            Assert.AreEqual("TestCity1", resultList[1].Address.City);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].ClassroomId);
+            Assert.AreEqual(1, resultList.PagedItems[0].ClassroomNumber);
+            Assert.AreEqual(10, resultList.PagedItems[0].Size);
+            Assert.AreEqual(1, resultList.PagedItems[0].Address.Id);
+            Assert.AreEqual(10, resultList.PagedItems[0].Address.Number);
+            Assert.AreEqual("22-222", resultList.PagedItems[0].Address.PostalCode);
+            Assert.AreEqual("TestStreet1", resultList.PagedItems[0].Address.Street);
+            Assert.AreEqual("TestCity1", resultList.PagedItems[0].Address.City);
+            Assert.AreEqual(2, resultList.PagedItems[1].ClassroomId);
+            Assert.AreEqual(2, resultList.PagedItems[1].ClassroomNumber);
+            Assert.AreEqual(20, resultList.PagedItems[1].Size);
+            Assert.AreEqual(1, resultList.PagedItems[1].Address.Id);
+            Assert.AreEqual(10, resultList.PagedItems[1].Address.Number);
+            Assert.AreEqual("22-222", resultList.PagedItems[1].Address.PostalCode);
+            Assert.AreEqual("TestStreet1", resultList.PagedItems[1].Address.Street);
+            Assert.AreEqual("TestCity1", resultList.PagedItems[1].Address.City);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -65,9 +68,33 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options); 
             _repository = new ClassroomRepository(_dbContext);
 
-            var result = await _repository.GetClassrooms();
+            var result = await _repository.GetClassrooms(1,10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+        }
+
+        [TestMethod]
+        public async Task Get_Classrooms_ThrowsPageIndexMustBeGreaterThanZeroException()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            _repository = new ClassroomRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetClassrooms(-1, 10));
+        }
+
+        [TestMethod]
+        public async Task Get_Classrooms_ThrowsPageSizeMustBeGreaterThanZeroException()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            _repository = new ClassroomRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetClassrooms(1, -10));
         }
 
         [TestMethod]

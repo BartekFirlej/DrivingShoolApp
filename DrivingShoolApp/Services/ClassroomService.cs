@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface IClassroomService
     {
-        public Task<ICollection<ClassroomGetDTO>> GetClassrooms();
+        public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails);
     }
@@ -21,10 +21,10 @@ namespace DrivingSchoolApp.Services
             _addressService = addressService;
         }
 
-        public async Task<ICollection<ClassroomGetDTO>> GetClassrooms()
+        public async Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size)
         {
-            var classrooms = await _classroomRepository.GetClassrooms();
-            if (!classrooms.Any())
+            var classrooms = await _classroomRepository.GetClassrooms(page, size);
+            if (!classrooms.PagedItems.Any())
                 throw new NotFoundClassroomException();
             return classrooms;
         }
