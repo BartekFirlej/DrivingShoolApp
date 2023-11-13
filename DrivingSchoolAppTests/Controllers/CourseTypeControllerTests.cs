@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CourseTypes_ReturnsOk()
         {
-            ICollection<CourseTypeGetDTO> courseTypesList = new List<CourseTypeGetDTO>();
-            _courseTypeServiceMock.Setup(service => service.GetCourseTypes()).Returns(Task.FromResult(courseTypesList));
+            var courseTypesList = new PagedList<CourseTypeGetDTO>();
+            _courseTypeServiceMock.Setup(service => service.GetCourseTypes(1, 10)).Returns(Task.FromResult(courseTypesList));
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetCourseTypes();
+            var result = (OkObjectResult)await _controller.GetCourseTypes(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -37,12 +37,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CourseTypes_ThrowsNotFoundCourseTypeException()
         {
-            _courseTypeServiceMock.Setup(service => service.GetCourseTypes()).Throws(new NotFoundCourseTypeException());
+            _courseTypeServiceMock.Setup(service => service.GetCourseTypes(1, 10)).Throws(new NotFoundCourseTypeException());
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetCourseTypes();
+            var result = (NotFoundObjectResult)await _controller.GetCourseTypes(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_CourseTypes_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _courseTypeServiceMock.Setup(service => service.GetCourseTypes(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetCourseTypes(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

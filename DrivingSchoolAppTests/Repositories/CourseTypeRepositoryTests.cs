@@ -3,6 +3,7 @@ using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Exceptions;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -33,25 +34,27 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new CourseTypeRepository(_dbContext);
 
-            var result = await _repository.GetCourseTypes();
+            var resultList = await _repository.GetCourseTypes(1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual("TestCourseType1", resultList[0].Name);
-            Assert.AreEqual(10, resultList[0].DrivingHours);
-            Assert.AreEqual(10, resultList[0].LecturesHours);
-            Assert.AreEqual(18, resultList[0].MinimumAge);
-            Assert.AreEqual(1, resultList[0].LicenceCategoryId);
-            Assert.AreEqual("TestLicenceCategory1", resultList[0].LicenceCategoryName);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual("TestCourseType2", resultList[1].Name);
-            Assert.AreEqual(20, resultList[1].DrivingHours);
-            Assert.AreEqual(20, resultList[1].LecturesHours);
-            Assert.AreEqual(21, resultList[1].MinimumAge);
-            Assert.AreEqual(1, resultList[1].LicenceCategoryId);
-            Assert.AreEqual("TestLicenceCategory1", resultList[1].LicenceCategoryName);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual("TestCourseType1", resultList.PagedItems[0].Name);
+            Assert.AreEqual(10, resultList.PagedItems[0].DrivingHours);
+            Assert.AreEqual(10, resultList.PagedItems[0].LecturesHours);
+            Assert.AreEqual(18, resultList.PagedItems[0].MinimumAge);
+            Assert.AreEqual(1, resultList.PagedItems[0].LicenceCategoryId);
+            Assert.AreEqual("TestLicenceCategory1", resultList.PagedItems[0].LicenceCategoryName);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual("TestCourseType2", resultList.PagedItems[1].Name);
+            Assert.AreEqual(20, resultList.PagedItems[1].DrivingHours);
+            Assert.AreEqual(20, resultList.PagedItems[1].LecturesHours);
+            Assert.AreEqual(21, resultList.PagedItems[1].MinimumAge);
+            Assert.AreEqual(1, resultList.PagedItems[1].LicenceCategoryId);
+            Assert.AreEqual("TestLicenceCategory1", resultList.PagedItems[1].LicenceCategoryName);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -63,9 +66,12 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new CourseTypeRepository(_dbContext);
 
-            var result = await _repository.GetCourseTypes();
+            var result = await _repository.GetCourseTypes(1, 10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+            Assert.IsFalse(result.HasNextPage);
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
         }
 
         [TestMethod]

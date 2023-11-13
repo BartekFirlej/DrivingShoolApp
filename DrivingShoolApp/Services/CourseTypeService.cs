@@ -5,7 +5,7 @@ using DrivingSchoolApp.Exceptions;
 namespace DrivingSchoolApp.Services
 {
     public interface ICourseTypeService {
-        public Task<ICollection<CourseTypeGetDTO>> GetCourseTypes();
+        public Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size);
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
         public Task<CourseTypeGetDTO> PostCourseType(CourseTypePostDTO newCourseType);
     }
@@ -20,10 +20,10 @@ namespace DrivingSchoolApp.Services
             _licenceCategoryService = licenceCategoryService;
         }
 
-        public async Task<ICollection<CourseTypeGetDTO>> GetCourseTypes()
+        public async Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size)
         {
-            var courseTypes = await _courseTypeRepository.GetCourseTypes();
-            if(!courseTypes.Any())
+            var courseTypes = await _courseTypeRepository.GetCourseTypes(page, size);
+            if(!courseTypes.PagedItems.Any())
                 throw new NotFoundCourseTypeException();
             return courseTypes;
         }

@@ -27,11 +27,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_CourseTypes_ReturnsCourseTypes()
         {
             var courseType = new CourseTypeGetDTO();
-            ICollection<CourseTypeGetDTO> courseTypesList = new List<CourseTypeGetDTO>() { courseType };
-            _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes()).Returns(Task.FromResult(courseTypesList));
+            var courseTypesList = new PagedList<CourseTypeGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CourseTypeGetDTO> { courseType }, HasNextPage = false };
+            _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes(1, 10)).Returns(Task.FromResult(courseTypesList));
             _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
 
-            var result = await _service.GetCourseTypes();
+            var result = await _service.GetCourseTypes(1, 10);
 
             Assert.AreEqual(courseTypesList, result);
         }
@@ -39,11 +39,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_CourseTypes_ThrowsNotFoundCourseTypesException()
         {
-            ICollection<CourseTypeGetDTO> courseTypesList = new List<CourseTypeGetDTO>();
-            _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes()).Returns(Task.FromResult(courseTypesList));
+            var courseTypesList = new PagedList<CourseTypeGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CourseTypeGetDTO>(), HasNextPage = false };
+            _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes(1, 10)).Returns(Task.FromResult(courseTypesList));
             _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.GetCourseTypes());
+            await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.GetCourseTypes(1, 10));
         }
 
         [TestMethod]

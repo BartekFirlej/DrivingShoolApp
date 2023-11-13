@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ICourseTypeRepository
     {
-        public Task<ICollection<CourseTypeGetDTO>> GetCourseTypes();
+        public Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size);
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
         public Task<CourseType> PostCourseType(CourseTypePostDTO courseTypeDetails);
     }
@@ -19,20 +19,22 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<CourseTypeGetDTO>> GetCourseTypes()
+        public async Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size)
         {
-            return await _dbContext.CourseTypes
-                             .Include(c => c.LicenceCategory)
-                             .Select(c => new CourseTypeGetDTO
-                             {
-                                 Id = c.Id,
-                                 Name = c.Name,
-                                 MinimumAge = c.MinimumAge,
-                                 LecturesHours = c.LectureHours,
-                                 DrivingHours = c.DrivingHours,
-                                 LicenceCategoryId = c.LicenceCategoryId,
-                                 LicenceCategoryName = c.LicenceCategory.Name
-                             }).ToListAsync();
+            return await PagedList<CourseTypeGetDTO>.Create(
+                _dbContext.CourseTypes
+                .Include(c => c.LicenceCategory)
+                .Select(c => new CourseTypeGetDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    MinimumAge = c.MinimumAge,
+                    LecturesHours = c.LectureHours,
+                    DrivingHours = c.DrivingHours,
+                    LicenceCategoryId = c.LicenceCategoryId,
+                    LicenceCategoryName = c.LicenceCategory.Name
+                }),
+                page, size);
         }
         public async Task<CourseTypeGetDTO> GetCourseType(int courseTypeId)
         {

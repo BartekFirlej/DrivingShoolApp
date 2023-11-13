@@ -81,7 +81,6 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(10, resultList[1].Number);
         }
 
-        
         [TestMethod]
         public async Task Get_Lectures_ReturnsNull()
         {

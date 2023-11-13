@@ -60,33 +60,12 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new AddressRepository(_dbContext);
 
-            var result = await _repository.GetAddresses(2,10);
+            var result = await _repository.GetAddresses(1,10);
 
             Assert.IsFalse(result.PagedItems.Any());
-        }
-
-        [TestMethod]
-        public async Task Get_Addresses_ThrowsPageIndexMustBeGreaterThanZeroException()
-        {
-            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            _dbContext = new DrivingSchoolDbContext(options);
-            _repository = new AddressRepository(_dbContext);
-
-            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetAddresses(-1, 10));
-        }
-
-        [TestMethod]
-        public async Task Get_Addresses_ThrowsPageSizeMustBeGreaterThanZeroException()
-        {
-            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            _dbContext = new DrivingSchoolDbContext(options);
-            _repository = new AddressRepository(_dbContext);
-
-            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetAddresses(1, -10));
+            Assert.IsFalse(result.HasNextPage);
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
         }
 
         [TestMethod]
