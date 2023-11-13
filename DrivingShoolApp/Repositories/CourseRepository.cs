@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DrivingSchoolApp.Repositories
 {
     public interface ICourseRepository {
-        public Task<ICollection<CourseGetDTO>> GetCourses();
+        public Task<PagedList<CourseGetDTO>> GetCourses(int page, int size);
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<Course> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
@@ -19,9 +19,10 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<CourseGetDTO>> GetCourses()
+        public async Task<PagedList<CourseGetDTO>> GetCourses(int page, int size)
         {
-            return await _dbContext.Courses.Include(c => c.CourseType)
+            return await PagedList<CourseGetDTO>.Create(
+                            _dbContext.Courses.Include(c => c.CourseType)
                                .Include(c => c.CourseType.LicenceCategory)
                                .Select(c => new CourseGetDTO
                                {
@@ -40,7 +41,8 @@ namespace DrivingSchoolApp.Repositories
                                        LicenceCategoryId = c.CourseType.LicenceCategoryId,
                                        LicenceCategoryName = c.CourseType.LicenceCategory.Name
                                    }
-                               }).ToListAsync();
+                               }),
+                            page, size);
         }
 
         public async Task<CourseGetDTO> GetCourse(int courseId)

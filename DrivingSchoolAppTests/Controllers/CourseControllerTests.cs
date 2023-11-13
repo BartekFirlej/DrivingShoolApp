@@ -30,11 +30,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Courses_ReturnsOk()
         {
-            ICollection<CourseGetDTO> coursesList = new List<CourseGetDTO>();
-            _courseServiceMock.Setup(service => service.GetCourses()).Returns(Task.FromResult(coursesList));
+            var coursesList = new PagedList<CourseGetDTO>();
+            _courseServiceMock.Setup(service => service.GetCourses(1, 10)).Returns(Task.FromResult(coursesList));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetCourses();
+            var result = (OkObjectResult)await _controller.GetCourses(1,10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -42,12 +42,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Courses_ThrowsNotFoundCourseException()
         {
-            _courseServiceMock.Setup(service => service.GetCourses()).Throws(new NotFoundCourseException());
+            _courseServiceMock.Setup(service => service.GetCourses(1,10)).Throws(new NotFoundCourseException());
             _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetCourses();
+            var result = (NotFoundObjectResult)await _controller.GetCourses(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Courses_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _courseServiceMock.Setup(service => service.GetCourses(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetCourses(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

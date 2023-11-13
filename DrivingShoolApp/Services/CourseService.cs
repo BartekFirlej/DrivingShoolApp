@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ICourseService
     {
-        public Task<ICollection<CourseGetDTO>> GetCourses();
+        public Task<PagedList<CourseGetDTO>> GetCourses(int page, int size);
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
@@ -23,10 +23,10 @@ namespace DrivingSchoolApp.Services
             _courseTypeService = courseTypeService;
         }
 
-        public async Task<ICollection<CourseGetDTO>> GetCourses()
+        public async Task<PagedList<CourseGetDTO>> GetCourses(int page, int size)
         {
-            var courses = await _courseRepository.GetCourses();
-            if(!courses.Any())
+            var courses = await _courseRepository.GetCourses(page, size);
+            if(!courses.PagedItems.Any())
                 throw new NotFoundCourseException();
             return courses;
         }

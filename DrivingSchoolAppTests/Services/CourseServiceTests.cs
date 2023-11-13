@@ -27,23 +27,24 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Courses_ReturnsCourses()
         {
             var course = new CourseGetDTO();
-            ICollection<CourseGetDTO> coursesList = new List<CourseGetDTO>() { course };
-            _courseRepositoryMock.Setup(repo => repo.GetCourses()).Returns(Task.FromResult(coursesList));
+            var coursesList = new PagedList<CourseGetDTO>() { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<CourseGetDTO> { course } };
+            _courseRepositoryMock.Setup(repo => repo.GetCourses(1, 10)).Returns(Task.FromResult(coursesList));
             _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
 
-            var result = await _service.GetCourses();
+            var result = await _service.GetCourses(1, 10);
 
             Assert.AreEqual(coursesList, result);
+            Assert.AreEqual(coursesList.PagedItems.Count, result.PagedItems.Count);
         }
 
         [TestMethod]
         public async Task Get_Courses_ThrowsNotFoundCoursesException()
         {
-            ICollection<CourseGetDTO> coursesList = new List<CourseGetDTO>();
-            _courseRepositoryMock.Setup(repo => repo.GetCourses()).Returns(Task.FromResult(coursesList));
+            var coursesList = new PagedList<CourseGetDTO>() { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<CourseGetDTO>()};
+            _courseRepositoryMock.Setup(repo => repo.GetCourses(1, 10)).Returns(Task.FromResult(coursesList));
             _service = new CourseService(_courseRepositoryMock.Object, _courseTypeServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourses());
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourses(1, 10));
         }
 
         [TestMethod]
