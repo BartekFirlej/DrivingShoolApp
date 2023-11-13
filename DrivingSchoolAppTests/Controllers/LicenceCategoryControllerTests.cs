@@ -27,11 +27,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_LicenceCategories_ReturnsOk()
         {
-            ICollection<LicenceCategoryGetDTO> licenceCategoriesList = new List<LicenceCategoryGetDTO>();
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategories()).Returns(Task.FromResult(licenceCategoriesList));
+            var licenceCategoriesList = new PagedList<LicenceCategoryGetDTO>();
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategories(1, 10)).Returns(Task.FromResult(licenceCategoriesList));
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetLicenceCategories();
+            var result = (OkObjectResult)await _controller.GetLicenceCategories(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -39,12 +39,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_LicenceCategories_ThrowsNotFoundLicenceCategoriesException()
         {
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategories()).Throws(new NotFoundLicenceCategoryException());
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategories(1, 10)).Throws(new NotFoundLicenceCategoryException());
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetLicenceCategories();
+            var result = (NotFoundObjectResult)await _controller.GetLicenceCategories(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Addresses_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategories(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetLicenceCategories(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

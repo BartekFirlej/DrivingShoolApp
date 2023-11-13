@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ILicenceCategoryService
     {
-        public Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories();
+        public Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size);
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
     }
@@ -19,10 +19,10 @@ namespace DrivingSchoolApp.Services
             _licenceCategoryRepository = licenceCategoryRepository;
         }
 
-        public async Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories()
+        public async Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size)
         {
-            var licenceCategories = await _licenceCategoryRepository.GetLicenceCategories();
-            if(!licenceCategories.Any())
+            var licenceCategories = await _licenceCategoryRepository.GetLicenceCategories(page, size);
+            if(!licenceCategories.PagedItems.Any())
                 throw new NotFoundLicenceCategoryException();
             return licenceCategories;
         }

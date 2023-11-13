@@ -25,23 +25,24 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_LicenceCategories_ReturnsLicenceCategories()
         {
             var licenceCategory = new LicenceCategoryGetDTO();
-            ICollection<LicenceCategoryGetDTO> licenceCategoriesList = new List<LicenceCategoryGetDTO>() { licenceCategory };
-            _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories()).Returns(Task.FromResult(licenceCategoriesList));
+            var licenceCategoriesList = new PagedList<LicenceCategoryGetDTO> { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<LicenceCategoryGetDTO> { licenceCategory } };
+            _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories(1,10)).Returns(Task.FromResult(licenceCategoriesList));
             _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
 
-            var result = await _service.GetLicenceCategories();
+            var result = await _service.GetLicenceCategories(1,10);
 
             Assert.AreEqual(licenceCategoriesList, result);
+            Assert.AreEqual(licenceCategoriesList.PagedItems.Count, result.PagedItems.Count);
         }
 
         [TestMethod]
         public async Task Get_LicenceCategories_ThrowsNotFoundLicenceCategoriesException()
         {
-            ICollection<LicenceCategoryGetDTO> licenceCategoriesList = new List<LicenceCategoryGetDTO>();
-            _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories()).Returns(Task.FromResult(licenceCategoriesList));
+            var licenceCategoriesList = new PagedList<LicenceCategoryGetDTO> { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<LicenceCategoryGetDTO>() };
+            _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories(1, 10)).Returns(Task.FromResult(licenceCategoriesList));
             _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.GetLicenceCategories());
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.GetLicenceCategories(1, 10));
         }
 
         [TestMethod]

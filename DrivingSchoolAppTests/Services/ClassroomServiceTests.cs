@@ -34,6 +34,7 @@ namespace DrivingSchoolAppTests.Services
             var result = await _service.GetClassrooms(1,10);
 
             Assert.AreEqual(classroomsList, result);
+            Assert.AreEqual(classroomsList.PagedItems.Count, result.PagedItems.Count);
         }
 
         [TestMethod]

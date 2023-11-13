@@ -3,6 +3,7 @@ using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Exceptions;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -31,15 +32,17 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new LicenceCategoryRepository(_dbContext);
 
-            var result = await _repository.GetLicenceCategories();
+            var resultList = await _repository.GetLicenceCategories(1,10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual("Test1", resultList[0].Name);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual("Test2", resultList[1].Name);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual("Test1", resultList.PagedItems[0].Name);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual("Test2", resultList.PagedItems[1].Name);
+            Assert.IsFalse(resultList.HasNextPage);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
         }
 
         [TestMethod]
@@ -51,9 +54,33 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new LicenceCategoryRepository(_dbContext);
 
-            var result = await _repository.GetLicenceCategories();
+            var result = await _repository.GetLicenceCategories(1,10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+        }
+
+        [TestMethod]
+        public async Task Get_LicenceCategory_ThrowsPageIndexMustBeGreaterThanZeroException()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            _repository = new LicenceCategoryRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetLicenceCategories(-1, 10));
+        }
+
+        [TestMethod]
+        public async Task Get_Addresses_ThrowsPageSizeMustBeGreaterThanZeroException()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            _repository = new LicenceCategoryRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetLicenceCategories(1, -10));
         }
 
         [TestMethod]

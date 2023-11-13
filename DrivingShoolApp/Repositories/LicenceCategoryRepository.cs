@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ILicenceCategoryRepository
     {
-        public Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories();
+        public Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size);
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int id);
         public Task<LicenceCategory> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
     }
@@ -19,11 +19,12 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<LicenceCategoryGetDTO>> GetLicenceCategories()
+        public async Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size)
         {
-            return await _dbContext.LicenceCategories.
-                                Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name })
-                                .ToListAsync();
+            return await PagedList<LicenceCategoryGetDTO>.Create(
+                    _dbContext.LicenceCategories.
+                         Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name }),
+                    page, size);
         }
 
         public async Task<LicenceCategoryGetDTO> GetLicenceCategory(int id)
