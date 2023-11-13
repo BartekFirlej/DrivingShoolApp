@@ -29,7 +29,8 @@ namespace DrivingSchoolApp.Repositories
                           Name = s.Name,
                           Code = s.Code,
                           Duration = s.Duration
-                      }),
+                      })
+                      .OrderBy(s => s.Id),
                 page, size);
         }
 

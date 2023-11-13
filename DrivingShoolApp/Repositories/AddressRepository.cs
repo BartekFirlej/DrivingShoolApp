@@ -29,7 +29,8 @@ namespace DrivingSchoolApp.Repositories
                         Street = a.Street,
                         Number = a.Number,
                         PostalCode = a.PostalCode
-                    }), 
+                    })
+                 .OrderBy(a => a.Id), 
                 page, size);
         }
 

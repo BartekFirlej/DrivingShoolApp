@@ -4,8 +4,6 @@ using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Exceptions;
-using DrivingSchoolApp.Services;
-using FluentAssertions.Common;
 
 namespace DrivingSchoolAppTests.Repositories
 {

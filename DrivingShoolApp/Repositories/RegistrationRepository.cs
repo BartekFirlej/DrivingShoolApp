@@ -43,7 +43,8 @@ namespace DrivingSchoolApp.Repositories
                            RegistrationDate = r.RegistrationDate,
                            CustomerId = r.CustomerId,
                            CourseId = r.CourseId
-                       }),
+                       })
+                       .OrderBy(r => r.RegistrationDate),
                     page, size);
         }
 

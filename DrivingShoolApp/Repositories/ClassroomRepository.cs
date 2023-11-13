@@ -36,7 +36,7 @@ namespace DrivingSchoolApp.Repositories
                         Number = c.Address.Number,
                         PostalCode = c.Address.PostalCode
                     }
-                }), 
+                }).OrderBy(c => c.ClassroomId), 
                 page, size);
         }
 

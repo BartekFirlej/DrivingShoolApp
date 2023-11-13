@@ -41,7 +41,8 @@ namespace DrivingSchoolApp.Repositories
                                        LicenceCategoryId = c.CourseType.LicenceCategoryId,
                                        LicenceCategoryName = c.CourseType.LicenceCategory.Name
                                    }
-                               }),
+                               }
+                               ).OrderBy(c => c.Id),
                             page, size);
         }
 
