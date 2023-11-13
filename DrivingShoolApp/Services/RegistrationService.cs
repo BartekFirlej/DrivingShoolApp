@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Repositories
     public interface IRegistrationService
     {
         public Task<ICollection<RegistrationGetDTO>> GetRegistrations();
-        public Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId);
+        public Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size);
         public Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int customerId);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails);
@@ -35,11 +35,11 @@ namespace DrivingSchoolApp.Repositories
             return registrations;
         }
 
-        public async Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId)
+        public async Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size)
         {
             var course = await _courseService.GetCourse(courseId);
-            var registration = await _registrationRepository.GetCourseRegistrations(courseId);
-            if (!registration.Any())
+            var registration = await _registrationRepository.GetCourseRegistrations(courseId, page, size);
+            if (!registration.PagedItems.Any())
                 throw new NotFoundRegistrationException();
             return registration;
         }

@@ -7,7 +7,7 @@ namespace DrivingSchoolApp.Repositories
     public interface IRegistrationRepository
     {
         public Task<ICollection<RegistrationGetDTO>> GetRegistrations();
-        public Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId);
+        public Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size);
         public Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate);
@@ -33,16 +33,18 @@ namespace DrivingSchoolApp.Repositories
 
         }
 
-        public async Task<ICollection<RegistrationGetDTO>> GetCourseRegistrations(int courseId)
+        public async Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size)
         {
-            return await _dbContext.Registrations
+            return await PagedList<RegistrationGetDTO>.Create(
+                    _dbContext.Registrations
                        .Where(r => r.CourseId == courseId)
                        .Select(r => new RegistrationGetDTO
                        {
                            RegistrationDate = r.RegistrationDate,
                            CustomerId = r.CustomerId,
                            CourseId = r.CourseId
-                       }).ToListAsync();
+                       }),
+                    page, size);
         }
 
         public async Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId)

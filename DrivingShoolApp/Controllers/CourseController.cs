@@ -56,12 +56,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet("{courseid}/customers")]
-        public async Task<IActionResult> GetCourseRegistrations(int courseid)
+        public async Task<IActionResult> GetCourseRegistrations(int courseid, [FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "size")] int size = 10)
         {
-            ICollection<RegistrationGetDTO> courseRegistrations;
+            PagedList<RegistrationGetDTO> courseRegistrations;
             try
             {
-                courseRegistrations = await _registrationService.GetCourseRegistrations(courseid);
+                courseRegistrations = await _registrationService.GetCourseRegistrations(courseid, page, size);
             }
             catch (NotFoundRegistrationException e)
             {
@@ -70,6 +70,10 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundCourseException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return Ok(courseRegistrations);
         }

@@ -90,9 +90,9 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CourseRegistrations_ReturnsOk()
         {
-            ICollection<RegistrationGetDTO> coursRegistrations = new List<RegistrationGetDTO>();
+            var coursRegistrations = new PagedList<RegistrationGetDTO>();
             var idOfCourseToFind = 1;
-            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind)).Returns(Task.FromResult(coursRegistrations));
+            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind, 1, 10)).Returns(Task.FromResult(coursRegistrations));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCourseRegistrations(idOfCourseToFind);
@@ -103,9 +103,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CourseRegistrations_NotFoundRegistrationException()
         {
-            ICollection<RegistrationGetDTO> coursRegistrations = new List<RegistrationGetDTO>();
             var idOfCourseToFind = 1;
-            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind)).Throws(new NotFoundRegistrationException());
+            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind, 1 ,10)).Throws(new NotFoundRegistrationException());
             _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCourseRegistrations(idOfCourseToFind);
@@ -118,12 +117,24 @@ namespace DrivingSchoolAppTests.Controllers
         {
             ICollection<RegistrationGetDTO> coursRegistrations = new List<RegistrationGetDTO>();
             var idOfCourseToFind = 1;
-            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind)).Throws(new NotFoundCourseException(idOfCourseToFind));
+            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind, 1, 10)).Throws(new NotFoundCourseException(idOfCourseToFind));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCourseRegistrations(idOfCourseToFind);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_CourseRegistrations_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var idOfCourseToFind = 1;
+            _registrationServiceMock.Setup(service => service.GetCourseRegistrations(idOfCourseToFind, -1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubecjtServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetCourseRegistrations(idOfCourseToFind, - 1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
