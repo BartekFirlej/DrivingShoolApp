@@ -8,7 +8,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<RegistrationGetDTO>> GetRegistrations();
         public Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size);
-        public Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId);
+        public Task<PagedList<RegistrationGetDTO>> GetCustomerRegistrations(int customerId, int page, int size);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate);
     }
@@ -44,20 +44,22 @@ namespace DrivingSchoolApp.Repositories
                            CustomerId = r.CustomerId,
                            CourseId = r.CourseId
                        })
-                       .OrderBy(r => r.RegistrationDate),
+                       .OrderBy(r => r.CustomerId),
                     page, size);
         }
 
-        public async Task<ICollection<RegistrationGetDTO>> GetCustomerRegistrations(int userId)
+        public async Task<PagedList<RegistrationGetDTO>> GetCustomerRegistrations(int customerId, int page, int size)
         {
-            return await _dbContext.Registrations
-                       .Where(r => r.CustomerId == userId)
+            return await PagedList<RegistrationGetDTO>.Create(
+                     _dbContext.Registrations
+                       .Where(r => r.CustomerId == customerId)
                        .Select(r => new RegistrationGetDTO
                        {
                            RegistrationDate = r.RegistrationDate,
                            CustomerId = r.CustomerId,
                            CourseId = r.CourseId
-                       }).ToListAsync();
+                       }).OrderBy(r => r.CourseId),
+                    page, size);
         }
 
         public async Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId)

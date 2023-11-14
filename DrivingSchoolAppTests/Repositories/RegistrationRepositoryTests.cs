@@ -132,32 +132,9 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourseRegistrations(idOfCourseToFind, 1 ,10);
 
             Assert.IsFalse(result.PagedItems.Any());
-        }
-
-        [TestMethod]
-        public async Task Get_CourseRegistrations_ThrowsPageIndexMustBeGreaterThanZeroException()
-        {
-            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            var idOfCourseToFind = 2;
-            _dbContext = new DrivingSchoolDbContext(options);
-            _repository = new RegistrationRepository(_dbContext);
-
-            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourseRegistrations(idOfCourseToFind, - 1, 10));
-        }
-
-        [TestMethod]
-        public async Task Get_CourseRegistrations_ThrowsPageSizeMustBeGreaterThanZeroException()
-        {
-            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            var idOfCourseToFind = 2;
-            _dbContext = new DrivingSchoolDbContext(options);
-            _repository = new RegistrationRepository(_dbContext);
-
-            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourseRegistrations(idOfCourseToFind,1, -10));
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
+            Assert.IsFalse(result.HasNextPage);
         }
 
         [TestMethod]
@@ -183,17 +160,19 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new RegistrationRepository(_dbContext);
 
-            var result = await _repository.GetCustomerRegistrations(idOfCustomerToFind);
+            var resultList = await _repository.GetCustomerRegistrations(idOfCustomerToFind, 1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].CourseId);
-            Assert.AreEqual(1, resultList[0].CustomerId);
-            Assert.AreEqual(new DateTime(2023, 1, 1), resultList[0].RegistrationDate);
-            Assert.AreEqual(2, resultList[1].CourseId);
-            Assert.AreEqual(1, resultList[1].CustomerId);
-            Assert.AreEqual(new DateTime(2023, 2, 1), resultList[1].RegistrationDate);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].CourseId);
+            Assert.AreEqual(1, resultList.PagedItems[0].CustomerId);
+            Assert.AreEqual(new DateTime(2023, 1, 1), resultList.PagedItems[0].RegistrationDate);
+            Assert.AreEqual(2, resultList.PagedItems[1].CourseId);
+            Assert.AreEqual(1, resultList.PagedItems[1].CustomerId);
+            Assert.AreEqual(new DateTime(2023, 2, 1), resultList.PagedItems[1].RegistrationDate);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -219,9 +198,12 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new RegistrationRepository(_dbContext);
 
-            var result = await _repository.GetCustomerRegistrations(idOfCustomerToFind);
+            var result = await _repository.GetCustomerRegistrations(idOfCustomerToFind, 1, 10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
+            Assert.IsFalse(result.HasNextPage);
         }
 
         [TestMethod]

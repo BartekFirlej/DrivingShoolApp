@@ -94,26 +94,27 @@ namespace DrivingSchoolAppTests.Services
         {
             var customer = new CustomerGetDTO { Id = 1 };
             var registration = new RegistrationGetDTO();
-            ICollection<RegistrationGetDTO> registrationsList = new List<RegistrationGetDTO>() { registration };
+            var registrationsList = new PagedList<RegistrationGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<RegistrationGetDTO> { registration }, HasNextPage = false };
             _customerServiceMock.Setup(service => service.GetCustomer(customer.Id)).ReturnsAsync(customer);
-            _registrationRepositoryMock.Setup(repo => repo.GetCustomerRegistrations(customer.Id)).ReturnsAsync(registrationsList);
+            _registrationRepositoryMock.Setup(repo => repo.GetCustomerRegistrations(customer.Id, 1, 10)).ReturnsAsync(registrationsList);
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
-            var result = await _service.GetCustomerRegistrations(customer.Id);
+            var result = await _service.GetCustomerRegistrations(customer.Id, 1, 10);
 
             Assert.AreEqual(registrationsList, result);
+            Assert.AreEqual(registrationsList.PagedItems.Count, result.PagedItems.Count);
         }
 
         [TestMethod]
         public async Task Get_CustomerRegistrations_ThrowsNotFoundRegistrationException()
         {
             var customer = new CustomerGetDTO { Id = 1 };
-            ICollection<RegistrationGetDTO> registrationsList = new List<RegistrationGetDTO>();
+            var registrationsList = new PagedList<RegistrationGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<RegistrationGetDTO>(), HasNextPage = false };
             _customerServiceMock.Setup(service => service.GetCustomer(customer.Id)).ReturnsAsync(customer);
-            _registrationRepositoryMock.Setup(repo => repo.GetCustomerRegistrations(customer.Id)).ReturnsAsync(registrationsList);
+            _registrationRepositoryMock.Setup(repo => repo.GetCustomerRegistrations(customer.Id,1 ,10)).ReturnsAsync(registrationsList);
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundRegistrationException>(async () => await _service.GetCustomerRegistrations(customer.Id));
+            await Assert.ThrowsExceptionAsync<NotFoundRegistrationException>(async () => await _service.GetCustomerRegistrations(customer.Id, 1, 10));
         }
 
         [TestMethod]
@@ -123,7 +124,7 @@ namespace DrivingSchoolAppTests.Services
             _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).Throws(new NotFoundCustomerException(idOfCustomerToFind));
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomerRegistrations(idOfCustomerToFind));
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomerRegistrations(idOfCustomerToFind, 1, 10));
         }
 
         [TestMethod]

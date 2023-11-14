@@ -87,12 +87,12 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CustomerRegistrations_ReturnsOk()
         {
-            ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
+            var customerRegistrations = new PagedList<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Returns(Task.FromResult(customerRegistrations));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).Returns(Task.FromResult(customerRegistrations));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
+            var result = (OkObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -100,12 +100,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CustomerRegistrations_ThrowsNotFoundRegistrationException()
         {
-            ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundRegistrationException(idOfCustomerToFindHisRegistrations));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).Throws(new NotFoundRegistrationException(idOfCustomerToFindHisRegistrations));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
+            var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
             result.StatusCode.Should().Be(404);
         }
@@ -113,14 +112,25 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_CustomerRegistrations_ThrowsNotFoundCustomerException()
         {
-            ICollection<RegistrationGetDTO> customerRegistrations = new List<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
-            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations)).Throws(new NotFoundCustomerException(idOfCustomerToFindHisRegistrations));
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).Throws(new NotFoundCustomerException(idOfCustomerToFindHisRegistrations));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations);
+            var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerRegistrations_ThrowsPageIndexMustBeGreaterThanZeroException()
+        {
+            var idOfCustomerToFindHisRegistrations = 1;
+            _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, -1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, -1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
