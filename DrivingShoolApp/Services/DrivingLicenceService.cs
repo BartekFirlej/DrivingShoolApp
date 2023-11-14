@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface IDrivingLicenceService
     {
-        public Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences();
+        public Task<PagedList<DrivingLicenceGetDTO>> GetDrivingLicences(int page, int size);
         public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
@@ -31,10 +31,10 @@ namespace DrivingSchoolApp.Services
             _requiredLicenceCategoryService = requiredLicenceCategoryService;
         }
 
-        public async Task<ICollection<DrivingLicenceGetDTO>> GetDrivingLicences()
+        public async Task<PagedList<DrivingLicenceGetDTO>> GetDrivingLicences(int page, int size)
         {
-            var drivingLicences = await _drivingLicenceRepository.GetDrivingLicences();
-            if(!drivingLicences.Any())
+            var drivingLicences = await _drivingLicenceRepository.GetDrivingLicences(page, size);
+            if(!drivingLicences.PagedItems.Any())
                 throw new NotFoundDrivingLicenceException();
             return drivingLicences;
         }

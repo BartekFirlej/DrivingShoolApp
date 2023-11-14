@@ -31,12 +31,12 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_DrivingLicences_ReturnsDrivingLicences()
         {
             var drivingLicence = new DrivingLicenceGetDTO();
-            ICollection<DrivingLicenceGetDTO> drivingLicencesList = new List<DrivingLicenceGetDTO>() { drivingLicence };
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences()).Returns(Task.FromResult(drivingLicencesList));
+            var drivingLicencesList = new PagedList<DrivingLicenceGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLicenceGetDTO> { drivingLicence }, HasNextPage = false };
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).Returns(Task.FromResult(drivingLicencesList));
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
-            var result = await _service.GetDrivingLicences();
+            var result = await _service.GetDrivingLicences(1, 10);
 
             Assert.AreEqual(drivingLicencesList, result);
         }
@@ -44,12 +44,12 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_DrivingLicences_ThrowsNotFoundDrivingLicencesException()
         {
-            ICollection<DrivingLicenceGetDTO> drivingLicencesList = new List<DrivingLicenceGetDTO>();
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences()).Returns(Task.FromResult(drivingLicencesList));
+            var drivingLicencesList = new PagedList<DrivingLicenceGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLicenceGetDTO>(), HasNextPage = false };
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).Returns(Task.FromResult(drivingLicencesList));
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.GetDrivingLicences());
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.GetDrivingLicences(1, 10));
         }
 
         [TestMethod]

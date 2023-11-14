@@ -37,27 +37,29 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new DrivingLicenceRepository(_dbContext);
 
-            var result = await _repository.GetDrivingLicences();
+            var resultList = await _repository.GetDrivingLicences(1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual(1, resultList[0].CustomerId);
-            Assert.AreEqual("TestCustomerName1", resultList[0].CustomerName);
-            Assert.AreEqual("TestCustomerSName1", resultList[0].CutomserSecondName);
-            Assert.AreEqual(1, resultList[0].LicenceCategoryId);
-            Assert.AreEqual("Test1", resultList[0].LicenceCategoryName);
-            Assert.AreEqual(new DateTime(2020, 1, 1), resultList[0].ReceivedDate);
-            Assert.AreEqual(new DateTime(2025, 1, 1), resultList[0].ExpirationDate);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual(2, resultList[1].CustomerId);
-            Assert.AreEqual("TestCustomerName2", resultList[1].CustomerName);
-            Assert.AreEqual("TestCustomerSName2", resultList[1].CutomserSecondName);
-            Assert.AreEqual(2, resultList[1].LicenceCategoryId);
-            Assert.AreEqual("Test2", resultList[1].LicenceCategoryName);
-            Assert.AreEqual(new DateTime(2020, 11, 11), resultList[1].ReceivedDate);
-            Assert.AreEqual(null, resultList[1].ExpirationDate);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual(1, resultList.PagedItems[0].CustomerId);
+            Assert.AreEqual("TestCustomerName1", resultList.PagedItems[0].CustomerName);
+            Assert.AreEqual("TestCustomerSName1", resultList.PagedItems[0].CutomserSecondName);
+            Assert.AreEqual(1, resultList.PagedItems[0].LicenceCategoryId);
+            Assert.AreEqual("Test1", resultList.PagedItems[0].LicenceCategoryName);
+            Assert.AreEqual(new DateTime(2020, 1, 1), resultList.PagedItems[0].ReceivedDate);
+            Assert.AreEqual(new DateTime(2025, 1, 1), resultList.PagedItems[0].ExpirationDate);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual(2, resultList.PagedItems[1].CustomerId);
+            Assert.AreEqual("TestCustomerName2", resultList.PagedItems[1].CustomerName);
+            Assert.AreEqual("TestCustomerSName2", resultList.PagedItems[1].CutomserSecondName);
+            Assert.AreEqual(2, resultList.PagedItems[1].LicenceCategoryId);
+            Assert.AreEqual("Test2", resultList.PagedItems[1].LicenceCategoryName);
+            Assert.AreEqual(new DateTime(2020, 11, 11), resultList.PagedItems[1].ReceivedDate);
+            Assert.AreEqual(null, resultList.PagedItems[1].ExpirationDate);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -69,9 +71,12 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new DrivingLicenceRepository(_dbContext);
 
-            var result = await _repository.GetDrivingLicences();
+            var result = await _repository.GetDrivingLicences(1, 10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
+            Assert.IsFalse(result.HasNextPage);
         }
 
         [TestMethod]

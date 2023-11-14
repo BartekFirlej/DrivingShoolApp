@@ -25,8 +25,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_DrivingLicences_ReturnsOk()
         {
-            ICollection<DrivingLicenceGetDTO> drivingLicencesList = new List<DrivingLicenceGetDTO>();
-            _drivingLicenceServiceMock.Setup(service => service.GetDrivingLicences()).Returns(Task.FromResult(drivingLicencesList));
+            var drivingLicencesList = new PagedList<DrivingLicenceGetDTO>();
+            _drivingLicenceServiceMock.Setup(service => service.GetDrivingLicences(1, 10)).Returns(Task.FromResult(drivingLicencesList));
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetDrivingLicences();
@@ -37,12 +37,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_DrivingLicences_ThrowsNotFoundDrivingLicencesException()
         {
-            _drivingLicenceServiceMock.Setup(service => service.GetDrivingLicences()).Throws(new NotFoundDrivingLicenceException());
+            _drivingLicenceServiceMock.Setup(service => service.GetDrivingLicences(1, 10)).Throws(new NotFoundDrivingLicenceException());
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetDrivingLicences();
+            var result = (NotFoundObjectResult)await _controller.GetDrivingLicences(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_DrivingLicences_ThrowsPageIndexMustBeGreaterThanZeroException()
+        {
+            _drivingLicenceServiceMock.Setup(service => service.GetDrivingLicences(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetDrivingLicences(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
