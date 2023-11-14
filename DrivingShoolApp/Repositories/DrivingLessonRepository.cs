@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface IDrivingLessonRepository
     {
-        public Task<ICollection<DrivingLessonGetDTO>> GetDrivingLessons();
+        public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
         public Task<DrivingLesson> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
     }
@@ -19,22 +19,23 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<DrivingLessonGetDTO>> GetDrivingLessons()
+        public async Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size)
         {
-            return await _dbContext.DrivingLessons
-                           .Include(d => d.Customer)
-                           .Include(d => d.Lecturer)
-                           .Select(d => new DrivingLessonGetDTO
-                           {
-                               Id = d.Id,
-                               LessonDate = d.LessonDate,
-                               CustomerId = d.CustomerId,
-                               CustomerName = d.Customer.Name,
-                               LecturerId = d.LecturerId,
-                               LecturerName = d.Lecturer.Name,
-                               AddressId = d.AddressId
-                           }).ToListAsync();
-                          
+            return await PagedList<DrivingLessonGetDTO>.Create(
+                _dbContext.DrivingLessons
+                .Include(d => d.Customer)
+                .Include(d => d.Lecturer)
+                .Select(d => new DrivingLessonGetDTO
+                {
+                    Id = d.Id,
+                    LessonDate = d.LessonDate,
+                    CustomerId = d.CustomerId,
+                    CustomerName = d.Customer.Name,
+                    LecturerId = d.LecturerId,
+                    LecturerName = d.Lecturer.Name,
+                    AddressId = d.AddressId
+                }).OrderBy(d => d.Id),
+                page, size);
         }
 
         public async Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId)

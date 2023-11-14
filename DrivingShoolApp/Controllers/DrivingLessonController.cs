@@ -17,16 +17,20 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDrivingLessons()
+        public async Task<IActionResult> GetDrivingLessons([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "size")] int size = 10)
         {
-            ICollection<DrivingLessonGetDTO> drivingLessons;
+            PagedList<DrivingLessonGetDTO> drivingLessons;
             try
             {
-                drivingLessons = await _drivingLessonService.GetDrivingLessons();
+                drivingLessons = await _drivingLessonService.GetDrivingLessons(page, size);
             }
             catch (NotFoundDrivingLessonException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return Ok(drivingLessons);
         }

@@ -31,11 +31,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_DrivingLessons_ReturnsDrivingLessons()
         {
             var drivingLesson = new DrivingLessonGetDTO();
-            ICollection<DrivingLessonGetDTO> drivingLessonsList = new List<DrivingLessonGetDTO>() { drivingLesson };
-            _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons()).Returns(Task.FromResult(drivingLessonsList));
+            var drivingLessonsList = new PagedList<DrivingLessonGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLessonGetDTO> { drivingLesson }, HasNextPage = false };
+            _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons(1, 10)).Returns(Task.FromResult(drivingLessonsList));
             _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object);
 
-            var result = await _service.GetDrivingLessons();
+            var result = await _service.GetDrivingLessons(1, 10);
 
             Assert.AreEqual(drivingLessonsList, result);
         }
@@ -43,12 +43,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_DrivingLessons_ThrowsNotFoundDrivingLessonException()
         {
-            ICollection<DrivingLessonGetDTO> drivingLessonsList = new List<DrivingLessonGetDTO>();
-            _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons()).Returns(Task.FromResult(drivingLessonsList));
+            var drivingLessonsList = new PagedList<DrivingLessonGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLessonGetDTO>(), HasNextPage = false };
+            _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons(1, 10)).Returns(Task.FromResult(drivingLessonsList));
             _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object);
 
-
-            await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.GetDrivingLessons());
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.GetDrivingLessons(1, 10));
         }
 
         [TestMethod]

@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_DrivingLessons_ReturnsOk()
         {
-            ICollection<DrivingLessonGetDTO> drivingLessonsList = new List<DrivingLessonGetDTO>();
-            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons()).Returns(Task.FromResult(drivingLessonsList));
+            var drivingLessonsList = new PagedList<DrivingLessonGetDTO>();
+            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons(1, 10)).Returns(Task.FromResult(drivingLessonsList));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetDrivingLessons();
+            var result = (OkObjectResult)await _controller.GetDrivingLessons(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -37,12 +37,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_DrivingLessons_ThrowsNotFoundDrivingLessonsException()
         {
-            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons()).Throws(new NotFoundDrivingLessonException());
+            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons(1, 10)).Throws(new NotFoundDrivingLessonException());
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetDrivingLessons();
+            var result = (NotFoundObjectResult)await _controller.GetDrivingLessons(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_DrivingLessons_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetDrivingLessons(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

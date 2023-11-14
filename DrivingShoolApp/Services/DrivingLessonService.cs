@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface IDrivingLessonService
     {
-        public Task<ICollection<DrivingLessonGetDTO>> GetDrivingLessons();
+        public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
         public Task<DrivingLessonGetDTO> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
     }
@@ -25,10 +25,10 @@ namespace DrivingSchoolApp.Services
             _addressService = addressService;
         }
 
-        public async Task<ICollection<DrivingLessonGetDTO>> GetDrivingLessons()
+        public async Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size)
         {
-            var drivingLessons = await _drivingLessonRepository.GetDrivingLessons();
-            if (!drivingLessons.Any())
+            var drivingLessons = await _drivingLessonRepository.GetDrivingLessons(page, size);
+            if (!drivingLessons.PagedItems.Any())
                 throw new NotFoundDrivingLessonException();
             return drivingLessons;
         }
