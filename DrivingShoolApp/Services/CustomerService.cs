@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ICustomerService
     {
-        public Task<ICollection<CustomerGetDTO>> GetCustomers();
+        public Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size);
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer);
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
@@ -20,10 +20,10 @@ namespace DrivingSchoolApp.Services
             _customerRepository = userRepository;
         }
 
-        public async Task<ICollection<CustomerGetDTO>> GetCustomers()
+        public async Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size)
         {
-            var customers = await _customerRepository.GetCustomers();
-            if(!customers.Any())
+            var customers = await _customerRepository.GetCustomers(page, size);
+            if(!customers.PagedItems.Any())
                 throw new NotFoundCustomerException();
             return customers;
         }

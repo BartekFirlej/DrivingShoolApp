@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ICustomerRepository
     {
-        public Task<ICollection<CustomerGetDTO>> GetCustomers();
+        public Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size);
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<Customer> PostCustomer(CustomerPostDTO customerDetails);
     }
@@ -19,17 +19,17 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<CustomerGetDTO>> GetCustomers()
+        public async Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size)
         {
-            return await _dbContext.Customers
-                            .Select(u => new CustomerGetDTO
+            return await PagedList<CustomerGetDTO>.Create(_dbContext.Customers
+                            .Select(c => new CustomerGetDTO
                             {
-                                Id = u.Id,
-                                Name = u.Name,
-                                SecondName = u.SecondName,
-                                BirthDate = u.BirthDate
-                            })
-                            .ToListAsync();
+                                Id = c.Id,
+                                Name = c.Name,
+                                SecondName = c.SecondName,
+                                BirthDate = c.BirthDate
+                            }).OrderBy(c => c.Id),
+                            page, size);
         }
 
         public async Task<CustomerGetDTO> GetCustomer(int customerId)

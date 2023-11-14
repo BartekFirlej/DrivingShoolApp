@@ -31,19 +31,21 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new CustomerRepository(_dbContext);
 
-            var result = await _repository.GetCustomers();
+            var resultList = await _repository.GetCustomers(1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual("TestName1", resultList[0].Name);
-            Assert.AreEqual("TestSName1", resultList[0].SecondName);
-            Assert.AreEqual(new DateTime(2000, 1, 1), resultList[0].BirthDate);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual("TestName2", resultList[1].Name);
-            Assert.AreEqual("TestSName2", resultList[1].SecondName);
-            Assert.AreEqual(new DateTime(1990, 1, 1), resultList[1].BirthDate);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual("TestName1", resultList.PagedItems[0].Name);
+            Assert.AreEqual("TestSName1", resultList.PagedItems[0].SecondName);
+            Assert.AreEqual(new DateTime(2000, 1, 1), resultList.PagedItems[0].BirthDate);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual("TestName2", resultList.PagedItems[1].Name);
+            Assert.AreEqual("TestSName2", resultList.PagedItems[1].SecondName);
+            Assert.AreEqual(new DateTime(1990, 1, 1), resultList.PagedItems[1].BirthDate);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -55,9 +57,12 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new CustomerRepository(_dbContext);
 
-            var result = await _repository.GetCustomers();
+            var result = await _repository.GetCustomers(1, 10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+            Assert.IsFalse(result.HasNextPage);
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
         }
 
         [TestMethod]

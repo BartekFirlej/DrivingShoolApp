@@ -23,7 +23,8 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<LicenceCategoryGetDTO>.Create(
                     _dbContext.LicenceCategories.
-                         Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name }),
+                         Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name })
+                         .OrderBy(l => l.Id),
                     page, size);
         }
 

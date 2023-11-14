@@ -28,11 +28,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Customers_ReturnsOk()
         {
-            ICollection<CustomerGetDTO> usersList = new List<CustomerGetDTO>();
-            _customerServiceMock.Setup(service => service.GetCustomers()).Returns(Task.FromResult(usersList));
+            var usersList = new PagedList<CustomerGetDTO>();
+            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).Returns(Task.FromResult(usersList));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetCustomers();
+            var result = (OkObjectResult)await _controller.GetCustomers(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -40,12 +40,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Customers_ThrowsNotFoundCustomersException()
         {
-            _customerServiceMock.Setup(service => service.GetCustomers()).Throws(new NotFoundCustomerException());
+            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).Throws(new NotFoundCustomerException());
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetCustomers();
+            var result = (NotFoundObjectResult)await _controller.GetCustomers(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Customers_ThrowsPageIndexMustBeGreaterThanZeroException()
+        {
+            _customerServiceMock.Setup(service => service.GetCustomers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetCustomers(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

@@ -33,7 +33,7 @@ namespace DrivingSchoolApp.Repositories
                     DrivingHours = c.DrivingHours,
                     LicenceCategoryId = c.LicenceCategoryId,
                     LicenceCategoryName = c.LicenceCategory.Name
-                }),
+                }).OrderBy(c => c.Id),
                 page, size);
         }
         public async Task<CourseTypeGetDTO> GetCourseType(int courseTypeId)

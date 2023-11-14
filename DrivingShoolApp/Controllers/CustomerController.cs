@@ -20,16 +20,20 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomers()
+        public async Task<IActionResult> GetCustomers([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "size")] int size = 10)
         {
-            ICollection<CustomerGetDTO> customers;
+            PagedList<CustomerGetDTO> customers;
             try
             {
-                customers = await _customerService.GetCustomers();
+                customers = await _customerService.GetCustomers(page, size);
             }
             catch(NotFoundCustomerException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return Ok(customers);
         }

@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Castle.Core.Resource;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -25,11 +26,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Customers_ReturnsCustomers()
         {
             var customer = new CustomerGetDTO();
-            ICollection<CustomerGetDTO> customersList = new List<CustomerGetDTO>() { customer };
-            _customerRepositoryMock.Setup(repo => repo.GetCustomers()).Returns(Task.FromResult(customersList));
+            var customersList = new PagedList<CustomerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CustomerGetDTO> { customer }, HasNextPage = false };
+            _customerRepositoryMock.Setup(repo => repo.GetCustomers(1, 10)).Returns(Task.FromResult(customersList));
             _service = new CustomerService(_customerRepositoryMock.Object);
 
-            var result = await _service.GetCustomers();
+            var result = await _service.GetCustomers(1, 10);
 
             Assert.AreEqual(customersList, result);
         }
@@ -37,11 +38,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Customers_ThrowsNotFoundCustomersException()
         {
-            ICollection<CustomerGetDTO> customersList = new List<CustomerGetDTO>();
-            _customerRepositoryMock.Setup(repo => repo.GetCustomers()).Returns(Task.FromResult(customersList));
+            var customersList = new PagedList<CustomerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CustomerGetDTO>(), HasNextPage = false };
+            _customerRepositoryMock.Setup(repo => repo.GetCustomers(1, 10)).Returns(Task.FromResult(customersList));
             _service = new CustomerService(_customerRepositoryMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomers());
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomers(1, 10));
         }
 
         [TestMethod]
