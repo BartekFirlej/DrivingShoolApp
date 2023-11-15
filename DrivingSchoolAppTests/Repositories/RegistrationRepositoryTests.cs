@@ -138,6 +138,16 @@ namespace DrivingSchoolAppTests.Repositories
         }
 
         [TestMethod]
+        public async Task Get_CourseRegistrations_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            var idOfCourseToFind = 2;
+            _dbContext = new DrivingSchoolDbContext();
+            _repository = new RegistrationRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourseRegistrations(idOfCourseToFind , - 1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_CustomerRegistrations_ReturnsRegistrations()
         {
             var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
@@ -204,6 +214,16 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
             Assert.IsFalse(result.HasNextPage);
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerRegistrations_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            var idOfCustomerToFind = 2;
+            _dbContext = new DrivingSchoolDbContext();
+            _repository = new RegistrationRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCustomerRegistrations(idOfCustomerToFind, -1, 10));
         }
 
         [TestMethod]

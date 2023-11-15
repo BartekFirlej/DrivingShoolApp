@@ -75,6 +75,15 @@ namespace DrivingSchoolAppTests.Repositories
         }
 
         [TestMethod]
+        public async Task Get_CourseTypes_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _dbContext = new DrivingSchoolDbContext();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourseTypes(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_CourseType_ReturnsCourseType()
         {
             var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()

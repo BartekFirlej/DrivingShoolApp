@@ -4,6 +4,8 @@ using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Services;
+using FluentAssertions.Common;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -66,6 +68,15 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+        }
+
+        [TestMethod]
+        public async Task Get_Addresses_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _dbContext = new DrivingSchoolDbContext();
+            _repository = new AddressRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetAddresses(-1, 10));
         }
 
         [TestMethod]

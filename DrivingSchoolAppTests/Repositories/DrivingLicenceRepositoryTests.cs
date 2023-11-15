@@ -3,6 +3,7 @@ using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolApp.Models;
+using DrivingSchoolApp.Exceptions;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -77,6 +78,15 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
             Assert.IsFalse(result.HasNextPage);
+        }
+
+        [TestMethod]
+        public async Task Get_DrivingLicences_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _dbContext = new DrivingSchoolDbContext();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetDrivingLicences(-1, 10));
         }
 
         [TestMethod]
