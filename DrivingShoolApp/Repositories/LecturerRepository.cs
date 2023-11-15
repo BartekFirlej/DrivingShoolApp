@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ILecturerRepository
     {
-        public Task<ICollection<LecturerGetDTO>> GetLecturers();
+        public Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size);
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
         public Task<Lecturer> PostLecturer(LecturerPostDTO lecturerDetails);
     }
@@ -19,14 +19,16 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<LecturerGetDTO>> GetLecturers()
+        public async Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size)
         {
-            return await _dbContext.Lecturers.Select(l => new LecturerGetDTO
-                                              {
-                                                Id = l.Id,
-                                                Name = l.Name,
-                                                SecondName = l.SecondName
-                                              }).ToListAsync();
+            return await PagedList<LecturerGetDTO>.Create(
+                            _dbContext.Lecturers.Select(l => new LecturerGetDTO
+                            {
+                                Id = l.Id,
+                                Name = l.Name,
+                                SecondName = l.SecondName
+                            }).OrderBy(l => l.Id),
+                            page, size);
         }
 
         public async Task<LecturerGetDTO> GetLecturer(int lecturerId)

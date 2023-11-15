@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ILecturerService
     {
-        public Task<ICollection<LecturerGetDTO>> GetLecturers();
+        public Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size);
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
         public Task<LecturerGetDTO> PostLecturer(LecturerPostDTO lecturerDetails);
     }
@@ -19,10 +19,10 @@ namespace DrivingSchoolApp.Services
             _lecturerRepository = lecturerRepository;
         }
 
-        public async Task<ICollection<LecturerGetDTO>> GetLecturers()
+        public async Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size)
         {
-            var lecturers = await _lecturerRepository.GetLecturers();
-            if (!lecturers.Any())
+            var lecturers = await _lecturerRepository.GetLecturers(page, size);
+            if (!lecturers.PagedItems.Any())
                 throw new NotFoundLecturerException();
             return lecturers;
         }

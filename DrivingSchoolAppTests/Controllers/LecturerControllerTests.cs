@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lecturers_ReturnsOk()
         {
-            ICollection<LecturerGetDTO> lecturersList = new List<LecturerGetDTO>();
-            _lecturerServiceMock.Setup(service => service.GetLecturers()).Returns(Task.FromResult(lecturersList));
+            var lecturersList = new PagedList<LecturerGetDTO>();
+            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetLecturers();
+            var result = (OkObjectResult)await _controller.GetLecturers(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -37,12 +37,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lecturers_ThrowsNotFoundLecturerException()
         {
-            _lecturerServiceMock.Setup(service => service.GetLecturers()).Throws(new NotFoundLecturerException());
+            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).Throws(new NotFoundLecturerException());
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetLecturers();
+            var result = (NotFoundObjectResult)await _controller.GetLecturers(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Lecturers_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _lecturerServiceMock.Setup(service => service.GetLecturers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetLecturers(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

@@ -25,11 +25,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Lecturers_ReturnsLecturers()
         {
             var lecturer = new LecturerGetDTO();
-            ICollection<LecturerGetDTO> lecturersList = new List<LecturerGetDTO>() { lecturer };
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers()).Returns(Task.FromResult(lecturersList));
+            var lecturersList = new PagedList<LecturerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<LecturerGetDTO> { lecturer }, HasNextPage = false };
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
-            var result = await _service.GetLecturers();
+            var result = await _service.GetLecturers(1, 10);
 
             Assert.AreEqual(lecturersList, result);
         }
@@ -37,11 +37,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Lecturers_ThrowsNotFoundLecturerException()
         {
-            ICollection<LecturerGetDTO> lecturersList = new List<LecturerGetDTO>();
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers()).Returns(Task.FromResult(lecturersList));
+            var lecturersList = new PagedList<LecturerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<LecturerGetDTO>(), HasNextPage = false };
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.GetLecturers());
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.GetLecturers(1, 10));
         }
 
         [TestMethod]
