@@ -16,13 +16,15 @@ namespace DrivingSchoolApp.Services
         private readonly ICustomerService _customerService;
         private readonly ILecturerService _lecturerService;
         private readonly IAddressService _addressService;
+        private readonly ICourseService _courseService;
 
-        public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, ILecturerService lecturerService, IAddressService addressService)
+        public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, ILecturerService lecturerService, IAddressService addressService, ICourseService courseService)
         {
             _drivingLessonRepository = drivingLessonRepository;
             _customerService = customerService;
             _lecturerService = lecturerService;
             _addressService = addressService;
+            _courseService = courseService;
         }
 
         public async Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size)
@@ -48,6 +50,7 @@ namespace DrivingSchoolApp.Services
             var customer = await _customerService.GetCustomer(drivingLessonDetails.CustomerId);
             var lecturer = await _lecturerService.GetLecturer(drivingLessonDetails.LecturerId);
             var address = await _addressService.GetAddress(drivingLessonDetails.AddressId);
+            var course = await _courseService.GetCourse(drivingLessonDetails.CourseId);
             var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
             return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
         }
