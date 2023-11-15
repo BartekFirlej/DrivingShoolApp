@@ -19,4 +19,6 @@ public partial class Course
     public virtual CourseType CourseType { get; set; } = null!;
 
     public virtual ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+
+    public virtual ICollection<DrivingLesson> DrivingLessons { get; set; } = new List<DrivingLesson>();
 }
