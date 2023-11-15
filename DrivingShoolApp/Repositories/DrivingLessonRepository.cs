@@ -33,7 +33,8 @@ namespace DrivingSchoolApp.Repositories
                     CustomerName = d.Customer.Name,
                     LecturerId = d.LecturerId,
                     LecturerName = d.Lecturer.Name,
-                    AddressId = d.AddressId
+                    AddressId = d.AddressId,
+                    CourseId = d.CourseId
                 }).OrderBy(d => d.Id),
                 page, size);
         }
@@ -52,7 +53,8 @@ namespace DrivingSchoolApp.Repositories
                    CustomerName = d.Customer.Name,
                    LecturerId = d.LecturerId,
                    LecturerName = d.Lecturer.Name,
-                   AddressId = d.AddressId
+                   AddressId = d.AddressId,
+                   CourseId = d.CourseId
                }).FirstOrDefaultAsync();
         }
 
@@ -63,7 +65,8 @@ namespace DrivingSchoolApp.Repositories
                 LessonDate = drivingLessonDetails.LessonDate,
                 CustomerId = drivingLessonDetails.CustomerId,
                 LecturerId = drivingLessonDetails.LecturerId,
-                AddressId = drivingLessonDetails.AddressId
+                AddressId = drivingLessonDetails.AddressId,
+                CourseId = drivingLessonDetails.CourseId
             };
             await _dbContext.DrivingLessons.AddAsync(drivingLessonToAdd);
             await _dbContext.SaveChangesAsync();
