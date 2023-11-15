@@ -134,6 +134,19 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
+        public async Task Post_DrivingLesson_ThrowsNotFoundCourseException()
+        {
+            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var idOfCourse = 1;
+            _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).Throws(new NotFoundCourseException(idOfCourse));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.PostDrivingLesson(drivingLessonToAdd);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
         public async Task Post_DrivingLesson_ThrowsDateTimeException()
         {
             var drivingLessonToAdd = new DrivingLessonPostDTO();

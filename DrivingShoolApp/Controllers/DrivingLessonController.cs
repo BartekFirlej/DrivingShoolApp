@@ -70,6 +70,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch(NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
             catch(DateTimeException e)
             {
                 return BadRequest(e.ToJson());
