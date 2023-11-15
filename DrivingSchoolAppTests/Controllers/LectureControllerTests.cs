@@ -27,11 +27,11 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lectures_ReturnsOk()
         {
-            ICollection<LectureGetDTO> lecturesList = new List<LectureGetDTO>();
-            _lectureServiceMock.Setup(service => service.GetLectures()).Returns(Task.FromResult(lecturesList));
+            var lecturesList = new PagedList<LectureGetDTO>();
+            _lectureServiceMock.Setup(service => service.GetLectures(1, 10)).Returns(Task.FromResult(lecturesList));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
 
-            var result = (OkObjectResult)await _controller.GetLectures();
+            var result = (OkObjectResult)await _controller.GetLectures(1, 10);
 
             result.StatusCode.Should().Be(200);
         }
@@ -39,12 +39,23 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lectures_ThrowsNotFoundLectureException()
         {
-            _lectureServiceMock.Setup(service => service.GetLectures()).Throws(new NotFoundLectureException());
+            _lectureServiceMock.Setup(service => service.GetLectures(1, 10)).Throws(new NotFoundLectureException());
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.GetLectures();
+            var result = (NotFoundObjectResult)await _controller.GetLectures(1, 10);
 
             result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_Lectures_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            _lectureServiceMock.Setup(service => service.GetLectures(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.GetLectures(-1, 10);
+
+            result.StatusCode.Should().Be(400);
         }
 
         [TestMethod]

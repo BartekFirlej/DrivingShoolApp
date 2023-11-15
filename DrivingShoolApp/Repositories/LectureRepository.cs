@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Repositories
 {
     public interface ILectureRepository
     {
-        public Task<ICollection<LectureGetDTO>> GetLectures();
+        public Task<PagedList<LectureGetDTO>> GetLectures(int page, int size);
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<Lecture> PostLecture(LecturePostDTO lectureDetails);
         public Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId);
@@ -20,9 +20,10 @@ namespace DrivingSchoolApp.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<LectureGetDTO>> GetLectures()
+        public async Task<PagedList<LectureGetDTO>> GetLectures(int page, int size)
         {
-            return await _dbContext.Lectures
+            return await PagedList<LectureGetDTO>.Create(
+                            _dbContext.Lectures
                             .Include(l => l.Lecturer)
                             .Include(l => l.Classroom)
                             .Include(l => l.Classroom.Address)
@@ -43,7 +44,8 @@ namespace DrivingSchoolApp.Repositories
                                 Street = l.Classroom.Address.Street,
                                 Number = l.Classroom.Address.Number,
                                 ClassroomNumber = l.Classroom.Number
-                            }).ToListAsync();
+                            }).OrderBy(l => l.Id),
+                            page, size);
         }
 
         public async Task<LectureGetDTO> GetLecture(int lectureId)

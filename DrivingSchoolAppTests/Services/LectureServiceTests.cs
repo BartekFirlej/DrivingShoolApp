@@ -31,11 +31,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Lectures_ReturnsLectures()
         {
             var lecture = new LectureGetDTO();
-            ICollection<LectureGetDTO> lecturesList = new List<LectureGetDTO>() { lecture };
-            _lectureRepositoryMock.Setup(repo => repo.GetLectures()).Returns(Task.FromResult(lecturesList));
+            var lecturesList = new PagedList<LectureGetDTO>() {PageIndex = 1, PageSize = 10, PagedItems = new List<LectureGetDTO> { lecture }, HasNextPage = false };
+            _lectureRepositoryMock.Setup(repo => repo.GetLectures(1, 10)).Returns(Task.FromResult(lecturesList));
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object);
 
-            var result = await _service.GetLectures();
+            var result = await _service.GetLectures(1, 10);
 
             Assert.AreEqual(lecturesList, result);
         }
@@ -43,11 +43,11 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Lectures_ThrowsNotFoundLecturesException()
         {
-            ICollection<LectureGetDTO> lecturesList = new List<LectureGetDTO>();
-            _lectureRepositoryMock.Setup(repo => repo.GetLectures()).Returns(Task.FromResult(lecturesList));
+            var lecturesList = new PagedList<LectureGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<LectureGetDTO> (), HasNextPage = false };
+            _lectureRepositoryMock.Setup(repo => repo.GetLectures(1, 10)).Returns(Task.FromResult(lecturesList));
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundLectureException>(async () => await _service.GetLectures());
+            await Assert.ThrowsExceptionAsync<NotFoundLectureException>(async () => await _service.GetLectures(1, 10));
         }
 
         [TestMethod]

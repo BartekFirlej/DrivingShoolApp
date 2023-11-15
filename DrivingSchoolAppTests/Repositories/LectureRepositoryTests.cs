@@ -50,35 +50,37 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
 
-            var result = await _repository.GetLectures();
+            var resultList = await _repository.GetLectures(1, 10);
 
-            var resultList = result.ToList();
             Assert.IsNotNull(resultList);
-            Assert.AreEqual(2, resultList.Count);
-            Assert.AreEqual(1, resultList[0].Id);
-            Assert.AreEqual(new DateTime(2023, 10, 10), resultList[0].LectureDate);
-            Assert.AreEqual(1, resultList[0].LecturerId);
-            Assert.AreEqual("TestName1", resultList[0].LecturerName);
-            Assert.AreEqual(1, resultList[0].CourseId);
-            Assert.AreEqual("TestCourse1", resultList[0].CourseName);
-            Assert.AreEqual(1, resultList[0].SubjectId);
-            Assert.AreEqual("TestSubject1", resultList[0].SubjectName);
-            Assert.AreEqual(1, resultList[0].ClassroomNumber);
-            Assert.AreEqual("TestCity1", resultList[0].City);
-            Assert.AreEqual("TestStreet1", resultList[0].Street);
-            Assert.AreEqual(10, resultList[0].Number);
-            Assert.AreEqual(2, resultList[1].Id);
-            Assert.AreEqual(new DateTime(2023, 11, 11), resultList[1].LectureDate);
-            Assert.AreEqual(2, resultList[1].LecturerId);
-            Assert.AreEqual("TestName2", resultList[1].LecturerName);
-            Assert.AreEqual(1, resultList[1].CourseId);
-            Assert.AreEqual("TestCourse1", resultList[1].CourseName);
-            Assert.AreEqual(2, resultList[1].SubjectId);
-            Assert.AreEqual("TestSubject2", resultList[1].SubjectName);
-            Assert.AreEqual(1, resultList[1].ClassroomNumber);
-            Assert.AreEqual("TestCity1", resultList[1].City);
-            Assert.AreEqual("TestStreet1", resultList[1].Street);
-            Assert.AreEqual(10, resultList[1].Number);
+            Assert.AreEqual(2, resultList.PagedItems.Count);
+            Assert.AreEqual(1, resultList.PagedItems[0].Id);
+            Assert.AreEqual(new DateTime(2023, 10, 10), resultList.PagedItems[0].LectureDate);
+            Assert.AreEqual(1, resultList.PagedItems[0].LecturerId);
+            Assert.AreEqual("TestName1", resultList.PagedItems[0].LecturerName);
+            Assert.AreEqual(1, resultList.PagedItems[0].CourseId);
+            Assert.AreEqual("TestCourse1", resultList.PagedItems[0].CourseName);
+            Assert.AreEqual(1, resultList.PagedItems[0].SubjectId);
+            Assert.AreEqual("TestSubject1", resultList.PagedItems[0].SubjectName);
+            Assert.AreEqual(1, resultList.PagedItems[0].ClassroomNumber);
+            Assert.AreEqual("TestCity1", resultList.PagedItems[0].City);
+            Assert.AreEqual("TestStreet1", resultList.PagedItems[0].Street);
+            Assert.AreEqual(10, resultList.PagedItems[0].Number);
+            Assert.AreEqual(2, resultList.PagedItems[1].Id);
+            Assert.AreEqual(new DateTime(2023, 11, 11), resultList.PagedItems[1].LectureDate);
+            Assert.AreEqual(2, resultList.PagedItems[1].LecturerId);
+            Assert.AreEqual("TestName2", resultList.PagedItems[1].LecturerName);
+            Assert.AreEqual(1, resultList.PagedItems[1].CourseId);
+            Assert.AreEqual("TestCourse1", resultList.PagedItems[1].CourseName);
+            Assert.AreEqual(2, resultList.PagedItems[1].SubjectId);
+            Assert.AreEqual("TestSubject2", resultList.PagedItems[1].SubjectName);
+            Assert.AreEqual(1, resultList.PagedItems[1].ClassroomNumber);
+            Assert.AreEqual("TestCity1", resultList.PagedItems[1].City);
+            Assert.AreEqual("TestStreet1", resultList.PagedItems[1].Street);
+            Assert.AreEqual(10, resultList.PagedItems[1].Number);
+            Assert.AreEqual(1, resultList.PageIndex);
+            Assert.AreEqual(10, resultList.PageSize);
+            Assert.IsFalse(resultList.HasNextPage);
         }
 
         [TestMethod]
@@ -90,9 +92,12 @@ namespace DrivingSchoolAppTests.Repositories
             _dbContext = new DrivingSchoolDbContext(options);
             _repository = new LectureRepository(_dbContext);
 
-            var result = await _repository.GetLectures();
+            var result = await _repository.GetLectures(1, 10);
 
-            Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.PagedItems.Any());
+            Assert.IsFalse(result.HasNextPage);
+            Assert.AreEqual(1, result.PageIndex);
+            Assert.AreEqual(10, result.PageSize);
         }
 
         [TestMethod]

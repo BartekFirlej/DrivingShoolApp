@@ -6,7 +6,7 @@ namespace DrivingSchoolApp.Services
 {
     public interface ILectureService
     {
-        public Task<ICollection<LectureGetDTO>> GetLectures();
+        public Task<PagedList<LectureGetDTO>> GetLectures(int page, int size);
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails);
         public Task<bool> GetCourseLectureSubject(int courseId, int subjectId);
@@ -26,10 +26,10 @@ namespace DrivingSchoolApp.Services
             _lecturerService = lecturerService;
         }
 
-        public async Task<ICollection<LectureGetDTO>> GetLectures()
+        public async Task<PagedList<LectureGetDTO>> GetLectures(int page, int size)
         {
-            var lectures = await _lectureRepository.GetLectures();
-            if (!lectures.Any())
+            var lectures = await _lectureRepository.GetLectures(page, size);
+            if (!lectures.PagedItems.Any())
                 throw new NotFoundLectureException();
             return lectures;
         }

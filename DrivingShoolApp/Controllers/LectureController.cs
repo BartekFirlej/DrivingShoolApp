@@ -20,16 +20,20 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetLectures()
+        public async Task<IActionResult> GetLectures([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "size")] int size = 10)
         {
-            ICollection<LectureGetDTO> lectures;
+            PagedList<LectureGetDTO> lectures;
             try
             {
-                lectures = await _lectureService.GetLectures();
+                lectures = await _lectureService.GetLectures(page, size);
             }
             catch (NotFoundLectureException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch(ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return Ok(lectures);
         }
