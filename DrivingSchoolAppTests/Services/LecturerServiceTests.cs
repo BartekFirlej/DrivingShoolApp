@@ -45,6 +45,15 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_Lecturers_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetLecturers(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_Lecturer_ReturnsLecturer()
         {
             var lecturer = new LecturerGetDTO();

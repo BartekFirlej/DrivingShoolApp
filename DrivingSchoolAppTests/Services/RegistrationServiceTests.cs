@@ -90,6 +90,18 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_CourseRegistrations_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            var course = new CourseGetDTO { Id = 1 };
+            var idOfCourseToFind = 1;
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _registrationRepositoryMock.Setup(repo => repo.GetCourseRegistrations(course.Id, -1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetCourseRegistrations(idOfCourseToFind, -1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_CustomerRegistrations_ReturnsRegistrations()
         {
             var customer = new CustomerGetDTO { Id = 1 };
@@ -125,6 +137,18 @@ namespace DrivingSchoolAppTests.Services
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomerRegistrations(idOfCustomerToFind, 1, 10));
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerRegistrations_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            var idOfCustomerToFind = 1;
+            var customer = new CustomerGetDTO { Id = 1 };
+            _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _registrationRepositoryMock.Setup(repo => repo.GetCustomerRegistrations(customer.Id, -1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetCustomerRegistrations(idOfCustomerToFind, -1, 10));
         }
 
         [TestMethod]

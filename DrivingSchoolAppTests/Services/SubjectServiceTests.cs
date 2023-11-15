@@ -45,6 +45,15 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_Subjects_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _subjectRepositoryMock.Setup(repo => repo.GetSubjects(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetSubjects(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_Subject_ReturnsSubject()
         {
             var subject = new SubjectGetDTO();

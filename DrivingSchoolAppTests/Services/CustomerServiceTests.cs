@@ -46,6 +46,15 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_Addresses_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _customerRepositoryMock.Setup(repo => repo.GetCustomers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new CustomerService(_customerRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetCustomers(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_Customer_ReturnsCustomer()
         {
             var customer = new CustomerGetDTO();

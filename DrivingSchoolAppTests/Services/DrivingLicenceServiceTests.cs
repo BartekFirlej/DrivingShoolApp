@@ -53,6 +53,16 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_DrivingLicences_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetDrivingLicences(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_DrivingLicence_ReturnsDrivingLicence()
         {
             var drivingLicence = new DrivingLicenceGetDTO();

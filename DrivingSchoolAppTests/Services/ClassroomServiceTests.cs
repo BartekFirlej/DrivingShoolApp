@@ -48,6 +48,15 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Get_Classrooms_PropagatesPageIndexMustBeGreaterThanZeroException()
+        {
+            _classroomRepositoryMock.Setup(repo => repo.GetClassrooms(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetClassrooms(-1, 10));
+        }
+
+        [TestMethod]
         public async Task Get_Classroom_ReturnsClassroom()
         {
             var classroom = new ClassroomGetDTO();
