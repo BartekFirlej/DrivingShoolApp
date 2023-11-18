@@ -9,6 +9,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
         public Task<DrivingLesson> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
+        public Task<DrivingLesson> DeleteDrivingLesson(DrivingLesson drivingLessonToDelete);
+        public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
     }
     public class DrivingLessonRepository : IDrivingLessonRepository
     {
@@ -71,6 +73,21 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.DrivingLessons.AddAsync(drivingLessonToAdd);
             await _dbContext.SaveChangesAsync();
             return drivingLessonToAdd;
+        }
+
+        public async Task<DrivingLesson> DeleteDrivingLesson(DrivingLesson drivingLessonToDelete)
+        {
+            var deletedDrivingLesson = _dbContext.DrivingLessons.Remove(drivingLessonToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedDrivingLesson.Entity;
+        }
+
+        public async Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId)
+        {
+            return await _dbContext.DrivingLessons
+               .Where(d => d.Id == drivingLessonId)
+               .AsNoTracking()
+               .FirstOrDefaultAsync();
         }
     }
 }

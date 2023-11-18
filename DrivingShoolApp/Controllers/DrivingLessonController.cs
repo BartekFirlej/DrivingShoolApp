@@ -2,6 +2,7 @@
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Common;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -32,6 +33,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
+            catch (DbException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
             return Ok(drivingLessons);
         }
 
@@ -46,6 +51,10 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundDrivingLessonException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch (DbException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             return Ok(drivingLesson);
         }
@@ -78,7 +87,29 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
+            catch (DbException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
             return CreatedAtAction(nameof(PostDrivingLesson), addedDrivingLesson);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDrivingLesson(int drivinglessonid)
+        {
+            try
+            {
+                await _drivingLessonService.DeleteDrivingLesson(drivinglessonid);
+            }
+            catch (NotFoundDrivingLessonException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(DbException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return NoContent();
         }
     }
 }

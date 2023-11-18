@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -9,6 +10,8 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
         public Task<DrivingLessonGetDTO> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
+        public Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId);
+        public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
     }
     public class DrivingLessonService : IDrivingLessonService
     {
@@ -18,7 +21,8 @@ namespace DrivingSchoolApp.Services
         private readonly IAddressService _addressService;
         private readonly ICourseService _courseService;
 
-        public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, ILecturerService lecturerService, IAddressService addressService, ICourseService courseService)
+        public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, 
+                                    ILecturerService lecturerService, IAddressService addressService, ICourseService courseService)
         {
             _drivingLessonRepository = drivingLessonRepository;
             _customerService = customerService;
@@ -53,6 +57,20 @@ namespace DrivingSchoolApp.Services
             var course = await _courseService.GetCourse(drivingLessonDetails.CourseId);
             var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
             return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
+        }
+
+        public async Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId)
+        {
+            var drivingLessonToDelete = await CheckDrivingLesson(drivingLessonId);
+            return await _drivingLessonRepository.DeleteDrivingLesson(drivingLessonToDelete);
+        }
+
+        public async Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId)
+        {
+            var drivingLesson = await _drivingLessonRepository.CheckDrivingLesson(drivingLessonId);
+            if (drivingLesson == null)
+                throw new NotFoundDrivingLessonException(drivingLessonId);
+            return drivingLesson;
         }
     }
 }

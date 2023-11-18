@@ -217,7 +217,117 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(drivingLessonToAdd.LessonDate, retrievedDrivingLesson.LessonDate);
             Assert.AreEqual(customer1.Name, retrievedDrivingLesson.CustomerName);
             Assert.AreEqual(lecturer2.Name, retrievedDrivingLesson.LecturerName);
-            
+        }
+
+        [TestMethod]
+        public async Task Delete_DrivingLesson_ReturnsDrivingLesson()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            var customer1 = new Customer { Id = 1, Name = "TestCustomerName1", SecondName = "TestCustomerSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestCustomerName2", SecondName = "TestCustomerSName2", BirthDate = new DateTime(1990, 1, 1) };
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestLecturerName1", SecondName = "TestLecturerSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestLecturerName2", SecondName = "TestLecturerSName2" };
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            var drivingLesson1 = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 4, 3), CourseId = 1 };
+            var drivingLesson2 = new DrivingLesson { Id = 2, AddressId = 2, CustomerId = 2, LecturerId = 2, LessonDate = new DateTime(2023, 5, 6), CourseId = 2 };
+            await _dbContext.CourseTypes.AddAsync(courseType1);
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.DrivingLessons.AddRangeAsync(drivingLesson1, drivingLesson2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLessonRepository(_dbContext);
+
+            var result = await _repository.DeleteDrivingLesson(drivingLesson2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(new DateTime(2023, 5, 6), result.LessonDate);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(2, result.AddressId);
+            Assert.AreEqual(2, result.CourseId);
+            Assert.AreEqual(1, await _dbContext.DrivingLessons.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLesson_ReturnsDrivingLesson()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLessonToFind = 2;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            var customer1 = new Customer { Id = 1, Name = "TestCustomerName1", SecondName = "TestCustomerSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestCustomerName2", SecondName = "TestCustomerSName2", BirthDate = new DateTime(1990, 1, 1) };
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestLecturerName1", SecondName = "TestLecturerSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestLecturerName2", SecondName = "TestLecturerSName2" };
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            var drivingLesson1 = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 4, 3), CourseId = 1 };
+            var drivingLesson2 = new DrivingLesson { Id = 2, AddressId = 2, CustomerId = 2, LecturerId = 2, LessonDate = new DateTime(2023, 5, 6), CourseId = 2 };
+            await _dbContext.CourseTypes.AddAsync(courseType1);
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.DrivingLessons.AddRangeAsync(drivingLesson1, drivingLesson2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLessonRepository(_dbContext);
+
+            var result = await _repository.CheckDrivingLesson(idOfDrivingLessonToFind);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(new DateTime(2023, 5, 6), result.LessonDate);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(2, result.AddressId);
+            Assert.AreEqual(2, result.CourseId);
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLesson_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLessonToFind = 3;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            var customer1 = new Customer { Id = 1, Name = "TestCustomerName1", SecondName = "TestCustomerSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestCustomerName2", SecondName = "TestCustomerSName2", BirthDate = new DateTime(1990, 1, 1) };
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestLecturerName1", SecondName = "TestLecturerSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestLecturerName2", SecondName = "TestLecturerSName2" };
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            var drivingLesson1 = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 4, 3), CourseId = 1 };
+            var drivingLesson2 = new DrivingLesson { Id = 2, AddressId = 2, CustomerId = 2, LecturerId = 2, LessonDate = new DateTime(2023, 5, 6), CourseId = 2 };
+            await _dbContext.CourseTypes.AddAsync(courseType1);
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.DrivingLessons.AddRangeAsync(drivingLesson1, drivingLesson2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLessonRepository(_dbContext);
+
+            var result = await _repository.GetDrivingLesson(idOfDrivingLessonToFind);
+
+            Assert.IsNull(result);
         }
     }
 }
