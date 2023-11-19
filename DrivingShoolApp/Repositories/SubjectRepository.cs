@@ -1,6 +1,8 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Linq.Expressions;
 
 namespace DrivingSchoolApp.Repositories
 {
@@ -9,6 +11,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size);
         public Task<SubjectGetDTO> GetSubject(int subjectId);
         public Task<Subject> PostSubject(SubjectPostDTO subjectDetails);
+        public Task<Subject> CheckSubject(int subjectId);
+        public Task<Subject> DeleteSubject(Subject subjectToDelete);
     }
     public class SubjectRepository : ISubjectRepository
     {
@@ -58,6 +62,20 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Subjects.AddAsync(SubjectToAdd);
             await _dbContext.SaveChangesAsync();
             return SubjectToAdd;
+        }
+
+        public async Task<Subject> CheckSubject(int subjectId)
+        {
+            return await _dbContext.Subjects
+                            .Where(s => s.Id == subjectId)
+                            .FirstOrDefaultAsync();
+        }
+
+        public async Task<Subject> DeleteSubject(Subject subjectToDelete)
+        {
+            var deletedSubject = _dbContext.Subjects.Remove(subjectToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedSubject.Entity;
         }
     }
 }

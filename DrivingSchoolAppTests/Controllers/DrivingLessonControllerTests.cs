@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using System.Runtime.Serialization;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolAppTests.Controllers
 {
@@ -60,18 +62,6 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Get_DrivingLessons_ThrowsSqlConnectionException()
-        {
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            _drivingLessonServiceMock.Setup(service => service.GetDrivingLessons(1,10)).ThrowsAsync(exception);
-            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
-
-            var result = (StatusCodeResult)await _controller.GetDrivingLessons();
-
-            result.StatusCode.Should().Be(500);
-        }
-
-        [TestMethod]
         public async Task Get_DrivingLesson_ReturnsOk()
         {
             var foundDrivingLesson = new DrivingLessonGetDTO();
@@ -94,19 +84,6 @@ namespace DrivingSchoolAppTests.Controllers
             var result = (NotFoundObjectResult)await _controller.GetDrivingLesson(idOfDrivingLesson);
 
             result.StatusCode.Should().Be(404);
-        }
-
-        [TestMethod]
-        public async Task Get_DrivingLesson_ThrowsSqlConnectionException()
-        {
-            var idOfDrivingLesson = 1;
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            _drivingLessonServiceMock.Setup(service => service.GetDrivingLesson(idOfDrivingLesson)).ThrowsAsync(exception);
-            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
-
-            var result = (StatusCodeResult)await _controller.GetDrivingLesson(idOfDrivingLesson);
-
-            result.StatusCode.Should().Be(500);
         }
 
         [TestMethod]
@@ -188,19 +165,6 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Post_DrivingLesson_ThrowsSqlConnectionException()
-        {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(exception);
-            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
-
-            var result = (StatusCodeResult)await _controller.PostDrivingLesson(drivingLessonToAdd);
-
-            result.StatusCode.Should().Be(500);
-        }
-
-        [TestMethod]
         public async Task Delete_DrivingLesson_ReturnsNoContent()
         {
             var idOfDrivingLesson = 5;
@@ -216,24 +180,35 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Delete_DrivingLesson_ThrowsNotFoundDrivingLessonException()
         {
-            var idOfDrivingLesson = 5;
-            _drivingLessonServiceMock.Setup(service => service.DeleteDrivingLesson(idOfDrivingLesson)).ThrowsAsync(new NotFoundDrivingLessonException(idOfDrivingLesson));
+            var idOfDrivingLessonToDelete = 5;
+            _drivingLessonServiceMock.Setup(service => service.DeleteDrivingLesson(idOfDrivingLessonToDelete)).ThrowsAsync(new NotFoundDrivingLessonException(idOfDrivingLessonToDelete));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
 
-            var result = (NotFoundObjectResult)await _controller.DeleteDrivingLesson(idOfDrivingLesson);
+            var result = (NotFoundObjectResult)await _controller.DeleteDrivingLesson(idOfDrivingLessonToDelete);
 
             result.StatusCode.Should().Be(404);
         }
 
         [TestMethod]
-        public async Task Delete_DrivingLesson_ThrowsSqlConnectionException()
+        public async Task Delete_DrivingLesson_ThrowsDbUpdateException()
         {
-            var idOfDrivingLesson = 5;
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            _drivingLessonServiceMock.Setup(service => service.DeleteDrivingLesson(idOfDrivingLesson)).ThrowsAsync(exception);
+            var idOfDrivingLessonToDelete = 1;
+            _drivingLessonServiceMock.Setup(service => service.DeleteDrivingLesson(idOfDrivingLessonToDelete)).ThrowsAsync(new DbUpdateException());
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
 
-            var result = (StatusCodeResult)await _controller.DeleteDrivingLesson(idOfDrivingLesson);
+            var result = (ObjectResult)await _controller.DeleteDrivingLesson(idOfDrivingLessonToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_DrivingLesson_ThrowsException()
+        {
+            var idOfDrivingLessonToDelete = 1;
+            _drivingLessonServiceMock.Setup(service => service.DeleteDrivingLesson(idOfDrivingLessonToDelete)).ThrowsAsync(new Exception());
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteDrivingLesson(idOfDrivingLessonToDelete);
 
             result.StatusCode.Should().Be(500);
         }

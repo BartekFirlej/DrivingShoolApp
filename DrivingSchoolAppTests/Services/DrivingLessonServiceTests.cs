@@ -259,17 +259,6 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
-        public async Task Delete_DrivingLesson_PropagatesSqlConnectionException()
-        {
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            var idOfDrivingLesson = 10;
-            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(idOfDrivingLesson)).ThrowsAsync(exception);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
-
-            await Assert.ThrowsExceptionAsync<SqlException>(async () => await _service.DeleteDrivingLesson(idOfDrivingLesson));
-        }
-
-        [TestMethod]
         public async Task Check_DrivingLesson_ReturnsDrivingLesson()
         {
             var drivingLesson = new DrivingLesson();
@@ -291,17 +280,5 @@ namespace DrivingSchoolAppTests.Services
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.CheckDrivingLesson(idOfDrivingLesson));
         }
-
-        [TestMethod]
-        public async Task Check_DrivingLesson_PropagatesSqlConnectionException()
-        {
-            var exception = FormatterServices.GetUninitializedObject(typeof(SqlException)) as SqlException;
-            var idOfDrivingLesson = 10;
-            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(idOfDrivingLesson)).ThrowsAsync(exception);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
-
-            await Assert.ThrowsExceptionAsync<SqlException>(async () => await _service.CheckDrivingLesson(idOfDrivingLesson));
-        }
-
     }
 }

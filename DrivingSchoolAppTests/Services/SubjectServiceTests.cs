@@ -4,6 +4,7 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Moq;
 
 namespace DrivingSchoolAppTests.Services
@@ -98,6 +99,65 @@ namespace DrivingSchoolAppTests.Services
             _service = new SubjectService(_subjectRepositoryMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostSubject(subjectToAdd));
+        }
+
+        [TestMethod]
+        public async Task Delete_Subject_ReturnsSubject()
+        {
+            var deletedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
+            var idOfSubjectToDelete = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync(deletedSubject);
+            _subjectRepositoryMock.Setup(repo => repo.DeleteSubject(deletedSubject)).ReturnsAsync(deletedSubject);
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            var result = await _service.DeleteSubject(idOfSubjectToDelete);
+
+            Assert.AreEqual(deletedSubject, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Subject_ThrowsNotFoundSubjectException()
+        {
+            var idOfSubjectToDelete = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync((Subject)null);
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.DeleteSubject(idOfSubjectToDelete));
+        }
+
+        [TestMethod]
+        public async Task Delete_Subject_PropagatesReferenceConstraintExceptionException()
+        {
+            var deletedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
+            var idOfSubjectToDelete = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync(deletedSubject);
+            _subjectRepositoryMock.Setup(repo => repo.DeleteSubject(deletedSubject)).ThrowsAsync(new ReferenceConstraintException());
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteSubject(idOfSubjectToDelete));
+        }
+
+        [TestMethod]
+        public async Task Check_Subject_ReturnsSubject()
+        {
+            var deletedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ReturnsAsync(deletedSubject);
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            var result = await _service.CheckSubject(idOfSubject);
+
+            Assert.AreEqual(deletedSubject, result);
+        }
+
+        [TestMethod]
+        public async Task Check_Subject_ThrowsNotFoundSubjectException()
+        {
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ThrowsAsync(new NotFoundSubjectException(idOfSubject));
+            _service = new SubjectService(_subjectRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckSubject(idOfSubject));
         }
     }
 }

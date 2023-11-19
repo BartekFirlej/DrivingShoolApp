@@ -1,7 +1,9 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
 namespace DrivingSchoolApp.Controllers
@@ -33,10 +35,6 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
-            catch (DbException e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
             return Ok(drivingLessons);
         }
 
@@ -51,10 +49,6 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundDrivingLessonException e)
             {
                 return NotFound(e.ToJson());
-            }
-            catch (DbException e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             return Ok(drivingLesson);
         }
@@ -87,10 +81,6 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(e.ToJson());
             }
-            catch (DbException e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
             return CreatedAtAction(nameof(PostDrivingLesson), addedDrivingLesson);
         }
 
@@ -105,9 +95,13 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch(DbException e)
+            catch (DbUpdateException e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }
             return NoContent();
         }

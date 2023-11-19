@@ -1,4 +1,5 @@
 ﻿using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -46,6 +47,7 @@ public partial class DrivingSchoolDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer("Server=127.0.0.1;Database=DrivingSchoolDB;User ID=sa;Password=zaq1@WSX;MultipleActiveResultSets=True;Encrypt=False;");
+            optionsBuilder.UseExceptionProcessor();
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -2,7 +2,10 @@
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -64,6 +67,33 @@ namespace DrivingSchoolApp.Controllers
                 return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostSubject),subject);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteSubject(int drivinglessonid)
+        {
+            Subject deleted;
+            try
+            {
+                deleted = await _subjectService.DeleteSubject(drivinglessonid);
+            }
+            catch (NotFoundSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch(ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This subject refers to something." } });
+            }
+            catch(DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
         }
     }
 }
