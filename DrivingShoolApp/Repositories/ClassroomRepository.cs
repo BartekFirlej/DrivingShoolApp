@@ -9,6 +9,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<Classroom> PostClassroom(ClassroomPostDTO classroomDetails);
+        public Task<Classroom> CheckClassroom(int classroomId);
+        public Task<Classroom> DeleteClassroom(Classroom classroomToDelete);
     }
     public class ClassroomRepository : IClassroomRepository
     {
@@ -71,6 +73,21 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Classrooms.AddAsync(classroomToAdd);
             await _dbContext.SaveChangesAsync();
             return classroomToAdd;
+        }
+
+        public async Task<Classroom> CheckClassroom(int classroomId)
+        {
+            return await _dbContext.Classrooms
+                          .Where(c => c.Id == classroomId)
+                          .AsNoTracking()
+                          .FirstOrDefaultAsync();
+        }
+
+        public async Task<Classroom> DeleteClassroom(Classroom classroomToDelete)
+        {
+            var deletedClassroom = _dbContext.Classrooms.Remove(classroomToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedClassroom.Entity;
         }
     }
 }

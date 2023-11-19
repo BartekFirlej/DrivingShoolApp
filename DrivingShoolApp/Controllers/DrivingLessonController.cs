@@ -84,7 +84,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostDrivingLesson), addedDrivingLesson);
         }
 
-        [HttpDelete]
+        [HttpDelete("{drivinglessonid}")]
         public async Task<IActionResult> DeleteDrivingLesson(int drivinglessonid)
         {
             try

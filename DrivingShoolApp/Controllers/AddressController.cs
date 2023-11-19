@@ -72,7 +72,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostAddress), addedAddress);
         }
 
-        [HttpDelete]
+        [HttpDelete("{addressid}")]
         public async Task<IActionResult> DeleteAddress(int addressId)
         {
             Address deleted;

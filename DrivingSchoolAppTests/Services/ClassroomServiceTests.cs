@@ -4,6 +4,7 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Moq;
 
 namespace DrivingSchoolAppTests.Services
@@ -126,6 +127,65 @@ namespace DrivingSchoolAppTests.Services
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostClassroom(classroomToAdd));
+        }
+
+        [TestMethod]
+        public async Task Delete_Classroom_ReturnsClassroom()
+        {
+            var deletedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var idOfClassroomToDelete = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroomToDelete)).ReturnsAsync(deletedClassroom);
+            _classroomRepositoryMock.Setup(repo => repo.DeleteClassroom(deletedClassroom)).ReturnsAsync(deletedClassroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            var result = await _service.DeleteClassroom(idOfClassroomToDelete);
+
+            Assert.AreEqual(deletedClassroom, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Classroom_ThrowsNotFoundClassroomException()
+        {
+            var idOfClassroomToDelete = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroomToDelete)).ReturnsAsync((Classroom)null);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.DeleteClassroom(idOfClassroomToDelete));
+        }
+
+        [TestMethod]
+        public async Task Delete_Classroom_PropagatesReferenceConstraintExceptionException()
+        {
+            var deletedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var idOfClassroomToDelete = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroomToDelete)).ReturnsAsync(deletedClassroom);
+            _classroomRepositoryMock.Setup(repo => repo.DeleteClassroom(deletedClassroom)).ThrowsAsync(new ReferenceConstraintException());
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteClassroom(idOfClassroomToDelete));
+        }
+
+        [TestMethod]
+        public async Task Check_Classroom_ReturnsClassroom()
+        {
+            var classroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var idOfClassroom = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroom)).ReturnsAsync(classroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            var result = await _service.CheckClassroom(idOfClassroom);
+
+            Assert.AreEqual(classroom, result);
+        }
+
+        [TestMethod]
+        public async Task Check_Classroom_ThrowsNotFoundClassroomException()
+        {
+            var idOfClassroom = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroom)).ReturnsAsync((Classroom)null);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.CheckClassroom(idOfClassroom));
         }
     }
 }

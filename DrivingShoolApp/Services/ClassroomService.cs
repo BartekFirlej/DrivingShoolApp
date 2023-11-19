@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -9,6 +10,8 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails);
+        public Task<Classroom> CheckClassroom(int classroomId);
+        public Task<Classroom> DeleteClassroom(int classroomId);
     }
     public class ClassroomService : IClassroomService
     {
@@ -46,6 +49,20 @@ namespace DrivingSchoolApp.Services
             var address = await _addressService.GetAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
             return await _classroomRepository.GetClassroom(addedClassroom.Id);
+        }
+
+        public async Task<Classroom> CheckClassroom(int classroomId)
+        {
+            var classroom = await _classroomRepository.CheckClassroom(classroomId);
+            if (classroom == null)
+                throw new NotFoundClassroomException(classroomId);
+            return classroom;
+        }
+
+        public async Task<Classroom> DeleteClassroom(int classroomId)
+        {
+            var classroomToDelete = await CheckClassroom(classroomId);
+            return await _classroomRepository.DeleteClassroom(classroomToDelete);
         }
     }
 }

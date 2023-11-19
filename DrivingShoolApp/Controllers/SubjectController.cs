@@ -69,7 +69,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostSubject),subject);
         }
 
-        [HttpDelete]
+        [HttpDelete("{subjectid}")]
         public async Task<IActionResult> DeleteSubject(int drivinglessonid)
         {
             Subject deleted;
