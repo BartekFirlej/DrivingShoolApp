@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using System.Text.RegularExpressions;
 
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size);
         public Task<AddressGetDTO> GetAddress(int addressId);
         public Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails);
+        public Task<Address> CheckAddress(int addressId);
+        public Task<Address> DeleteAddress(int addressId);
     }
     public class AddressService : IAddressService
     {
@@ -45,6 +48,20 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("number");
             var addedAddress = await _addressRepository.PostAddress(addressDetails);
             return await _addressRepository.GetAddress(addedAddress.Id);
+        }
+
+        public async Task<Address> CheckAddress(int addressId)
+        {
+            var address = await _addressRepository.CheckAddress(addressId);
+            if (address == null)
+                throw new NotFoundAddressException(addressId);
+            return address;
+        }
+
+        public async Task<Address> DeleteAddress(int addressId)
+        {
+            var addressToDelete = await CheckAddress(addressId);
+            return await _addressRepository.DeleteAddress(addressToDelete);
         }
     }
 }

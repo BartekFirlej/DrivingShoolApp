@@ -154,7 +154,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Check_Subject_ThrowsNotFoundSubjectException()
         {
             var idOfSubject = 1;
-            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ThrowsAsync(new NotFoundSubjectException(idOfSubject));
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ReturnsAsync((Subject)null);
             _service = new SubjectService(_subjectRepositoryMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckSubject(idOfSubject));

@@ -151,5 +151,72 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(addressToAdd.Number, retrievedAddress.Number);
             Assert.AreEqual(addressToAdd.PostalCode, retrievedAddress.PostalCode);
         }
+
+        [TestMethod]
+        public async Task Delete_Address_ReturnsAddress()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.DeleteAddress(address2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCity2", result.City);
+            Assert.AreEqual(20, result.Number);
+            Assert.AreEqual("44-444", result.PostalCode);
+            Assert.AreEqual("TestStreet2", result.Street);
+            Assert.AreEqual(1, await _dbContext.Addresses.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_Address_ReturnsAddress()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfAddressToCheck = 2;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.CheckAddress(idOfAddressToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCity2", result.City);
+            Assert.AreEqual(20, result.Number);
+            Assert.AreEqual("44-444", result.PostalCode);
+            Assert.AreEqual("TestStreet2", result.Street);
+        }
+
+        [TestMethod]
+        public async Task Check_Address_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfAddressToCheck = 3;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.CheckAddress(idOfAddressToCheck);
+
+            Assert.IsNull(result);
+        }
     }
 }

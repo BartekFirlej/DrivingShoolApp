@@ -6,6 +6,9 @@ using DrivingSchoolApp.Services;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolAppTests.Controllers
 {
@@ -37,7 +40,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Addresses_ThrowsNotFoundAddressException()
         {
-            _addressServiceMock.Setup(service => service.GetAddresses(1,10)).Throws(new NotFoundAddressException());
+            _addressServiceMock.Setup(service => service.GetAddresses(1,10)).ThrowsAsync(new NotFoundAddressException());
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetAddresses();
@@ -48,7 +51,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Addresses_ThrowsValueMustBeGreaterThanZeroException()
         {
-            _addressServiceMock.Setup(service => service.GetAddresses(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _addressServiceMock.Setup(service => service.GetAddresses(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.GetAddresses(-1,10);
@@ -73,7 +76,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Address_ThrowsNotFoundAddressException()
         {
             var idOfAddressToGet = 1;
-            _addressServiceMock.Setup(service => service.GetAddress(idOfAddressToGet)).Throws(new NotFoundAddressException(idOfAddressToGet));
+            _addressServiceMock.Setup(service => service.GetAddress(idOfAddressToGet)).ThrowsAsync(new NotFoundAddressException(idOfAddressToGet));
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetAddress(idOfAddressToGet);
@@ -100,7 +103,7 @@ namespace DrivingSchoolAppTests.Controllers
             var addressToAdd = new AddressPostDTO();
             var addedAddress = new AddressGetDTO();
             var postalCode = "22222";
-            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).Throws(new WrongPostalCodeFormatException(postalCode));
+            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ThrowsAsync(new WrongPostalCodeFormatException(postalCode));
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.PostAddress(addressToAdd);
@@ -114,12 +117,73 @@ namespace DrivingSchoolAppTests.Controllers
             var addressToAdd = new AddressPostDTO();
             var addedAddress = new AddressGetDTO();
             var propertyName = "number";
-            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).Throws(new ValueMustBeGreaterThanZeroException(propertyName));
+            _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(propertyName));
             _controller = new AddressController(_addressServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.PostAddress(addressToAdd);
 
             result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task Delete_Address_ReturnNoContent()
+        {
+            var deletedAddress = new Address();
+            var idOfAddressToDelete = 1;
+            _addressServiceMock.Setup(service => service.DeleteAddress(idOfAddressToDelete)).ReturnsAsync(deletedAddress);
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteAddress(idOfAddressToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_Address_ThrowsNotFoundAddressException()
+        {
+            var idOfAddressToDelete = 1;
+            _addressServiceMock.Setup(service => service.DeleteAddress(idOfAddressToDelete)).ThrowsAsync(new NotFoundAddressException(idOfAddressToDelete));
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteAddress(idOfAddressToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Address_ThrowsReferenceConstraintException()
+        {
+            var idOfAddressToDelete = 1;
+            _addressServiceMock.Setup(service => service.DeleteAddress(idOfAddressToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteAddress(idOfAddressToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Address_ThrowsDbUpdateException()
+        {
+            var idOfAddressToDelete = 1;
+            _addressServiceMock.Setup(service => service.DeleteAddress(idOfAddressToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteAddress(idOfAddressToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Address_ThrowsException()
+        {
+            var idOfAddressToDelete = 1;
+            _addressServiceMock.Setup(service => service.DeleteAddress(idOfAddressToDelete)).ThrowsAsync(new Exception());
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteAddress(idOfAddressToDelete);
+
+            result.StatusCode.Should().Be(500);
         }
     }
 }

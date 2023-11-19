@@ -68,6 +68,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await _dbContext.Subjects
                             .Where(s => s.Id == subjectId)
+                            .AsNoTracking()
                             .FirstOrDefaultAsync();
         }
 
