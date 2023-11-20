@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -9,6 +10,8 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size);
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
+        public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
+        public Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId);
     }
     public class LicenceCategoryService : ILicenceCategoryService
     {
@@ -39,6 +42,20 @@ namespace DrivingSchoolApp.Services
         {
             var createdCategory = await _licenceCategoryRepository.PostLicenceCategory(newCategory);
             return await _licenceCategoryRepository.GetLicenceCategory(createdCategory.Id);
+        }
+
+        public async Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId)
+        {
+            var licenceCategory = await _licenceCategoryRepository.CheckLicenceCategory(licenceCategoryId);
+            if (licenceCategory == null)
+                throw new NotFoundLicenceCategoryException(licenceCategoryId);
+            return licenceCategory;
+        }
+
+        public async Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId)
+        {
+            var licenceCategoryToDelete = await CheckLicenceCategory(licenceCategoryId);
+            return await _licenceCategoryRepository.DeleteLicenceCategory(licenceCategoryToDelete);
         }
     }
 }

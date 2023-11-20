@@ -3,6 +3,9 @@ using DrivingSchoolApp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using DrivingSchoolApp.Exceptions;
 using System.Collections.Generic;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -77,6 +80,33 @@ namespace DrivingSchoolApp.Controllers
         {
             var addedLicenceCategory = await _licenceCategoryService.PostLicenceCategory(licenceCategoryDetails);
             return CreatedAtAction(nameof(PostLicenceCategory), addedLicenceCategory);
+        }
+
+        [HttpDelete("{licencecategoryid}")]
+        public async Task<IActionResult> DeleteLicenceCategory(int licencecategoryid)
+        {
+            LicenceCategory deleted;
+            try
+            {
+                deleted = await _licenceCategoryService.DeleteLicenceCategory(licencecategoryid);
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This licence category refers to something." } });
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
         }
     }
 }
