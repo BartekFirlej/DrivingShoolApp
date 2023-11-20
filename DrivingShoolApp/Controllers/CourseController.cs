@@ -3,6 +3,9 @@ using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using DrivingSchoolApp.Repositories;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -130,6 +133,33 @@ namespace DrivingSchoolApp.Controllers
                 return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostCourse), addedCourseSubject);
+        }
+
+        [HttpDelete("{courseid}")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
+        {
+            Course deleted;
+            try
+            {
+                deleted = await _courseService.DeleteCourse(courseId);
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This classroom refers to something." } });
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
         }
     }
 }

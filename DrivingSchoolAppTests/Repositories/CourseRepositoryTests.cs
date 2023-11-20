@@ -1,9 +1,9 @@
 ﻿using AutoFixture;
 using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using Microsoft.EntityFrameworkCore;
-using DrivingSchoolApp.Models;
-using DrivingSchoolApp.Exceptions;
 
 namespace DrivingSchoolAppTests.Repositories
 {
@@ -247,6 +247,75 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseType1.MinimumAge, retrievedCourse.CourseType.MinimumAge);
             Assert.AreEqual(courseType1.LicenceCategoryId, retrievedCourse.CourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourse.CourseType.LicenceCategoryName);
+        }
+
+        [TestMethod]
+        public async Task Delete_Course_ReturnsCourse()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.DeleteCourse(course2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourse2", result.Name);
+            Assert.AreEqual(new DateTime(2020, 2, 2), result.BeginDate);
+            Assert.AreEqual(1, result.CourseTypeId);
+            Assert.AreEqual(20, result.Limit);
+            Assert.AreEqual(200, result.Price);
+            Assert.AreEqual(1, await _dbContext.Courses.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_Course_ReturnsCourse()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseToCheck = 2;
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.CheckCourse(idOfCourseToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourse2", result.Name);
+            Assert.AreEqual(new DateTime(2020, 2, 2), result.BeginDate);
+            Assert.AreEqual(1, result.CourseTypeId);
+            Assert.AreEqual(20, result.Limit);
+            Assert.AreEqual(200, result.Price);
+        }
+
+        [TestMethod]
+        public async Task Check_Course_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseToCheck = 3;
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.CheckCourse(idOfCourseToCheck);
+
+            Assert.IsNull(result);
         }
     }
 }

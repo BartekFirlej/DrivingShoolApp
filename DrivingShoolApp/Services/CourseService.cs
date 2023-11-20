@@ -1,6 +1,7 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Services
         public Task<CourseGetDTO> GetCourse(int courseId);
         public Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
+        public Task<Course> CheckCourse(int courseId);
+        public Task<Course> DeleteCourse(int courseId);
 
     }
     public class CourseService : ICourseService
@@ -58,6 +61,20 @@ namespace DrivingSchoolApp.Services
             await _courseTypeService.GetCourseType(courseDetails.CourseTypeId);
             var addedCourse = await _courseRepository.PostCourse(courseDetails);
             return await _courseRepository.GetCourse(addedCourse.Id);
+        }
+
+        public async Task<Course> CheckCourse(int courseId)
+        {
+            var course = await _courseRepository.CheckCourse(courseId);
+            if (course == null)
+                throw new NotFoundCourseException(courseId);
+            return course;
+        }
+
+        public async Task<Course> DeleteCourse(int courseId)
+        {
+            var courseToDelete = await CheckCourse(courseId);
+            return await _courseRepository.DeleteCourse(courseToDelete);
         }
     }
 }
