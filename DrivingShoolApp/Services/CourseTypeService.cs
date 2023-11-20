@@ -1,6 +1,7 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {
@@ -8,6 +9,8 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size);
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
         public Task<CourseTypeGetDTO> PostCourseType(CourseTypePostDTO newCourseType);
+        public Task<CourseType> CheckCourseType(int courseTypeId);
+        public Task<CourseType> DeleteCourseType(int courseTypeId);
     }
     public class CourseTypeService : ICourseTypeService
     {
@@ -47,6 +50,20 @@ namespace DrivingSchoolApp.Services
             await _licenceCategoryService.GetLicenceCategory(newCourseType.LicenceCategoryId);
             var addedCourseType = await _courseTypeRepository.PostCourseType(newCourseType);
             return await _courseTypeRepository.GetCourseType(addedCourseType.Id);
+        }
+
+        public async Task<CourseType> CheckCourseType(int courseTypeId)
+        {
+            var courseType = await _courseTypeRepository.CheckCourseType(courseTypeId);
+            if (courseType == null)
+                throw new NotFoundCourseTypeException(courseTypeId);
+            return courseType;
+        }
+
+        public async Task<CourseType> DeleteCourseType(int courseTypeId)
+        {
+            var courseTypeToDelete = await CheckCourseType(courseTypeId);
+            return await _courseTypeRepository.DeleteCourseType(courseTypeToDelete);
         }
     }
 }

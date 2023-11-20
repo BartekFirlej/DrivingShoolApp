@@ -139,7 +139,6 @@ namespace DrivingSchoolAppTests.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
-            var idOfCourseTypeToFind = 3;
             var licenceCategory1 = new LicenceCategory { Id = 1, Name = "TestLicenceCategory1" };
             var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
             var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
@@ -166,6 +165,76 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseTypeToAdd.MinimumAge, retrievedCourseType.MinimumAge);
             Assert.AreEqual(courseTypeToAdd.LicenceCategoryId, retrievedCourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourseType.LicenceCategoryName);
+        }
+
+
+        [TestMethod]
+        public async Task Delete_Course_ReturnsCourse()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.DeleteCourseType(courseType2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourseType2", result.Name);
+            Assert.AreEqual(20, result.DrivingHours);
+            Assert.AreEqual(20, result.LectureHours);
+            Assert.AreEqual(21, result.MinimumAge);
+            Assert.AreEqual(1, result.LicenceCategoryId);
+            Assert.AreEqual(1, await _dbContext.CourseTypes.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_CourseType_ReturnsCourseType()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseTypeToCheck = 2;
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.CheckCourseType(idOfCourseTypeToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourseType2", result.Name);
+            Assert.AreEqual(20, result.DrivingHours);
+            Assert.AreEqual(20, result.LectureHours);
+            Assert.AreEqual(21, result.MinimumAge);
+            Assert.AreEqual(1, result.LicenceCategoryId);
+        }
+
+        [TestMethod]
+        public async Task Check_Course_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseTypeToCheck = 3;
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.CheckCourseType(idOfCourseTypeToCheck);
+
+            Assert.IsNull(result);
         }
     }
 }

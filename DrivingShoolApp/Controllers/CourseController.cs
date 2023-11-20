@@ -149,7 +149,7 @@ namespace DrivingSchoolApp.Controllers
             }
             catch (ReferenceConstraintException e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This classroom refers to something." } });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course refers to something." } });
             }
             catch (DbUpdateException e)
             {
