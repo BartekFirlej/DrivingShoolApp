@@ -4,6 +4,7 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Moq;
 
 namespace DrivingSchoolAppTests.Services
@@ -26,7 +27,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var lecturer = new LecturerGetDTO();
             var lecturersList = new PagedList<LecturerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<LecturerGetDTO> { lecturer }, HasNextPage = false };
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).ReturnsAsync(lecturersList);
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             var result = await _service.GetLecturers(1, 10);
@@ -38,7 +39,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Lecturers_ThrowsNotFoundLecturerException()
         {
             var lecturersList = new PagedList<LecturerGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<LecturerGetDTO>(), HasNextPage = false };
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(1, 10)).ReturnsAsync(lecturersList);
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.GetLecturers(1, 10));
@@ -47,7 +48,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_Lecturers_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturers(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetLecturers(-1, 10));
@@ -58,7 +59,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var lecturer = new LecturerGetDTO();
             var idOfLecturerToFind = 1;
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(idOfLecturerToFind)).Returns(Task.FromResult(lecturer));
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(idOfLecturerToFind)).ReturnsAsync(lecturer);
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             var result = await _service.GetLecturer(idOfLecturerToFind);
@@ -70,7 +71,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Lecturer_ThrowsNotFoundLectNotFoundLecturerException()
         {
             var idOfLecturerToFind = 1;
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(idOfLecturerToFind)).Returns(Task.FromResult<LecturerGetDTO>(null));
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(idOfLecturerToFind)).ReturnsAsync((LecturerGetDTO)null);
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.GetLecturer(idOfLecturerToFind));
@@ -82,13 +83,72 @@ namespace DrivingSchoolAppTests.Services
             var addedLecturer = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
             var addedLecturerDTO = new LecturerGetDTO { Name = "TestName", SecondName = "TestSecondName" };
             var lecturerToAdd = new LecturerPostDTO { Name = "TestName", SecondName = "TestSecondName" };
-            _lecturerRepositoryMock.Setup(repo => repo.PostLecturer(lecturerToAdd)).Returns(Task.FromResult(addedLecturer));
-            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(addedLecturer.Id)).Returns(Task.FromResult(addedLecturerDTO));
+            _lecturerRepositoryMock.Setup(repo => repo.PostLecturer(lecturerToAdd)).ReturnsAsync(addedLecturer);
+            _lecturerRepositoryMock.Setup(repo => repo.GetLecturer(addedLecturer.Id)).ReturnsAsync(addedLecturerDTO);
             _service = new LecturerService(_lecturerRepositoryMock.Object);
 
             var result = await _service.PostLecturer(lecturerToAdd);
 
             Assert.AreEqual(addedLecturerDTO, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ReturnsLecturer()
+        {
+            var idOfLecturerToDelete = 1;
+            var deletedLecturer = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToDelete)).ReturnsAsync(deletedLecturer);
+            _lecturerRepositoryMock.Setup(repo => repo.DeleteLecturer(deletedLecturer)).ReturnsAsync(deletedLecturer);
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            var result = await _service.DeleteLecturer(idOfLecturerToDelete);
+
+            Assert.AreEqual(deletedLecturer, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ThrowsNotFoundLecturerException()
+        {
+            var idOfLectureToDelete = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLectureToDelete)).ReturnsAsync((Lecturer)null);
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.DeleteLecturer(idOfLectureToDelete));
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_PropagatesReferenceConstraintExceptionException()
+        {
+            var idOfLecturerToDelete = 1;
+            var deletedLecturer = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToDelete)).ReturnsAsync(deletedLecturer);
+            _lecturerRepositoryMock.Setup(repo => repo.DeleteLecturer(deletedLecturer)).ThrowsAsync(new ReferenceConstraintException());
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteLecturer(idOfLecturerToDelete));
+        }
+
+        [TestMethod]
+        public async Task Check_Lecturer_ReturnsLecturer()
+        {
+            var lecture = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
+            var idOfLecturerToCheck = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToCheck)).ReturnsAsync(lecture);
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            var result = await _service.CheckLecturer(idOfLecturerToCheck);
+
+            Assert.AreEqual(lecture, result);
+        }
+
+        [TestMethod]
+        public async Task Check_Lecture_ThrowsNotFoundLectureException()
+        {
+            var idOfLecturerToCheck = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToCheck)).ReturnsAsync((Lecturer)null);
+            _service = new LecturerService(_lecturerRepositoryMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.CheckLecturer(idOfLecturerToCheck));
         }
     }
 }

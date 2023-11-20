@@ -6,6 +6,9 @@ using DrivingSchoolApp.Services;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolAppTests.Controllers
 {
@@ -26,7 +29,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Lecturers_ReturnsOk()
         {
             var lecturersList = new PagedList<LecturerGetDTO>();
-            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).Returns(Task.FromResult(lecturersList));
+            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).ReturnsAsync(lecturersList);
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetLecturers(1, 10);
@@ -37,7 +40,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lecturers_ThrowsNotFoundLecturerException()
         {
-            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).Throws(new NotFoundLecturerException());
+            _lecturerServiceMock.Setup(service => service.GetLecturers(1, 10)).ThrowsAsync(new NotFoundLecturerException());
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetLecturers(1, 10);
@@ -48,7 +51,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Lecturers_ThrowsValueMustBeGreaterThanZeroException()
         {
-            _lecturerServiceMock.Setup(service => service.GetLecturers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _lecturerServiceMock.Setup(service => service.GetLecturers(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.GetLecturers(-1, 10);
@@ -61,7 +64,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var lecturer = new LecturerGetDTO();
             var idOfLecturerToFind = 1;
-            _lecturerServiceMock.Setup(service => service.GetLecturer(idOfLecturerToFind)).Returns(Task.FromResult(lecturer));
+            _lecturerServiceMock.Setup(service => service.GetLecturer(idOfLecturerToFind)).ReturnsAsync(lecturer);
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetLecturer(idOfLecturerToFind);
@@ -73,7 +76,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Lecturer_ThrowsNotFoundLecturerException()
         {
             var idOfLecturerToFind = 1;
-            _lecturerServiceMock.Setup(service => service.GetLecturer(idOfLecturerToFind)).Throws(new NotFoundLecturerException(idOfLecturerToFind));
+            _lecturerServiceMock.Setup(service => service.GetLecturer(idOfLecturerToFind)).ThrowsAsync(new NotFoundLecturerException(idOfLecturerToFind));
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetLecturer(idOfLecturerToFind);
@@ -86,12 +89,73 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var lecturerToAdd = new LecturerPostDTO();
             var addedLecturer = new LecturerGetDTO();
-            _lecturerServiceMock.Setup(service => service.PostLecturer(lecturerToAdd)).Returns(Task.FromResult(addedLecturer));
+            _lecturerServiceMock.Setup(service => service.PostLecturer(lecturerToAdd)).ReturnsAsync(addedLecturer);
             _controller = new LecturerController(_lecturerServiceMock.Object);
 
             var result = (CreatedAtActionResult)await _controller.PostLecturer(lecturerToAdd);
 
             result.StatusCode.Should().Be(201);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ReturnNoContent()
+        {
+            var deletedLecturer = new Lecturer();
+            var idOfLecturerToDelete = 1;
+            _lecturerServiceMock.Setup(service => service.DeleteLecturer(idOfLecturerToDelete)).ReturnsAsync(deletedLecturer);
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteLecturer(idOfLecturerToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ThrowsNotFoundLecturerException()
+        {
+            var idOfLecturerToDelete = 1;
+            _lecturerServiceMock.Setup(service => service.DeleteLecturer(idOfLecturerToDelete)).ThrowsAsync(new NotFoundLecturerException(idOfLecturerToDelete));
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteLecturer(idOfLecturerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ThrowsReferenceConstraintException()
+        {
+            var idOfLecturerToDelete = 1;
+            _lecturerServiceMock.Setup(service => service.DeleteLecturer(idOfLecturerToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteLecturer(idOfLecturerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ThrowsDbUpdateException()
+        {
+            var idOfLecturerToDelete = 1;
+            _lecturerServiceMock.Setup(service => service.DeleteLecturer(idOfLecturerToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteLecturer(idOfLecturerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Lecturer_ThrowsException()
+        {
+            var idOfLecturerToDelete = 1;
+            _lecturerServiceMock.Setup(service => service.DeleteLecturer(idOfLecturerToDelete)).ThrowsAsync(new Exception());
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteLecturer(idOfLecturerToDelete);
+
+            result.StatusCode.Should().Be(500);
         }
     }
 }

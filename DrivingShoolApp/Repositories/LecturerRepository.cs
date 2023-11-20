@@ -9,6 +9,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size);
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
         public Task<Lecturer> PostLecturer(LecturerPostDTO lecturerDetails);
+        public Task<Lecturer> CheckLecturer(int lecturerId);
+        public Task<Lecturer> DeleteLecturer(Lecturer lecturerToDelete);
     }
     public class LecturerRepository : ILecturerRepository
     {
@@ -53,6 +55,21 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Lecturers.AddAsync(lecturerToAdd);
             await _dbContext.SaveChangesAsync();
             return lecturerToAdd;
+        }
+
+        public async Task<Lecturer> CheckLecturer(int lecturerId)
+        {
+            return await _dbContext.Lecturers
+                             .Where(l => l.Id == lecturerId)
+                             .AsNoTracking()
+                             .FirstOrDefaultAsync();
+        }
+
+        public async Task<Lecturer> DeleteLecturer(Lecturer lecturerToDelete)
+        {
+            var deletedLecturer = _dbContext.Lecturers.Remove(lecturerToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedLecturer.Entity;
         }
     }
 }
