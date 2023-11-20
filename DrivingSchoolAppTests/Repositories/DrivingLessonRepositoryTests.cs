@@ -325,7 +325,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new DrivingLessonRepository(_dbContext);
 
-            var result = await _repository.GetDrivingLesson(idOfDrivingLessonToFind);
+            var result = await _repository.CheckDrivingLesson(idOfDrivingLessonToFind);
 
             Assert.IsNull(result);
         }

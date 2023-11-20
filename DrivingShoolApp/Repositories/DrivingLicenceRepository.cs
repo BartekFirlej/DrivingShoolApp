@@ -10,6 +10,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
+        public Task<DrivingLicence> DeleteDrivingLicence(DrivingLicence drivingLicenceToDelete);
+        public Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId);
     }
     public class DrivingLicenceRepository : IDrivingLicenceRepository
     {
@@ -104,6 +106,21 @@ namespace DrivingSchoolApp.Repositories
                                        ReceivedDate = d.ReceivedDate,
                                        ExpirationDate = (DateTime)d.ExpirationDate
                                    }).ToListAsync();
+        }
+
+        public async Task<DrivingLicence> DeleteDrivingLicence(DrivingLicence drivingLicenceToDelete)
+        {
+            var deletedDrivingLicence = _dbContext.DrivingLicences.Remove(drivingLicenceToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedDrivingLicence.Entity;
+        }
+
+        public async Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId)
+        {
+            return await _dbContext.DrivingLicences
+                                   .Where(d => d.Id == drivingLicenceId)
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync();
         }
     }
 }

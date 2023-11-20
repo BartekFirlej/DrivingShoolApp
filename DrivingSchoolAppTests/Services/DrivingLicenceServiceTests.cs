@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Castle.Core.Resource;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -32,7 +33,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var drivingLicence = new DrivingLicenceGetDTO();
             var drivingLicencesList = new PagedList<DrivingLicenceGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLicenceGetDTO> { drivingLicence }, HasNextPage = false };
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).Returns(Task.FromResult(drivingLicencesList));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).ReturnsAsync(drivingLicencesList);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -45,7 +46,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_DrivingLicences_ThrowsNotFoundDrivingLicencesException()
         {
             var drivingLicencesList = new PagedList<DrivingLicenceGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLicenceGetDTO>(), HasNextPage = false };
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).Returns(Task.FromResult(drivingLicencesList));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(1, 10)).ReturnsAsync(drivingLicencesList);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -55,7 +56,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_DrivingLicences_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicences(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -67,7 +68,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var drivingLicence = new DrivingLicenceGetDTO();
             var idOfDrivingLicenceToFind = 1;
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(idOfDrivingLicenceToFind)).Returns(Task.FromResult(drivingLicence));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(idOfDrivingLicenceToFind)).ReturnsAsync(drivingLicence);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -80,7 +81,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_DrivingLicence_ThrowsNotFoundDrivingLicenceException()
         {
             var idOfDrivingLicenceToFind = 1;
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(idOfDrivingLicenceToFind)).Returns(Task.FromResult<DrivingLicenceGetDTO>(null));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(idOfDrivingLicenceToFind)).ReturnsAsync((DrivingLicenceGetDTO)null);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -96,12 +97,12 @@ namespace DrivingSchoolAppTests.Services
             var addedDrivingLicence = new DrivingLicence { Id = 1, ExpirationDate = new DateTime(2015,1,1), ReceivedDate = new DateTime(2014,1,1), CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id };
             var addedDrivingLicenceDTO = new DrivingLicenceGetDTO { Id = 1, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1), CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, LicenceCategoryName = "Test", CustomerName = "Test", CutomserSecondName = "Test" };
             var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1) };
-            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).Returns(Task.FromResult(customer));
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).Returns(Task.FromResult(licenceCategory));
-            _requiredLicenceCategoryServiceMock.Setup(service => service.MeetRequirements(customerDrivingLicences, drivingLicenceToAdd.LicenceCategoryId, drivingLicenceToAdd.ReceivedDate)).Returns(Task.FromResult(true));
-            _drivingLicenceRepositoryMock.Setup(repo => repo.PostDrivingLicence(drivingLicenceToAdd)).Returns(Task.FromResult(addedDrivingLicence));
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(addedDrivingLicence.Id)).Returns(Task.FromResult(addedDrivingLicenceDTO));
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(drivingLicenceToAdd.CustomerId, drivingLicenceToAdd.ReceivedDate)).Returns(Task.FromResult(customerDrivingLicences));
+            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).ReturnsAsync(customer);
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).ReturnsAsync(licenceCategory);
+            _requiredLicenceCategoryServiceMock.Setup(service => service.MeetRequirements(customerDrivingLicences, drivingLicenceToAdd.LicenceCategoryId, drivingLicenceToAdd.ReceivedDate)).ReturnsAsync(true);
+            _drivingLicenceRepositoryMock.Setup(repo => repo.PostDrivingLicence(drivingLicenceToAdd)).ReturnsAsync(addedDrivingLicence);
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetDrivingLicence(addedDrivingLicence.Id)).ReturnsAsync(addedDrivingLicenceDTO);
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(drivingLicenceToAdd.CustomerId, drivingLicenceToAdd.ReceivedDate)).ReturnsAsync(customerDrivingLicences);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -153,7 +154,7 @@ namespace DrivingSchoolAppTests.Services
             var customer = new CustomerGetDTO { Id = 1, Name = "Test", SecondName = "Test", BirthDate = new DateTime(2000, 1, 1) };
             var licenceCategory = new LicenceCategoryGetDTO { Id = 1, Name = "Test" };
             var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1) };
-            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).Throws(new NotFoundCustomerException(drivingLicenceToAdd.CustomerId));
+            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).ThrowsAsync(new NotFoundCustomerException(drivingLicenceToAdd.CustomerId));
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -166,8 +167,8 @@ namespace DrivingSchoolAppTests.Services
             var customer = new CustomerGetDTO { Id = 1, Name = "Test", SecondName = "Test", BirthDate = new DateTime(2000, 1, 1) };
             var licenceCategory = new LicenceCategoryGetDTO { Id = 1, Name = "Test" };
             var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1) };
-            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).Returns(Task.FromResult(customer));
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).Throws(new NotFoundLicenceCategoryException(drivingLicenceToAdd.LicenceCategoryId));
+            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).ReturnsAsync(customer);
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).ThrowsAsync(new NotFoundLicenceCategoryException(drivingLicenceToAdd.LicenceCategoryId));
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -183,14 +184,65 @@ namespace DrivingSchoolAppTests.Services
             var addedDrivingLicence = new DrivingLicence { Id = 1, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1), CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id };
             var addedDrivingLicenceDTO = new DrivingLicenceGetDTO { Id = 1, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1), CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, LicenceCategoryName = "Test", CustomerName = "Test", CutomserSecondName = "Test" };
             var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = customer.Id, LicenceCategoryId = licenceCategory.Id, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1) };
-            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).Returns(Task.FromResult(customer));
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).Returns(Task.FromResult(licenceCategory));
-            _requiredLicenceCategoryServiceMock.Setup(service => service.MeetRequirements(customerDrivingLicences, drivingLicenceToAdd.LicenceCategoryId, drivingLicenceToAdd.ReceivedDate)).Returns(Task.FromResult(false));
-            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(drivingLicenceToAdd.CustomerId, drivingLicenceToAdd.ReceivedDate)).Returns(Task.FromResult(customerDrivingLicences));
+            _customerServiceMock.Setup(service => service.GetCustomer(drivingLicenceToAdd.CustomerId)).ReturnsAsync(customer);
+            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(drivingLicenceToAdd.LicenceCategoryId)).ReturnsAsync(licenceCategory);
+            _requiredLicenceCategoryServiceMock.Setup(service => service.MeetRequirements(customerDrivingLicences, drivingLicenceToAdd.LicenceCategoryId, drivingLicenceToAdd.ReceivedDate)).ReturnsAsync(false);
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(drivingLicenceToAdd.CustomerId, drivingLicenceToAdd.ReceivedDate)).ReturnsAsync(customerDrivingLicences);
             _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<CustomerDoesntMeetRequirementsException>(async () => await _service.PostDrivingLicence(drivingLicenceToAdd));
+        }
+
+        [TestMethod]
+        public async Task Delete_DrivingLicence_ReturnsDrivingLicence()
+        {
+            var drivingLicence = new DrivingLicence { Id = 1, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1), CustomerId = 1, LicenceCategoryId = 1 };
+            var idOfDrivingLicence = 1;
+            _drivingLicenceRepositoryMock.Setup(repo => repo.CheckDrivingLicence(idOfDrivingLicence)).ReturnsAsync(drivingLicence);
+            _drivingLicenceRepositoryMock.Setup(repo => repo.DeleteDrivingLicence(drivingLicence)).ReturnsAsync(drivingLicence);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = await _service.DeleteDrivingLicence(idOfDrivingLicence);
+
+            Assert.AreEqual(drivingLicence, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_DrivingLicence_ThrowsNotFoundDrivingLicenceException()
+        {
+            var idOfDrivingLicence = 1;
+            _drivingLicenceRepositoryMock.Setup(repo => repo.CheckDrivingLicence(idOfDrivingLicence)).ReturnsAsync((DrivingLicence)null);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.DeleteDrivingLicence(idOfDrivingLicence));
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicence_ReturnsDrivingLicence()
+        {
+            var drivingLicence = new DrivingLicence { Id = 1, ExpirationDate = new DateTime(2015, 1, 1), ReceivedDate = new DateTime(2014, 1, 1), CustomerId = 1, LicenceCategoryId = 1 };
+            var idOfDrivingLicence = 1;
+            _drivingLicenceRepositoryMock.Setup(repo => repo.CheckDrivingLicence(idOfDrivingLicence)).ReturnsAsync(drivingLicence);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = await _service.CheckDrivingLicence(idOfDrivingLicence);
+
+            Assert.AreEqual(drivingLicence, result);
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicence_ThrowsDrivingLicenceException()
+        {
+            var idOfDrivingLicence = 10;
+            _drivingLicenceRepositoryMock.Setup(repo => repo.CheckDrivingLicence(idOfDrivingLicence)).ReturnsAsync((DrivingLicence)null);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.DeleteDrivingLicence(idOfDrivingLicence));
         }
     }
 }

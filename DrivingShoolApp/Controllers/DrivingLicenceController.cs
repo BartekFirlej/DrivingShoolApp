@@ -2,6 +2,8 @@
 using DrivingSchoolApp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using DrivingSchoolApp.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using EntityFramework.Exceptions.Common;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -75,6 +77,28 @@ namespace DrivingSchoolApp.Controllers
                 return BadRequest(e.ToJson());
             }
             return CreatedAtAction(nameof(PostDrivingLicence), addedDrivingLicence);
+        }
+
+        [HttpDelete("{drivinglicenceid}")]
+        public async Task<IActionResult> DeleteDrivingLicence(int drivinglicenceid)
+        {
+            try
+            {
+                await _drivingLicenceService.DeleteDrivingLicence(drivinglicenceid);
+            }
+            catch (NotFoundDrivingLicenceException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
         }
     }
 }

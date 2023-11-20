@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
+        public Task<DrivingLicence> DeleteDrivingLicence(int drivingLicenceId);
+        public Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId);
 
     }
     public class DrivingLicenceService : IDrivingLicenceService
@@ -71,6 +74,20 @@ namespace DrivingSchoolApp.Services
                 throw new CustomerDoesntMeetRequirementsException(drivingLicenceDetails.CustomerId, drivingLicenceDetails.LicenceCategoryId);
             var addedDrivingLicence = await _drivingLicenceRepository.PostDrivingLicence(drivingLicenceDetails);
             return await _drivingLicenceRepository.GetDrivingLicence(addedDrivingLicence.Id);
+        }
+
+        public async Task<DrivingLicence> DeleteDrivingLicence(int drivingLicenceId)
+        {
+            var drivingLicenceToDelete = await CheckDrivingLicence(drivingLicenceId);
+            return await _drivingLicenceRepository.DeleteDrivingLicence(drivingLicenceToDelete);
+        }
+
+        public async Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId)
+        {
+            var drivingLicence = await _drivingLicenceRepository.CheckDrivingLicence(drivingLicenceId);
+            if (drivingLicence == null)
+                throw new NotFoundDrivingLicenceException(drivingLicenceId);
+            return drivingLicence;
         }
     }
 }

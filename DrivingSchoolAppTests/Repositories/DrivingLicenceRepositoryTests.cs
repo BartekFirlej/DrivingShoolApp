@@ -290,5 +290,70 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customer2.SecondName, retrievedDrivingLicence.CutomserSecondName);
             Assert.AreEqual(licenceCategory1.Name, retrievedDrivingLicence.LicenceCategoryName);
         }
+
+        [TestMethod]
+        public async Task Delete_DrivingLicence_ReturnsDrivingLicence()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.DeleteDrivingLicence(drivingLicence2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
+            Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
+            Assert.AreEqual(1, await _dbContext.DrivingLicences.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicence_ReturnsDrivingLicence()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLicenceToFind = 2;
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.CheckDrivingLicence(idOfDrivingLicenceToFind);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
+            Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicence_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLicenceToFind = 3;
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.CheckDrivingLicence(idOfDrivingLicenceToFind);
+
+            Assert.IsNull(result);
+        }
     }
 }
