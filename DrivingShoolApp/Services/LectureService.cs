@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Services
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails);
         public Task<bool> GetCourseLectureSubject(int courseId, int subjectId);
+        public Task<Lecture> CheckLecture(int lectureId);
+        public Task<Lecture> DeleteLecture(int lectureId);
     }
     public class LectureService : ILectureService
     {
@@ -61,6 +64,20 @@ namespace DrivingSchoolApp.Services
                 throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);
             return await _lectureRepository.GetLecture(addedLecture.Id);
+        }
+
+        public async Task<Lecture> CheckLecture(int lectureId)
+        {
+            var lecture = await _lectureRepository.CheckLecture(lectureId);
+            if (lecture == null)
+                throw new NotFoundLectureException(lectureId);
+            return lecture;
+        }
+
+        public async Task<Lecture> DeleteLecture(int lectureId)
+        {
+            var lectureToDelete = await CheckLecture(lectureId);
+            return await _lectureRepository.DeleteLecture(lectureToDelete);
         }
     }
 }

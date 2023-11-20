@@ -10,6 +10,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<Lecture> PostLecture(LecturePostDTO lectureDetails);
         public Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId);
+        public Task<Lecture> CheckLecture(int lectureId);
+        public Task<Lecture> DeleteLecture(Lecture lectureToDelete);
     }
     public class LectureRepository : ILectureRepository
     {
@@ -93,6 +95,21 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId)
         {
             return await _dbContext.Lectures.FirstOrDefaultAsync(l => l.CourseSubjectsCourseId == courseId && l.CourseSubjectsSubjectId == subjectId);
+        }
+
+        public async Task<Lecture> CheckLecture(int lectureId)
+        {
+            return await _dbContext.Lectures
+               .Where(l => l.Id == lectureId)
+               .AsNoTracking()
+               .FirstOrDefaultAsync();
+        }
+
+        public async Task<Lecture> DeleteLecture(Lecture lectureToDelete)
+        {
+            var deletedLecture = _dbContext.Lectures.Remove(lectureToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedLecture.Entity;
         }
     }
 }

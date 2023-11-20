@@ -336,5 +336,74 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestStreet1", retrievedLecture.Street);
             Assert.AreEqual(10, retrievedLecture.Number);
         }
+
+        [TestMethod]
+        public async Task Delete_Lecture_ReturnsLecture()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.DeleteLecture(lecture2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(1, result.ClassroomId);
+            Assert.AreEqual(1, result.CourseSubjectsCourseId);
+            Assert.AreEqual(2, result.CourseSubjectsSubjectId);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
+            Assert.AreEqual(1, await _dbContext.Lectures.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_Lecture_ReturnsLecture()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLectureToCheck = 2;
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.CheckLecture(idOfLectureToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(1, result.ClassroomId);
+            Assert.AreEqual(1, result.CourseSubjectsCourseId);
+            Assert.AreEqual(2, result.CourseSubjectsSubjectId);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
+        }
+
+        [TestMethod]
+        public async Task Check_Lecture_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLectureToCheck = 3;
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.CheckLecture(idOfLectureToCheck);
+
+            Assert.IsNull(result);
+        }
     }
 }
