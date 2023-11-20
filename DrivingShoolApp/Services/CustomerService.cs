@@ -1,6 +1,7 @@
 ﻿using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Models;
 
 namespace DrivingSchoolApp.Services
 {
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Services
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer);
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
+        public Task<Customer> CheckCustomer(int customerId);
+        public Task<Customer> DeleteCustomer(int customerId);
     }
     public class CustomerService : ICustomerService
     {
@@ -50,6 +53,20 @@ namespace DrivingSchoolApp.Services
             if (assignDate >= RequiredDate)
                 return true;
             return false;
+        }
+
+        public async Task<Customer> CheckCustomer(int customerId)
+        {
+            var customer = await _customerRepository.CheckCustomer(customerId);
+            if (customer == null)
+                throw new NotFoundCustomerException(customerId);
+            return customer;
+        }
+
+        public async Task<Customer> DeleteCustomer(int customerId)
+        {
+            var customerToDelete = await CheckCustomer(customerId);
+            return await _customerRepository.DeleteCustomer(customerToDelete);
         }
     }
 }

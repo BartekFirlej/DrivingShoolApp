@@ -3,6 +3,9 @@ using DrivingSchoolApp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -120,6 +123,33 @@ namespace DrivingSchoolApp.Controllers
                 return Conflict(e.ToJson());
             }
             return CreatedAtAction(nameof(RegisterCustomerForCourse), customerRegistration);
+        }
+
+        [HttpDelete("{customerid}")]
+        public async Task<IActionResult> DeleteCustomer(int customerid)
+        {
+            Customer deleted;
+            try
+            {
+                deleted = await _customerService.DeleteCustomer(customerid);
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This customer refers to something." } });
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
         }
     }
 }

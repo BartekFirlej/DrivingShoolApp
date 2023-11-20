@@ -9,6 +9,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size);
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<Customer> PostCustomer(CustomerPostDTO customerDetails);
+        public Task<Customer> CheckCustomer(int customerId);
+        public Task<Customer> DeleteCustomer(Customer customerToDelete);
     }
     public class CustomerRepository : ICustomerRepository
     {
@@ -57,6 +59,21 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Customers.AddAsync(customerToAdd);
             await _dbContext.SaveChangesAsync();
             return customerToAdd;
+        }
+
+        public async Task<Customer> CheckCustomer(int customerId)
+        {
+            return await _dbContext.Customers
+                            .Where(u => u.Id == customerId)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+        }
+
+        public async Task<Customer> DeleteCustomer(Customer customerToDelete)
+        {
+            var deletedCustomer = _dbContext.Customers.Remove(customerToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedCustomer.Entity;
         }
     }
 }

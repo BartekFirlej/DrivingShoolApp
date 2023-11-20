@@ -118,7 +118,7 @@ namespace DrivingSchoolAppTests.Repositories
         }
 
         [TestMethod]
-        public async Task Post_Custoemr_ReturnsAddedCustomer()
+        public async Task Post_Customer_ReturnsAddedCustomer()
         {
             var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -143,6 +143,71 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customerToAdd.Name, retrievedCustomer.Name);
             Assert.AreEqual(customerToAdd.SecondName, retrievedCustomer.SecondName);
             Assert.AreEqual(customerToAdd.BirthDate, retrievedCustomer.BirthDate);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ReturnsCustomer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.DeleteCustomer(customer2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestName2", result.Name);
+            Assert.AreEqual("TestSName2", result.SecondName);
+            Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
+            Assert.AreEqual(1, await _dbContext.Customers.CountAsync());
+        }
+
+        [TestMethod]
+        public async Task Check_Customer_ReturnsCustomer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCustomerToCheck = 2;
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.CheckCustomer(idOfCustomerToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestName2", result.Name);
+            Assert.AreEqual("TestSName2", result.SecondName);
+            Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
+        }
+
+        [TestMethod]
+        public async Task Check_Customer_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCustomerToCheck = 3;
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.CheckCustomer(idOfCustomerToCheck);
+
+            Assert.IsNull(result);
         }
     }
 }

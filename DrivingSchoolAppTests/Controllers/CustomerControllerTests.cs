@@ -7,6 +7,9 @@ using DrivingSchoolApp.Services;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using DrivingSchoolApp.Models;
+using EntityFramework.Exceptions.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolAppTests.Controllers
 {
@@ -237,6 +240,67 @@ namespace DrivingSchoolAppTests.Controllers
             var result = (ConflictObjectResult)await _controller.RegisterCustomerForCourse(registrationToAdd);
 
             result.StatusCode.Should().Be(409);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ReturnNoContent()
+        {
+            var deletedCustomer = new Customer();
+            var idOfCustomerToDelete = 1;
+            _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ReturnsAsync(deletedCustomer);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomerToDelete = 1;
+            _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToDelete));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ThrowsReferenceConstraintException()
+        {
+            var idOfCustomerToDelete = 1;
+            _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ThrowsDbUpdateException()
+        {
+            var idOfCustomerToDelete = 1;
+            _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Customer_ThrowsException()
+        {
+            var idOfCustomerToDelete = 1;
+            _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new Exception());
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
         }
     }
 } 
