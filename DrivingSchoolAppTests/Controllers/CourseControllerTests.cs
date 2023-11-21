@@ -373,5 +373,97 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ReturnNoContent()
+        {
+            var deletedCourseSubject = new CourseSubject();
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ReturnsAsync(deletedCourseSubject);
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new NotFoundCourseException(idOfCourseToDelete));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundSubjectException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new NotFoundSubjectException(idOfSubjectToDelete));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundCourseSubjectException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new NotFoundCourseSubjectException(idOfCourseToDelete, idOfSubjectToDelete));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsReferenceConstraintException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsDbUpdateException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfSubjectToDelete = 1;
+            _courseSubjectServiceMock.Setup(service => service.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete)).ThrowsAsync(new Exception());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCourseSubject(idOfCourseToDelete, idOfSubjectToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
     }
 }

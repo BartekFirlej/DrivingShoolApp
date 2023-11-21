@@ -51,15 +51,17 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_CourseSubject_ReturnsCourseSubject()
         {
+            var idOfCourseToFind = 1;
+            var idOfSubjectToFind = 1;
             var courseSubject = new CourseSubjectGetDTO();
             var course = new CourseGetDTO();
             var subject = new SubjectGetDTO();
-            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(course.Id, subject.Id)).ReturnsAsync(courseSubject);
-            _courseServiceMock.Setup(service => service.GetCourse(course.Id)).ReturnsAsync(course);
-            _subjectServiceMock.Setup(service => service.GetSubject(subject.Id)).Returns(Task.FromResult(subject));
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind)).ReturnsAsync(courseSubject);
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.GetSubject(idOfSubjectToFind)).ReturnsAsync(subject);
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            var result = await _service.GetCourseSubject(course.Id, subject.Id);
+            var result = await _service.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind);
 
             Assert.AreEqual(courseSubject, result);
         }
@@ -67,49 +69,53 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_CourseSubject_ThrowsNotFoundCourseException()
         {
-            var idOfCourseTypeToFind = 1;
-            var subject = new SubjectGetDTO();
-            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseTypeToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseTypeToFind));
+            var idOfCourseToFind = 1;
+            var idOfSubjectToFind = 1;
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseSubject(idOfCourseTypeToFind, subject.Id));
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
 
         [TestMethod]
         public async Task Get_CourseSubject_ThrowsNotFoundSubjectException()
         {
             var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
             var course = new CourseGetDTO();
-            _courseServiceMock.Setup(service => service.GetCourse(course.Id)).ReturnsAsync(course);
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
             _subjectServiceMock.Setup(service => service.GetSubject(idOfSubjectToFind)).ThrowsAsync(new NotFoundSubjectException(idOfSubjectToFind));
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetCourseSubject(course.Id, idOfSubjectToFind));
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
 
         [TestMethod]
         public async Task Get_CourseSubject_ThrowsNotFoundCourseSubjectException()
         {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
             var course = new CourseGetDTO();
             var subject = new SubjectGetDTO();
-            _courseServiceMock.Setup(service => service.GetCourse(course.Id)).ReturnsAsync(course);
-            _subjectServiceMock.Setup(service => service.GetSubject(subject.Id)).ReturnsAsync(subject);
-            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(course.Id, subject.Id)).ThrowsAsync(new NotFoundCourseSubjectException(course.Id, subject.Id));
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.GetSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind)).ThrowsAsync(new NotFoundCourseSubjectException(course.Id, subject.Id));
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.GetCourseSubject(course.Id, subject.Id));
+            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
 
         [TestMethod]
         public async Task Get_CourseSubjects_ReturnsCourseSubjects()
         {
+            var idOfCourseToFind = 1;
             var courseSubjects = new CourseSubjectsGetDTO();
             var course = new CourseGetDTO();
-            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubjects(course.Id)).ReturnsAsync(courseSubjects);
-            _courseServiceMock.Setup(service => service.GetCourse(course.Id)).ReturnsAsync(course);
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubjects(idOfCourseToFind)).ReturnsAsync(courseSubjects);
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            var result = await _service.GetCourseSubjects(course.Id);
+            var result = await _service.GetCourseSubjects(idOfCourseToFind);
 
             Assert.AreEqual(courseSubjects, result);
         }
@@ -117,24 +123,82 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Get_CourseSubjects_ThrowsNotFoundCourseException()
         {
-            var idOfCourseTypeToFind = 1;
+            var idOfCourseToFind = 1;
             var subject = new SubjectGetDTO();
-            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseTypeToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseTypeToFind));
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseSubjects(idOfCourseTypeToFind));
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetCourseSubjects(idOfCourseToFind));
         }
 
         [TestMethod]
         public async Task Get_CourseSubjects_ThrowsNotFoundCourseSubjectException()
         {
-            var idOfCourseTypeToFind = 1;
+            var idOfCourseToFind = 1;
             var course = new CourseGetDTO();
-            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseTypeToFind)).ReturnsAsync(course);
-            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubjects(idOfCourseTypeToFind)).ReturnsAsync((CourseSubjectsGetDTO)null);
+            _courseServiceMock.Setup(service => service.GetCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubjects(idOfCourseToFind)).ReturnsAsync((CourseSubjectsGetDTO)null);
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.GetCourseSubjects(idOfCourseTypeToFind));
+            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.GetCourseSubjects(idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Check_CourseSubject_ReturnsCourseSubject()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var courseSubject = new CourseSubject();
+            var course = new Course();
+            var subject = new Subject();
+            _courseSubjectRepositoryMock.Setup(repo => repo.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind)).ReturnsAsync(courseSubject);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            var result = await _service.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind);
+
+            Assert.AreEqual(courseSubject, result);
+        }
+
+        [TestMethod]
+        public async Task Check_CourseSubject_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToFind = 1;
+            var idOfSubjectToFind = 1;
+            var subject = new SubjectGetDTO();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind));
+        }
+
+        [TestMethod]
+        public async Task Check_CourseSubject_ThrowsNotFoundSubjectException()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var course = new Course();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ThrowsAsync(new NotFoundSubjectException(idOfSubjectToFind));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind));
+        }
+
+        [TestMethod]
+        public async Task Check_CourseSubject_ThrowsNotFoundCourseSubjectException()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var course = new Course();
+            var subject = new Subject();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(course.Id, idOfSubjectToFind)).ThrowsAsync(new NotFoundCourseSubjectException(course.Id, subject.Id));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
 
         [TestMethod]     
@@ -223,6 +287,65 @@ namespace DrivingSchoolAppTests.Services
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<TakenSequenceNumberException>(async () => await _service.PostCourseSubject(courseSubjectToAdd));
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ReturnsCourseSubject()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var courseSubject = new CourseSubject();
+            var course = new Course();
+            var subject = new Subject();
+            _courseSubjectRepositoryMock.Setup(repo => repo.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind)).ReturnsAsync(courseSubject);
+            _courseSubjectRepositoryMock.Setup(repo => repo.DeleteCourseSubject(courseSubject)).ReturnsAsync(courseSubject);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            var result = await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind);
+
+            Assert.AreEqual(courseSubject, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToFind = 1;
+            var idOfSubjectToFind = 1;
+            var subject = new SubjectGetDTO();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind));
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundSubjectException()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var course = new Course();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ThrowsAsync(new NotFoundSubjectException(idOfSubjectToFind));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind));
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_ThrowsNotFoundCourseSubjectException()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var course = new Course();
+            var subject = new Subject();
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _courseSubjectRepositoryMock.Setup(repo => repo.GetCourseSubject(course.Id, idOfSubjectToFind)).ThrowsAsync(new NotFoundCourseSubjectException(course.Id, subject.Id));
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
     }
 }

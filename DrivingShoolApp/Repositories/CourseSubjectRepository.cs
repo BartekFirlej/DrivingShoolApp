@@ -8,9 +8,11 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
+        public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
         public Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
+        public Task<CourseSubject> DeleteCourseSubject(CourseSubject courseSubjectToDelete);
     }
     public class CourseSubjectRepository : ICourseSubjectRepository
     {
@@ -19,6 +21,21 @@ namespace DrivingSchoolApp.Repositories
         public CourseSubjectRepository(DrivingSchoolDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId)
+        {
+            return await _dbContext.CourseSubjects
+                        .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
+        }
+
+        public async Task<CourseSubject> DeleteCourseSubject(CourseSubject courseSubjectToDelete)
+        {
+            var deletedCourseSubject = _dbContext.CourseSubjects.Remove(courseSubjectToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedCourseSubject.Entity;
         }
 
         public async Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects()

@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 namespace DrivingSchoolApp.Services
@@ -9,7 +10,9 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
+        public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectGetDTO> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
+        public Task<CourseSubject> DeleteCourseSubject(int courseId, int subjectId);
     }
     public class CourseSubjectService : ICourseSubjectService
     {
@@ -64,6 +67,21 @@ namespace DrivingSchoolApp.Services
                 throw new TakenSequenceNumberException(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber);
             var addedSubjectService = await _courseSubjectRepository.PostCourseSubject(courseSubjectDetails);
             return await _courseSubjectRepository.GetCourseSubject(addedSubjectService.CourseId, courseSubjectDetails.SubjectId);
+        }
+        public async Task<CourseSubject> DeleteCourseSubject(int courseId, int subjectId)
+        {
+            var courseSubjectToDelete = await CheckCourseSubject(courseId, subjectId);
+            return await _courseSubjectRepository.DeleteCourseSubject(courseSubjectToDelete);
+        }
+
+        public async Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId)
+        {
+            var course = await _courseService.CheckCourse(courseId);
+            var subject = await _subjectService.CheckSubject(subjectId);
+            var courseSubject = await _courseSubjectRepository.CheckCourseSubject(courseId, subjectId);
+            if (courseSubject == null)
+                throw new NotFoundCourseSubjectException(courseId, subjectId);
+            return courseSubject;
         }
     }
 }
