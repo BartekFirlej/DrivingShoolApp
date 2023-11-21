@@ -94,37 +94,6 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostCustomer), addedCustomer);
         }
 
-        [HttpPost("course")]
-        public async Task<IActionResult> RegisterCustomerForCourse(RegistrationPostDTO registrationDetails)
-        {
-            RegistrationGetDTO customerRegistration;
-            try
-            {
-                customerRegistration = await _registrationService.PostRegistration(registrationDetails);
-            }
-            catch(NotFoundCustomerException e)
-            {
-                return NotFound(e.ToJson());
-            }
-            catch(NotFoundCourseException e)
-            {
-                return NotFound(e.ToJson());
-            }
-            catch(CustomerAlreadyAssignedToCourseException e)
-            {
-                return Conflict(e.ToJson());
-            }
-            catch(CustomerDoesntMeetRequirementsException e)
-            {
-                return Conflict(e.ToJson());
-            }
-            catch(AssignLimitReachedException e)
-            {
-                return Conflict(e.ToJson());
-            }
-            return CreatedAtAction(nameof(RegisterCustomerForCourse), customerRegistration);
-        }
-
         [HttpDelete("{customerid}")]
         public async Task<IActionResult> DeleteCustomer(int customerid)
         {
