@@ -375,5 +375,69 @@ namespace DrivingSchoolAppTests.Services
 
             Assert.IsFalse(result);
         }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ReturnsRequirement()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 2;
+            var licenceCategory = new LicenceCategory();
+            var requiredLicenceCategory = new LicenceCategory();
+            var requirement = new RequiredLicenceCategory();
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfLicenceCategory)).ReturnsAsync(licenceCategory);
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfRequiredLicenceCategory)).ReturnsAsync(requiredLicenceCategory);
+            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ReturnsAsync(requirement);
+            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.DeleteRequirement(requirement)).ReturnsAsync(requirement);
+            _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+
+            var result = await _service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            Assert.AreEqual(requirement, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsNotFoundLicenceCategoryException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 2;
+            var licenceCategory = new LicenceCategory();
+            var requiredLicenceCategory = new LicenceCategory();
+            var requirement = new RequiredLicenceCategory();
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfLicenceCategory)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
+            _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory));
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsNotFoundRequiredLicenceCategoryException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 2;
+            var licenceCategory = new LicenceCategory();
+            var requiredLicenceCategory = new LicenceCategory();
+            var requirement = new RequiredLicenceCategory();
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfLicenceCategory)).ReturnsAsync(licenceCategory);
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfRequiredLicenceCategory)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfRequiredLicenceCategory));
+            _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory));
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsNotFoundRequirementException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 2;
+            var licenceCategory = new LicenceCategory();
+            var requiredLicenceCategory = new LicenceCategory();
+            var requirement = new RequiredLicenceCategory();
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfLicenceCategory)).ReturnsAsync(licenceCategory);
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(idOfRequiredLicenceCategory)).ReturnsAsync(requiredLicenceCategory);
+            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ReturnsAsync((RequiredLicenceCategory)null);
+            _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundRequiredLicenceCategoryException>(async () => await _service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory));
+        }
     }
 }

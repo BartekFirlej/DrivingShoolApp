@@ -10,6 +10,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
+        public Task<RequiredLicenceCategory> DeleteRequirement(RequiredLicenceCategory requirementToDelete);
         public Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
     }
     public class RequiredLicenceCategoryRepository : IRequiredLicenceCategoryRepository
@@ -91,6 +92,13 @@ namespace DrivingSchoolApp.Repositories
                           where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
                           select rlc)
                           .FirstOrDefaultAsync();
+        }
+
+        public async Task<RequiredLicenceCategory> DeleteRequirement(RequiredLicenceCategory requirementToDelete)
+        {
+            var deletedRequirement = _dbContext.RequiredLicenceCategories.Remove(requirementToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedRequirement.Entity;
         }
     }
 }

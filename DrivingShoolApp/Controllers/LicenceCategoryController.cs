@@ -131,5 +131,32 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpDelete("{licencecategoryid}/requirements/{requiredlicencecategoryid}")]
+        public async Task<IActionResult> DeleteRequirement(int licencecategoryid, int requiredlicencecategoryid)
+        {
+            RequiredLicenceCategory deleted;
+            try
+            {
+                deleted = await _requirededLicenceCategoryService.DeleteRequirement(licencecategoryid, requiredlicencecategoryid);
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundRequiredLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
+        }
     }
 }

@@ -245,5 +245,71 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Delete_Requiremnt_ReturnNoContent()
+        {
+            var deletedRequirement = new RequiredLicenceCategory();
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 1;
+            _requiredLicenceCategoryServiceMock.Setup(service => service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ReturnsAsync(deletedRequirement);
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsNotFoundLicenceCategoryException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 1;
+            _requiredLicenceCategoryServiceMock.Setup(service => service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsNotFoundRequirementException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 1;
+            _requiredLicenceCategoryServiceMock.Setup(service => service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ThrowsAsync(new NotFoundRequiredLicenceCategoryException());
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsDbUpdateException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 1;
+            _requiredLicenceCategoryServiceMock.Setup(service => service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ThrowsAsync(new DbUpdateException());
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Requirement_ThrowsException()
+        {
+            var idOfLicenceCategory = 1;
+            var idOfRequiredLicenceCategory = 1;
+            _requiredLicenceCategoryServiceMock.Setup(service => service.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory)).ThrowsAsync(new Exception());
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
+
+            result.StatusCode.Should().Be(500);
+        }
     }
 }
