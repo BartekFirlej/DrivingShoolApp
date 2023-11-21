@@ -81,6 +81,25 @@ namespace DrivingSchoolApp.Controllers
             return Ok(courseRegistrations);
         }
 
+        [HttpGet("{courseid}/subjects")]
+        public async Task<IActionResult> GetCourseSubjects(int courseid)
+        {
+            CourseSubjectsGetDTO courseSubjects;
+            try
+            {
+                courseSubjects = await _courseSubjectService.GetCourseSubjects(courseid);
+            }
+            catch (NotFoundCourseSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(courseSubjects);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostCourse(CoursePostDTO courseDetails)
         {
@@ -104,7 +123,7 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostCourse), addedCourse);
         }
 
-        [HttpPost("subject")]
+        [HttpPost("subjects")]
         public async Task<IActionResult> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
         {
             CourseSubjectGetDTO addedCourseSubject;
@@ -136,12 +155,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpDelete("{courseid}")]
-        public async Task<IActionResult> DeleteCourse(int courseId)
+        public async Task<IActionResult> DeleteCourse(int courseid)
         {
             Course deleted;
             try
             {
-                deleted = await _courseService.DeleteCourse(courseId);
+                deleted = await _courseService.DeleteCourse(courseid);
             }
             catch (NotFoundCourseException e)
             {

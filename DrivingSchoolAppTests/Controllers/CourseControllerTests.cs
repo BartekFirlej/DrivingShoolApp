@@ -141,6 +141,43 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
+        public async Task Get_CourseSubjects_ReturnsOk()
+        {
+            var courseSubjects = new CourseSubjectsGetDTO();
+            var idOfCourseToFind = 1;
+            _courseSubjectServiceMock.Setup(service => service.GetCourseSubjects(idOfCourseToFind)).ReturnsAsync(courseSubjects);
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.GetCourseSubjects(idOfCourseToFind);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Get_CourseSubjects_NotFoundCourseException()
+        {
+            var idOfCourseToFind = 1;
+            _courseSubjectServiceMock.Setup(service => service.GetCourseSubjects(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetCourseSubjects(idOfCourseToFind);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_CourseSubjects_NotFoundCourseSubjectException()
+        {
+            var idOfCourseToFind = 1;
+            _courseSubjectServiceMock.Setup(service => service.GetCourseSubjects(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseSubjectException(idOfCourseToFind));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetCourseSubjects(idOfCourseToFind);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
         public async Task Post_Course_ReturnCreatedAtAction()
         {
             var courseToAdd = new CoursePostDTO();

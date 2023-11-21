@@ -8,6 +8,7 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
+        public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
         public Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
     }
@@ -51,6 +52,47 @@ namespace DrivingSchoolApp.Repositories
                                        Duration = s.Subject.Duration,
                                        SequenceNumber = s.SequenceNumber
                                    }).FirstOrDefaultAsync();
+        }
+
+        public async Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId)
+        {
+            return await _dbContext.CourseSubjects
+                    .Include(s => s.Course)
+                    .Include(s => s.Course.CourseType)
+                    .Include(s => s.Subject)
+                    .Where(s => s.CourseId == courseId)
+                    .GroupBy(s => new
+                    {
+                        s.CourseId,
+                        s.Course.BeginDate,
+                        s.Course.Limit,
+                        s.Course.Name,
+                        s.Course.Price,
+                        s.Course.CourseTypeId,
+                        CourseTypeName = s.Course.CourseType.Name
+                    })
+                    .Select(group => new CourseSubjectsGetDTO
+                    {
+                        Id = group.Key.CourseId,
+                        BeginDate = group.Key.BeginDate,
+                        Limit = group.Key.Limit,
+                        Name = group.Key.Name,
+                        Price = group.Key.Price,
+                        CourseTypeId = group.Key.CourseTypeId,
+                        CourseTypeName = group.Key.CourseTypeName,
+                        CourseSubjects = group.Select(s => new CourseSubjectSequenceGetDTO
+                        {
+                            Subject = new SubjectGetDTO
+                            {
+                                Id = s.SubjectId,
+                                Name = s.Subject.Name,
+                                Code = s.Subject.Code,
+                                Duration = s.Subject.Duration
+                            },
+                            Sequence = s.SequenceNumber
+                        }).OrderBy(s => s.Sequence).ToList()
+                    })
+                    .FirstOrDefaultAsync();
         }
 
         public async Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
