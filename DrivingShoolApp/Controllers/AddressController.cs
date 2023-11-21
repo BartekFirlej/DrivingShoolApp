@@ -73,12 +73,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpDelete("{addressid}")]
-        public async Task<IActionResult> DeleteAddress(int addressId)
+        public async Task<IActionResult> DeleteAddress(int addressid)
         {
             Address deleted;
             try
             {
-                deleted = await _addressService.DeleteAddress(addressId);
+                deleted = await _addressService.DeleteAddress(addressid);
             }
             catch (NotFoundAddressException e)
             {
@@ -92,7 +92,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }

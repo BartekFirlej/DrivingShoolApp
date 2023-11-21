@@ -24,7 +24,9 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size)
         {
             return await PagedList<AddressGetDTO>.Create(
-                 _dbContext.Addresses.Select(a => new AddressGetDTO
+                 _dbContext.Addresses
+                 .AsNoTracking()
+                 .Select(a => new AddressGetDTO
                     {
                         Id = a.Id,
                         City = a.City,
@@ -39,6 +41,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<AddressGetDTO> GetAddress(int addressId)
         {
             return await _dbContext.Addresses
+                .AsNoTracking()
                 .Where(a => a.Id == addressId)
                 .Select(a => new AddressGetDTO
                 {
