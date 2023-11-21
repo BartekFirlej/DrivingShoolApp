@@ -137,6 +137,55 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
+        public async Task Post_RequiredLicenceCategory_ReturnsCreatedAtAction()
+        {
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            var addedRequiredLicenceCategory = new RequiredLicenceCategoryGetDTO();
+            _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ReturnsAsync(addedRequiredLicenceCategory);
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (CreatedAtActionResult)await _controller.PostRequiredLicenceCategory(requiredLicenceCategoryToAdd);
+
+            result.StatusCode.Should().Be(201);
+        }
+
+        [TestMethod]
+        public async Task Post_RequiredLicenceCategory_ThrowsNotFoundLicenceCategoryException()
+        {
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new NotFoundLicenceCategoryException());
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.PostRequiredLicenceCategory(requiredLicenceCategoryToAdd);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Post_RequiredLicenceCategory_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("years"));
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.PostRequiredLicenceCategory(requiredLicenceCategoryToAdd);
+
+            result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task Post_RequiredLicenceCategory_ThrowsRequirementAlreadyExistsException()
+        {
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new RequirementAlreadyExistsException(1, 2));
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (ConflictObjectResult)await _controller.PostRequiredLicenceCategory(requiredLicenceCategoryToAdd);
+
+            result.StatusCode.Should().Be(409);
+        }
+
+        [TestMethod]
         public async Task Delete_LicenceCategory_ReturnNoContent()
         {
             var deletedLicenceCategory = new LicenceCategory();

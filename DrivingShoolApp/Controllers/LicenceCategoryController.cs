@@ -82,6 +82,29 @@ namespace DrivingSchoolApp.Controllers
             return CreatedAtAction(nameof(PostLicenceCategory), addedLicenceCategory);
         }
 
+        [HttpPost("requirements")]
+        public async Task<IActionResult> PostRequiredLicenceCategory(RequiredLicenceCategoryPostDTO requiredLicenceCategoryDetails)
+        {
+            RequiredLicenceCategoryGetDTO addedRequiredLicenceCategory;
+            try
+            {
+                addedRequiredLicenceCategory = await _requirededLicenceCategoryService.PostRequirement(requiredLicenceCategoryDetails);
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (RequirementAlreadyExistsException e)
+            {
+                return Conflict(e.ToJson());
+            }
+            return CreatedAtAction(nameof(PostRequiredLicenceCategory), addedRequiredLicenceCategory);
+        }
+
         [HttpDelete("{licencecategoryid}")]
         public async Task<IActionResult> DeleteLicenceCategory(int licencecategoryid)
         {
