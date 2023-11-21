@@ -357,5 +357,97 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ReturnNoContent()
+        {
+            var deletedCustomerLecture = new CustomerLectureCheckDTO();
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ReturnsAsync(deletedCustomerLecture);
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsNotFoundLectureException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundLectureException(idOfLectureToDelete));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsNotFoundCustomerException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundCustomerException(idOfLectureToDelete));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsNotFoundCustomerLectureException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundCustomerLectureException(idOfLectureToDelete));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsReferenceConstraintException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsDbUpdateException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_CustomerLecture_ThrowsException()
+        {
+            var idOfLectureToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _customerLectureServiceMock.Setup(service => service.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete)).ThrowsAsync(new Exception());
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteCustomerLecture(idOfLectureToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
     }
 }

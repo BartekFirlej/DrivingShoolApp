@@ -165,5 +165,40 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpDelete("{lectureid}/customers/{customerid}")]
+        public async Task<IActionResult> DeleteCustomerLecture(int lectureid, int customerid)
+        {
+            CustomerLectureCheckDTO deleted;
+            try
+            {
+                deleted = await _customerLectureService.DeleteCustomerLecture(lectureid, customerid);
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundLectureException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCustomerLectureException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This customer lecture refers to something." } });
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
+        }
     }
 }

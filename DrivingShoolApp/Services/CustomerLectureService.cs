@@ -10,6 +10,8 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<CustomerLectureGetDTO>> GetCustomerLectures(int customerId);
         public Task<ICollection<CustomerLectureGetDTO>> GetCustomersLecture(int lectureId);
         public Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId);
+        public Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId);
+        public Task<CustomerLectureCheckDTO> DeleteCustomerLecture(int customerId, int lectureId);
         public Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails);
     }
     public class CustomerLectureService : ICustomerLectureService
@@ -72,6 +74,24 @@ namespace DrivingSchoolApp.Services
                 throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             var registration = await _registrationService.GetRegistration(customer.Id, lecture.CourseId);
             return await _customerLectureRepository.PostCustomerLecture(customerLectureDetails);
+        }
+
+        public async Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId)
+        {
+            var lecture = await _lectureService.CheckLecture(lectureId);
+            var customer = await _customerService.CheckCustomer(customerId);
+            var customerLecture = await _customerLectureRepository.CheckCustomerLecture(customerId, lectureId);
+            if (customerLecture == null)
+                throw new NotFoundCustomerLectureException(customerId, lectureId);
+            return customerLecture;
+        }
+
+        public async Task<CustomerLectureCheckDTO> DeleteCustomerLecture(int customerId, int lectureId)
+        {
+            await CheckCustomerLecture(customerId, lectureId);
+            var customer = await _customerService.CheckCustomer(customerId);
+            var lecture = await _lectureService.CheckLecture(lectureId);
+            return await _customerLectureRepository.DeleteCustomerLecture(customer, lecture);
         }
     }
 }
