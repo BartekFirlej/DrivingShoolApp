@@ -9,6 +9,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements();
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
+        public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
     }
     public class RequiredLicenceCategoryRepository : IRequiredLicenceCategoryRepository
@@ -80,6 +81,16 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.RequiredLicenceCategories.AddAsync(requirementToAdd);
             await _dbContext.SaveChangesAsync();
             return requirementToAdd;
+        }
+
+        public async Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
+        {
+            return await (from rlc in _dbContext.RequiredLicenceCategories
+                          join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
+                          join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
+                          where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
+                          select rlc)
+                          .FirstOrDefaultAsync();
         }
     }
 }

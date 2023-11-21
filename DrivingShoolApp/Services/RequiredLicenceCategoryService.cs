@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 
 
@@ -10,6 +11,7 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements();
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
+        public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
         public Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate);
     }
@@ -83,6 +85,16 @@ namespace DrivingSchoolApp.Services
                     return false;
             }
             return true;
+        }
+
+        public async Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
+        {
+            await _licenceCategoryService.CheckLicenceCategory(licenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(requiredLicenceCategoryId);
+            var requiredLicenceCategory = await _requiredLicenceCategoryRepository.CheckRequirement(licenceCategoryId, requiredLicenceCategoryId);
+            if (requiredLicenceCategory == null)
+                throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId, requiredLicenceCategoryId);
+            return requiredLicenceCategory;
         }
     }
 }
