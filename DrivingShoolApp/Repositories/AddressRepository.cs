@@ -70,8 +70,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Address> CheckAddress(int addressId)
         {
             return await _dbContext.Addresses
-                .Where(a => a.Id == addressId)
                 .AsNoTracking()
+                .Where(a => a.Id == addressId)
                 .FirstOrDefaultAsync();
         }
 

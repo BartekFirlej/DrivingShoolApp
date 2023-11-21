@@ -24,7 +24,9 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size)
         {
             return await PagedList<ClassroomGetDTO>.Create(
-                _dbContext.Classrooms.Include(c => c.Address)
+                _dbContext.Classrooms
+                .AsNoTracking()
+                .Include(c => c.Address)
                 .Select(c => new ClassroomGetDTO
                 {
                     ClassroomId = c.Id,
@@ -44,7 +46,9 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ClassroomGetDTO> GetClassroom(int classroomId)
         {
-            return await _dbContext.Classrooms.Include(c => c.Address)
+            return await _dbContext.Classrooms
+                          .AsNoTracking()
+                          .Include(c => c.Address)
                           .Where(c => c.Id == classroomId)
                           .Select(c => new ClassroomGetDTO
                           {
@@ -78,8 +82,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Classroom> CheckClassroom(int classroomId)
         {
             return await _dbContext.Classrooms
-                          .Where(c => c.Id == classroomId)
                           .AsNoTracking()
+                          .Where(c => c.Id == classroomId)
                           .FirstOrDefaultAsync();
         }
 

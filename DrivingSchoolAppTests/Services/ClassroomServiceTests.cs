@@ -83,11 +83,13 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Classroom_ReturnsAdded()
         {
-            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var idOfAddressToFind = 1;
+            var address = new Address();
+            var addressDTO = new AddressGetDTO();
             var addedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
-            var addedClassroomGetDTO = new ClassroomGetDTO { Address = addedAddressDTO, Size = 10, ClassroomNumber = 10, ClassroomId = 1 };
+            var addedClassroomGetDTO = new ClassroomGetDTO { Address = addressDTO, Size = 10, ClassroomNumber = 10, ClassroomId = 1 };
             var classroomToAdd = new ClassroomPostDTO { AddressID=1, Size = 10, Number = 10};
-            _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).ReturnsAsync(addedAddressDTO);
+            _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _classroomRepositoryMock.Setup(repo => repo.PostClassroom(classroomToAdd)).ReturnsAsync(addedClassroom);
             _classroomRepositoryMock.Setup(repo => repo.GetClassroom(addedClassroom.Id)).ReturnsAsync(addedClassroomGetDTO);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
@@ -100,8 +102,9 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Classroom_ThrowsNotFoundAddressException()
         {
+            var idOfAddressToFind = 1;
             var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Size = 10, Number = 10 };
-            _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).ThrowsAsync(new NotFoundAddressException(classroomToAdd.AddressID));
+            _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ThrowsAsync(new NotFoundAddressException(idOfAddressToFind));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.PostClassroom(classroomToAdd));
@@ -110,9 +113,10 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Classroom_ThrowsNumberMustBeGreaterThanZeroExceptionException()
         {
+            var address = new Address();
+            var idOfAddressToFind = 1;
             var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Size = 10, Number = -2 };
-            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
-            _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).ReturnsAsync(addedAddressDTO);
+            _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostClassroom(classroomToAdd));
@@ -121,9 +125,10 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Classroom_ThrowsSizeMustBeGreaterThanZeroExceptionException()
         {
+            var address = new Address();
+            var idOfAddressToFind = 1;
             var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Size = -2, Number = 10 };
-            var addedAddressDTO = new AddressGetDTO { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
-            _addressServiceMock.Setup(service => service.GetAddress(classroomToAdd.AddressID)).ReturnsAsync(addedAddressDTO);
+            _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostClassroom(classroomToAdd));
@@ -132,7 +137,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Delete_Classroom_ReturnsClassroom()
         {
-            var deletedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var deletedClassroom = new Classroom();
             var idOfClassroomToDelete = 1;
             _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroomToDelete)).ReturnsAsync(deletedClassroom);
             _classroomRepositoryMock.Setup(repo => repo.DeleteClassroom(deletedClassroom)).ReturnsAsync(deletedClassroom);
@@ -156,7 +161,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Delete_Classroom_PropagatesReferenceConstraintExceptionException()
         {
-            var deletedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var deletedClassroom = new Classroom();
             var idOfClassroomToDelete = 1;
             _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroomToDelete)).ReturnsAsync(deletedClassroom);
             _classroomRepositoryMock.Setup(repo => repo.DeleteClassroom(deletedClassroom)).ThrowsAsync(new ReferenceConstraintException());
@@ -168,7 +173,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Check_Classroom_ReturnsClassroom()
         {
-            var classroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var classroom = new Classroom();
             var idOfClassroom = 1;
             _classroomRepositoryMock.Setup(repo => repo.CheckClassroom(idOfClassroom)).ReturnsAsync(classroom);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object);

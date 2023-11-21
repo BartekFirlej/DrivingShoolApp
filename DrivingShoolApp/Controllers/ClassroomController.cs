@@ -73,12 +73,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpDelete("{classroomid}")]
-        public async Task<IActionResult> DeleteClassroom(int classroomId)
+        public async Task<IActionResult> DeleteClassroom(int classroomid)
         {
             Classroom deleted;
             try
             {
-                deleted = await _classroomService.DeleteClassroom(classroomId);
+                deleted = await _classroomService.DeleteClassroom(classroomid);
             }
             catch (NotFoundClassroomException e)
             {
@@ -92,7 +92,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }

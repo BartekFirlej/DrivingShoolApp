@@ -57,6 +57,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -74,6 +76,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -83,6 +87,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new ClassroomRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetClassrooms(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -112,6 +118,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("22-222", result.Address.PostalCode);
             Assert.AreEqual("TestStreet1", result.Address.Street);
             Assert.AreEqual("TestCity1", result.Address.City);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -133,6 +141,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetClassroom(idOfClassroomToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -168,6 +178,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(address1.Street, retrievedClassroom.Address.Street);
             Assert.AreEqual(address1.Number, retrievedClassroom.Address.Number);
             Assert.AreEqual(retrievedClassroom.Address.PostalCode, address1.PostalCode);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -193,6 +205,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.Number);
             Assert.AreEqual(20, result.Size);
             Assert.AreEqual(1, await _dbContext.Addresses.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -218,6 +232,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.AddressId);
             Assert.AreEqual(2, result.Number);
             Assert.AreEqual(20, result.Size);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -239,6 +255,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckClassroom(idOfClassroomToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

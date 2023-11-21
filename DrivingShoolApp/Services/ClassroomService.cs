@@ -46,7 +46,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("number");
             if (classroomDetails.Size <=0)
                 throw new ValueMustBeGreaterThanZeroException("size");
-            var address = await _addressService.GetAddress(classroomDetails.AddressID);
+            var address = await _addressService.CheckAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
             return await _classroomRepository.GetClassroom(addedClassroom.Id);
         }
