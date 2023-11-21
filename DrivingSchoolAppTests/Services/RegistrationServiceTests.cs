@@ -203,7 +203,68 @@ namespace DrivingSchoolAppTests.Services
             await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.GetRegistration(customer.Id, idOfCourseToFind));
         }
 
-        
+        [TestMethod]
+        public async Task Check_Registration_ReturnsRegistration()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _registrationRepositoryMock.Setup(repo => repo.CheckRegistration(idOfCustomerToFind, idOfCourseToFind)).ReturnsAsync(registration);
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            var result = await _service.CheckRegistration(idOfCustomerToFind, idOfCourseToFind);
+
+            Assert.AreEqual(registration, result);
+        }
+
+        [TestMethod]
+        public async Task Check_Registration_ThrowsNotFoundRegistrationException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _registrationRepositoryMock.Setup(repo => repo.CheckRegistration(idOfCustomerToFind, idOfCourseToFind)).ReturnsAsync((Registration)null);
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundRegistrationException>(async () => await _service.CheckRegistration(idOfCustomerToFind, idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Check_Registration_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToFind));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.CheckRegistration(idOfCustomerToFind, idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Check_Registration_ThrowsNotFoundCourseException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer(); 
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.CheckRegistration(customer.Id, idOfCourseToFind));
+        }
+
+
         [TestMethod]
         public async Task Post_Registration_ReturnsRegistration()
         {
@@ -302,6 +363,68 @@ namespace DrivingSchoolAppTests.Services
             _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<CustomerDoesntMeetRequirementsException>(async () => await _service.PostRegistration(registrationToAdd));
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ReturnsRegistration()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _registrationRepositoryMock.Setup(repo => repo.CheckRegistration(idOfCustomerToFind, idOfCourseToFind)).ReturnsAsync(registration);
+            _registrationRepositoryMock.Setup(repo => repo.DeleteRegistration(registration)).ReturnsAsync(registration);
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            var result = await _service.DeleteRegistration(idOfCustomerToFind, idOfCourseToFind);
+
+            Assert.AreEqual(registration, result);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundRegistrationException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _registrationRepositoryMock.Setup(repo => repo.CheckRegistration(idOfCustomerToFind, idOfCourseToFind)).ReturnsAsync((Registration)null);
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundRegistrationException>(async () => await _service.DeleteRegistration(idOfCustomerToFind, idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            var course = new Course();
+            var registration = new Registration();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToFind));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.DeleteRegistration(idOfCustomerToFind, idOfCourseToFind));
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundCourseException()
+        {
+            var idOfCustomerToFind = 1;
+            var idOfCourseToFind = 1;
+            var customer = new Customer();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ThrowsAsync(new NotFoundCourseException(idOfCourseToFind));
+            _service = new RegistrationService(_registrationRepositoryMock.Object, _customerServiceMock.Object, _courseServiceMock.Object, _dateTimeHelperServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.DeleteRegistration(customer.Id, idOfCourseToFind));
         }
     }
 }

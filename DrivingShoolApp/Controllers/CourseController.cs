@@ -246,5 +246,40 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpDelete("{courseid}/customers/{customerid}")]
+        public async Task<IActionResult> DeleteRegistration(int courseid, int customerid)
+        {
+            Registration deleted;
+            try
+            {
+                deleted = await _registrationService.DeleteRegistration(courseid, customerid);
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundRegistrationException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ReferenceConstraintException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course refers to something." } });
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
+            }
+            return NoContent();
+        }
     }
 }

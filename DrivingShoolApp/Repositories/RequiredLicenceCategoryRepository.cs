@@ -91,6 +91,7 @@ namespace DrivingSchoolApp.Repositories
                           join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
                           where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
                           select rlc)
+                          .AsNoTracking()
                           .FirstOrDefaultAsync();
         }
 

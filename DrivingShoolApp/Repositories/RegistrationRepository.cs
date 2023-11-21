@@ -10,6 +10,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size);
         public Task<PagedList<RegistrationGetDTO>> GetCustomerRegistrations(int customerId, int page, int size);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
+        public Task<Registration> CheckRegistration(int customerId, int courseId);
+        public Task<Registration> DeleteRegistration(Registration registrationToDelete);
         public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate);
     }
     public class RegistrationRepository : IRegistrationRepository
@@ -85,6 +87,21 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.Registrations.AddAsync(registrationToAdd);
             await _dbContext.SaveChangesAsync();
             return registrationToAdd;
+        }
+
+        public async Task<Registration> CheckRegistration(int customerId, int courseId)
+        {
+            return await _dbContext.Registrations
+                       .Where(r => r.CustomerId == customerId && r.CourseId == courseId)
+                       .AsNoTracking()
+                       .FirstOrDefaultAsync();
+        }
+
+        public async Task<Registration> DeleteRegistration(Registration registrationToDelete)
+        {
+            var deletedRegistration = _dbContext.Registrations.Remove(registrationToDelete);
+            await _dbContext.SaveChangesAsync();
+            return deletedRegistration.Entity;
         }
     }
 }

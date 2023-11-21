@@ -1,5 +1,6 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
+using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Services;
 
 namespace DrivingSchoolApp.Repositories
@@ -10,6 +11,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size);
         public Task<PagedList<RegistrationGetDTO>> GetCustomerRegistrations(int customerId, int page, int size);
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
+        public Task<Registration> CheckRegistration(int customerId, int courseId);
+        public Task<Registration> DeleteRegistration(int customerId, int courseId);
         public Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails);
     }
     public class RegistrationService : IRegistrationService
@@ -77,6 +80,22 @@ namespace DrivingSchoolApp.Repositories
                 throw new CustomerDoesntMeetRequirementsException(customer.Id);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails, _dateTimeHelperService.GetDateTimeNow());
             return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);
+        }
+
+        public async Task<Registration> CheckRegistration(int customerId, int courseId)
+        {
+            var customer = await _customerService.CheckCustomer(customerId);
+            var course = await _courseService.CheckCourse(courseId);
+            var registration = await _registrationRepository.CheckRegistration(customerId, courseId);
+            if (registration == null)
+                throw new NotFoundRegistrationException(customerId, courseId);
+            return registration;
+        }
+
+        public async Task<Registration> DeleteRegistration(int customerId, int courseId)
+        {
+            var registrationToDelete = await CheckRegistration(customerId, courseId);
+            return await _registrationRepository.DeleteRegistration(registrationToDelete);
         }
     }
 }

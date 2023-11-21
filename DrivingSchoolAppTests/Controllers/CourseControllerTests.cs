@@ -545,5 +545,97 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Delete_Registration_ReturnNoContent()
+        {
+            var deletedRegistration = new Registration();
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ReturnsAsync(deletedRegistration);
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NoContentResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(204);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundCourseException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundCourseException(idOfCourseToDelete));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundCustomerException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToDelete));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsNotFoundRegistrationException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new NotFoundRegistrationException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsReferenceConstraintException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new ReferenceConstraintException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsDbUpdateException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new DbUpdateException());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
+
+        [TestMethod]
+        public async Task Delete_Registration_ThrowsException()
+        {
+            var idOfCourseToDelete = 1;
+            var idOfCustomerToDelete = 1;
+            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new Exception());
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (ObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
+
+            result.StatusCode.Should().Be(500);
+        }
     }
 }
