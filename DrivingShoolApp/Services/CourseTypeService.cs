@@ -47,7 +47,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("Driving hours");
             if (newCourseType.MinimumAge <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Minimum age");
-            await _licenceCategoryService.GetLicenceCategory(newCourseType.LicenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(newCourseType.LicenceCategoryId);
             var addedCourseType = await _courseTypeRepository.PostCourseType(newCourseType);
             return await _courseTypeRepository.GetCourseType(addedCourseType.Id);
         }

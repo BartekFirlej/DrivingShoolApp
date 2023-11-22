@@ -85,8 +85,8 @@ namespace DrivingSchoolAppTests.Services
             var addedCourseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var addedCourseType = new CourseType { Id = 1, DrivingHours = 10, LectureHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
             var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
-            var licenceCategoryDTO = new LicenceCategoryGetDTO();
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ReturnsAsync(licenceCategoryDTO);
+            var licenceCategoryDTO = new LicenceCategory();
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ReturnsAsync(licenceCategoryDTO);
             _courseTypeRepositoryMock.Setup(repo => repo.PostCourseType(courseTypeToAdd)).ReturnsAsync(addedCourseType);
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseType(addedCourseType.Id)).ReturnsAsync(addedCourseTypeDTO);
             _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
@@ -97,10 +97,10 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
-        public async Task Post_Classroom_ThrowsNotFoundLicenceCategoryException()
+        public async Task Post_CourseType_ThrowsNotFoundLicenceCategoryException()
         {
             var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
-            _licenceCategoryServiceMock.Setup(service => service.GetLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ThrowsAsync(new NotFoundLicenceCategoryException(courseTypeToAdd.LicenceCategoryId));
+            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ThrowsAsync(new NotFoundLicenceCategoryException(courseTypeToAdd.LicenceCategoryId));
             _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.PostCourseType(courseTypeToAdd));

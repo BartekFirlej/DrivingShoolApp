@@ -25,6 +25,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<CourseTypeGetDTO>.Create(
                 _dbContext.CourseTypes
+                .AsNoTracking()
                 .Include(c => c.LicenceCategory)
                 .Select(c => new CourseTypeGetDTO
                 {
@@ -41,6 +42,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CourseTypeGetDTO> GetCourseType(int courseTypeId)
         {
             return await _dbContext.CourseTypes
+                             .AsNoTracking()
                              .Include(c => c.LicenceCategory)
                              .Where(c => c.Id == courseTypeId)
                              .Select(c => new CourseTypeGetDTO
@@ -72,6 +74,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CourseType> CheckCourseType(int courseTypeId)
         {
             return await _dbContext.CourseTypes
+                             .AsNoTracking()
                              .Where(c => c.Id == courseTypeId)
                              .AsNoTracking()
                              .FirstOrDefaultAsync();

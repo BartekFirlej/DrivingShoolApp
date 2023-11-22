@@ -4,6 +4,7 @@ using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
+using EntityFramework.Exceptions.Common;
 using Moq;
 
 namespace DrivingSchoolAppTests.Services
@@ -342,6 +343,23 @@ namespace DrivingSchoolAppTests.Services
             _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind));
+        }
+
+        [TestMethod]
+        public async Task Delete_CourseSubject_PropagatesReferenceConstraintExceptionException()
+        {
+            var idOfSubjectToFind = 1;
+            var idOfCourseToFind = 1;
+            var courseSubject = new CourseSubject();
+            var course = new Course();
+            var subject = new Subject();
+            _courseSubjectRepositoryMock.Setup(repo => repo.CheckCourseSubject(idOfCourseToFind, idOfSubjectToFind)).ReturnsAsync(courseSubject);
+            _courseSubjectRepositoryMock.Setup(repo => repo.DeleteCourseSubject(courseSubject)).ThrowsAsync(new ReferenceConstraintException());
+            _courseServiceMock.Setup(service => service.CheckCourse(idOfCourseToFind)).ReturnsAsync(course);
+            _subjectServiceMock.Setup(service => service.CheckSubject(idOfSubjectToFind)).ReturnsAsync(subject);
+            _service = new CourseSubjectService(_courseSubjectRepositoryMock.Object, _courseServiceMock.Object, _subjectServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteCourseSubject(idOfCourseToFind, idOfSubjectToFind));
         }
     }
 }

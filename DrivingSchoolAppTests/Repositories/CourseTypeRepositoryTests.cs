@@ -55,6 +55,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -72,6 +74,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -109,6 +113,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(21, result.MinimumAge);
             Assert.AreEqual(1, result.LicenceCategoryId);
             Assert.AreEqual("TestLicenceCategory1", result.LicenceCategoryName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -130,6 +136,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourseType(idOfCourseTypeToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -165,11 +173,14 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseTypeToAdd.MinimumAge, retrievedCourseType.MinimumAge);
             Assert.AreEqual(courseTypeToAdd.LicenceCategoryId, retrievedCourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourseType.LicenceCategoryName);
+            Assert.AreEqual(3, await _dbContext.CourseTypes.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
 
         [TestMethod]
-        public async Task Delete_Course_ReturnsCourse()
+        public async Task Delete_CourseType_ReturnsCourseType()
         {
             var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -191,6 +202,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(21, result.MinimumAge);
             Assert.AreEqual(1, result.LicenceCategoryId);
             Assert.AreEqual(1, await _dbContext.CourseTypes.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -216,10 +229,12 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(20, result.LectureHours);
             Assert.AreEqual(21, result.MinimumAge);
             Assert.AreEqual(1, result.LicenceCategoryId);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
-        public async Task Check_Course_ReturnsNull()
+        public async Task Check_CourseType_ReturnsNull()
         {
             var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -235,6 +250,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCourseType(idOfCourseTypeToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }
