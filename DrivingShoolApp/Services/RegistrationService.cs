@@ -40,7 +40,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<PagedList<RegistrationGetDTO>> GetCourseRegistrations(int courseId, int page, int size)
         {
-            var course = await _courseService.GetCourse(courseId);
+            var course = await _courseService.CheckCourse(courseId);
             var registration = await _registrationRepository.GetCourseRegistrations(courseId, page, size);
             if (!registration.PagedItems.Any())
                 throw new NotFoundRegistrationException();
@@ -49,7 +49,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<PagedList<RegistrationGetDTO>> GetCustomerRegistrations(int customerId, int page, int size)
         {
-            var customer = await _customerService.GetCustomer(customerId);
+            var customer = await _customerService.CheckCustomer(customerId);
             var registrations = await _registrationRepository.GetCustomerRegistrations(customerId, page, size);
             if (!registrations.PagedItems.Any())
                 throw new NotFoundRegistrationException();
@@ -58,8 +58,8 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId)
         {
-            var customer = await _customerService.GetCustomer(customerId);
-            var course = await _courseService.GetCourse(courseId);
+            var customer = await _customerService.CheckCustomer(customerId);
+            var course = await _courseService.CheckCourse(courseId);
             var registration = await _registrationRepository.GetRegistration(customerId, courseId);
             if (registration == null)
                 throw new NotFoundRegistrationException(customerId, courseId);
@@ -67,12 +67,12 @@ namespace DrivingSchoolApp.Repositories
         }
         public async Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails)
         {
-            var customer = await _customerService.GetCustomer(registrationDetails.CustomerId);
+            var customer = await _customerService.CheckCustomer(registrationDetails.CustomerId);
             var course = await _courseService.GetCourse(registrationDetails.CourseId);
             var assignedPeopleCount = await _courseService.GetCourseAssignedPeopleCount(registrationDetails.CourseId);
             if (assignedPeopleCount >= course.Limit)
                 throw new AssignLimitReachedException(course.Id);
-            var registration = await _registrationRepository.GetRegistration(registrationDetails.CustomerId, registrationDetails.CourseId);
+            var registration = await _registrationRepository.CheckRegistration(registrationDetails.CustomerId, registrationDetails.CourseId);
             if (registration != null)
                 throw new CustomerAlreadyAssignedToCourseException(registrationDetails.CustomerId, registrationDetails.CourseId);
             var meetAgeRequirement = _customerService.CheckCustomerAgeRequirement(customer.BirthDate, course.CourseType.MinimumAge, _dateTimeHelperService.GetDateTimeNow());

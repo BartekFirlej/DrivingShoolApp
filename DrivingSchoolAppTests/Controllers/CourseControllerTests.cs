@@ -600,19 +600,6 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Delete_Registration_ThrowsReferenceConstraintException()
-        {
-            var idOfCourseToDelete = 1;
-            var idOfCustomerToDelete = 1;
-            _registrationServiceMock.Setup(service => service.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete)).ThrowsAsync(new ReferenceConstraintException());
-            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
-
-            var result = (ObjectResult)await _controller.DeleteRegistration(idOfCourseToDelete, idOfCustomerToDelete);
-
-            result.StatusCode.Should().Be(500);
-        }
-
-        [TestMethod]
         public async Task Delete_Registration_ThrowsDbUpdateException()
         {
             var idOfCourseToDelete = 1;

@@ -267,10 +267,6 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (ReferenceConstraintException)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course registration refers to something." } });
-            }
             catch (DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });

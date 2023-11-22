@@ -26,6 +26,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<RegistrationGetDTO>> GetRegistrations()
         {
             return await _dbContext.Registrations
+                                   .AsNoTracking() 
                                    .Select(r => new RegistrationGetDTO
                                    {
                                        RegistrationDate = r.RegistrationDate,
@@ -39,6 +40,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<RegistrationGetDTO>.Create(
                     _dbContext.Registrations
+                        .AsNoTracking()
                        .Where(r => r.CourseId == courseId)
                        .Select(r => new RegistrationGetDTO
                        {
@@ -54,6 +56,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<RegistrationGetDTO>.Create(
                      _dbContext.Registrations
+                       .AsNoTracking()
                        .Where(r => r.CustomerId == customerId)
                        .Select(r => new RegistrationGetDTO
                        {
@@ -67,6 +70,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId)
         {
             return await _dbContext.Registrations
+                        .AsNoTracking()
                        .Where(r => r.CustomerId == customerId && r.CourseId == courseId)
                        .Select(r => new RegistrationGetDTO
                        {
@@ -92,8 +96,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Registration> CheckRegistration(int customerId, int courseId)
         {
             return await _dbContext.Registrations
-                       .Where(r => r.CustomerId == customerId && r.CourseId == courseId)
                        .AsNoTracking()
+                       .Where(r => r.CustomerId == customerId && r.CourseId == courseId)
                        .FirstOrDefaultAsync();
         }
 

@@ -52,6 +52,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList[1].CourseId);
             Assert.AreEqual(2, resultList[1].CustomerId);
             Assert.AreEqual(new DateTime(2023, 2, 1), resultList[1].RegistrationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -66,6 +68,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetRegistrations();
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -104,6 +108,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -135,6 +141,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
             Assert.IsFalse(result.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -145,6 +153,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new RegistrationRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourseRegistrations(idOfCourseToFind , - 1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -183,6 +193,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -214,6 +226,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
             Assert.IsFalse(result.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -224,6 +238,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new RegistrationRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCustomerRegistrations(idOfCustomerToFind, -1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -256,6 +272,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.CourseId);
             Assert.AreEqual(1, result.CustomerId);
             Assert.AreEqual(new DateTime(2023, 1, 1), result.RegistrationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -285,6 +303,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetRegistration(idOfCustomerToFind, idOfCourseToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -317,6 +337,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.CourseId);
             Assert.AreEqual(1, result.CustomerId);
             Assert.AreEqual(new DateTime(2023, 1, 1), result.RegistrationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -346,6 +368,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckRegistration(idOfCustomerToFind, idOfCourseToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -362,8 +386,7 @@ namespace DrivingSchoolAppTests.Repositories
             var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
             var registration1 = new Registration { CourseId = 1, CustomerId = 1, RegistrationDate = new DateTime(2023, 1, 1) };
             var registration2 = new Registration { CourseId = 2, CustomerId = 1, RegistrationDate = new DateTime(2023, 2, 1) };
-            var idOfCustomerToFind = 1;
-            var idOfCourseToFind = 1;
+
             await _dbContext.Customers.AddRangeAsync(customer1, customer2);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
             await _dbContext.CourseTypes.AddAsync(courseType1);
@@ -378,7 +401,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CourseId);
             Assert.AreEqual(1, result.CustomerId);
             Assert.AreEqual(new DateTime(2023, 2, 1), result.RegistrationDate);
-            Assert.AreEqual(1, _dbContext.Registrations.Count());
+            Assert.AreEqual(1, await _dbContext.Registrations.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -418,6 +443,10 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(addedRegistration.CourseId, retrievedRegistration.CourseId);
             Assert.AreEqual(addedRegistration.CustomerId, retrievedRegistration.CustomerId);
             Assert.AreEqual(addedRegistration.RegistrationDate, retrievedRegistration.RegistrationDate);
+
+            Assert.AreEqual(2, await _dbContext.Registrations.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
     }
 }
