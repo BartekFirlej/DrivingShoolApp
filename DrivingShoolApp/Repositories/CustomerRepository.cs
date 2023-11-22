@@ -24,6 +24,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size)
         {
             return await PagedList<CustomerGetDTO>.Create(_dbContext.Customers
+                            .AsNoTracking()
                             .Select(c => new CustomerGetDTO
                             {
                                 Id = c.Id,
@@ -37,6 +38,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CustomerGetDTO> GetCustomer(int customerId)
         {
             return await _dbContext.Customers
+                            .AsNoTracking()
                             .Where(u => u.Id == customerId)
                             .Select(u => new CustomerGetDTO
                             {
@@ -64,6 +66,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Customer> CheckCustomer(int customerId)
         {
             return await _dbContext.Customers
+                            .AsNoTracking()
                             .Where(u => u.Id == customerId)
                             .AsNoTracking()
                             .FirstOrDefaultAsync();

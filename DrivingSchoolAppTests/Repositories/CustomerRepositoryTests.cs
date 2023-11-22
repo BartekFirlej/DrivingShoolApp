@@ -47,6 +47,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -64,6 +66,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -73,6 +77,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new CustomerRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCustomers(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -96,6 +102,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
             Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -115,6 +123,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomer(idOfCustomerToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -143,6 +153,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customerToAdd.Name, retrievedCustomer.Name);
             Assert.AreEqual(customerToAdd.SecondName, retrievedCustomer.SecondName);
             Assert.AreEqual(customerToAdd.BirthDate, retrievedCustomer.BirthDate);
+            Assert.AreEqual(3, await _dbContext.Customers.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -166,6 +179,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestSName2", result.SecondName);
             Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
             Assert.AreEqual(1, await _dbContext.Customers.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -189,6 +204,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
             Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -208,6 +225,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCustomer(idOfCustomerToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

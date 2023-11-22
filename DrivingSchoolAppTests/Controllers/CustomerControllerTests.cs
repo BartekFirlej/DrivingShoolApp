@@ -32,7 +32,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Customers_ReturnsOk()
         {
             var usersList = new PagedList<CustomerGetDTO>();
-            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).Returns(Task.FromResult(usersList));
+            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).ReturnsAsync(usersList);
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomers(1, 10);
@@ -43,7 +43,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Customers_ThrowsNotFoundCustomersException()
         {
-            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).Throws(new NotFoundCustomerException());
+            _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).ThrowsAsync(new NotFoundCustomerException());
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomers(1, 10);
@@ -54,7 +54,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Get_Customers_ThrowsPageIndexMustBeGreaterThanZeroException()
         {
-            _customerServiceMock.Setup(service => service.GetCustomers(-1, 10)).Throws(new ValueMustBeGreaterThanZeroException("page index"));
+            _customerServiceMock.Setup(service => service.GetCustomers(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.GetCustomers(-1, 10);
@@ -67,7 +67,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var foundCustomer = new CustomerGetDTO();
             var idOfCustomerToFind = 1;
-            _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).Returns(Task.FromResult(foundCustomer));
+            _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).ReturnsAsync(foundCustomer);
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomer(idOfCustomerToFind);
@@ -79,7 +79,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Customer_ThrowsNotFoundCustomerException()
         {
             var idOfCustomerToFind = 1;
-            _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).Throws(new NotFoundCustomerException(1));
+            _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).ThrowsAsync(new NotFoundCustomerException(1));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomer(idOfCustomerToFind);
@@ -141,7 +141,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var customerToAdd = new CustomerPostDTO();
             var addedCustomer = new CustomerGetDTO();
-            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).Returns(Task.FromResult(addedCustomer));
+            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ReturnsAsync(addedCustomer);
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (CreatedAtActionResult)await _controller.PostCustomer(customerToAdd);
@@ -154,7 +154,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var customerToAdd = new CustomerPostDTO();
             var wrongDate = "begin date";
-            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).Throws(new DateTimeException(wrongDate));
+            _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ThrowsAsync(new DateTimeException(wrongDate));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.PostCustomer(customerToAdd);

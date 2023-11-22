@@ -43,8 +43,8 @@ namespace DrivingSchoolApp.Services
         {
             if (newCustomer.BirthDate == DateTime.MinValue)
                 throw new DateTimeException("birth");
-            var createdCustomer = await _customerRepository.PostCustomer(newCustomer);
-            return await _customerRepository.GetCustomer(createdCustomer.Id);
+            var addedCustomer = await _customerRepository.PostCustomer(newCustomer);
+            return await _customerRepository.GetCustomer(addedCustomer.Id);
         }
 
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate)
