@@ -69,6 +69,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(resultList.HasNextPage);
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -86,6 +88,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -95,6 +99,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new DrivingLessonRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetDrivingLessons(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -136,6 +142,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CustomerId);
             Assert.AreEqual(2, result.AddressId);
             Assert.AreEqual(2, result.CourseId);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -169,6 +177,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetDrivingLesson(idOfDrivingLessonToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -217,6 +227,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(drivingLessonToAdd.LessonDate, retrievedDrivingLesson.LessonDate);
             Assert.AreEqual(customer1.Name, retrievedDrivingLesson.CustomerName);
             Assert.AreEqual(lecturer2.Name, retrievedDrivingLesson.LecturerName);
+            Assert.AreEqual(3, await _dbContext.DrivingLessons.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -256,6 +269,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.AddressId);
             Assert.AreEqual(2, result.CourseId);
             Assert.AreEqual(1, await _dbContext.DrivingLessons.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -295,6 +310,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CustomerId);
             Assert.AreEqual(2, result.AddressId);
             Assert.AreEqual(2, result.CourseId);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -328,6 +345,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckDrivingLesson(idOfDrivingLessonToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

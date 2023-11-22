@@ -25,6 +25,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<DrivingLessonGetDTO>.Create(
                 _dbContext.DrivingLessons
+                .AsNoTracking()
                 .Include(d => d.Customer)
                 .Include(d => d.Lecturer)
                 .Select(d => new DrivingLessonGetDTO
@@ -44,6 +45,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId)
         {
             return await _dbContext.DrivingLessons
+                .AsNoTracking()
                .Include(d => d.Customer)
                .Include(d => d.Lecturer)
                .Where(d => d.Id == drivingLessonId)
@@ -85,8 +87,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId)
         {
             return await _dbContext.DrivingLessons
-               .Where(d => d.Id == drivingLessonId)
                .AsNoTracking()
+               .Where(d => d.Id == drivingLessonId)
                .FirstOrDefaultAsync();
         }
     }

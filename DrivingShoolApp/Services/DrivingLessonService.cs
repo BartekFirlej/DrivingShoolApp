@@ -51,10 +51,10 @@ namespace DrivingSchoolApp.Services
         {
             if (drivingLessonDetails.LessonDate == DateTime.MinValue)
                 throw new DateTimeException("lesson date");
-            var customer = await _customerService.GetCustomer(drivingLessonDetails.CustomerId);
-            var lecturer = await _lecturerService.GetLecturer(drivingLessonDetails.LecturerId);
-            var address = await _addressService.GetAddress(drivingLessonDetails.AddressId);
-            var course = await _courseService.GetCourse(drivingLessonDetails.CourseId);
+            var customer = await _customerService.CheckCustomer(drivingLessonDetails.CustomerId);
+            var lecturer = await _lecturerService.CheckLecturer(drivingLessonDetails.LecturerId);
+            var address = await _addressService.CheckAddress(drivingLessonDetails.AddressId);
+            var course = await _courseService.CheckCourse(drivingLessonDetails.CourseId);
             var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
             return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
         }
