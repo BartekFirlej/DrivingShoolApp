@@ -27,6 +27,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<SubjectGetDTO>.Create(
                 _dbContext.Subjects
+                      .AsNoTracking()
                       .Select(s => new SubjectGetDTO
                       {
                           Id = s.Id,
@@ -41,6 +42,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<SubjectGetDTO> GetSubject(int subjectId)
         {
             return await _dbContext.Subjects
+                            .AsNoTracking()
                             .Where(s => s.Id == subjectId)
                             .Select(s => new SubjectGetDTO
                             {
@@ -67,6 +69,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Subject> CheckSubject(int subjectId)
         {
             return await _dbContext.Subjects
+                            .AsNoTracking()
                             .Where(s => s.Id == subjectId)
                             .AsNoTracking()
                             .FirstOrDefaultAsync();

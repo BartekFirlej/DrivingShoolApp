@@ -70,26 +70,26 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpDelete("{subjectid}")]
-        public async Task<IActionResult> DeleteSubject(int drivinglessonid)
+        public async Task<IActionResult> DeleteSubject(int subjectid)
         {
             Subject deleted;
             try
             {
-                deleted = await _subjectService.DeleteSubject(drivinglessonid);
+                deleted = await _subjectService.DeleteSubject(subjectid);
             }
             catch (NotFoundSubjectException e)
             {
                 return NotFound(e.ToJson());
             }
-            catch(ReferenceConstraintException e)
+            catch(ReferenceConstraintException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This subject refers to something." } });
             }
-            catch(DbUpdateException e)
+            catch(DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }

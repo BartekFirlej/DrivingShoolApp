@@ -47,6 +47,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -64,6 +66,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -73,6 +77,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new SubjectRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetSubjects(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -96,6 +102,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestCode2", result.Code);
             Assert.AreEqual(2, result.Duration);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -115,6 +123,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetSubject(idOfSubjectToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -143,6 +153,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(subjectToAdd.Name, retrievedSubject.Name);
             Assert.AreEqual(subjectToAdd.Code, retrievedSubject.Code);
             Assert.AreEqual(subjectToAdd.Duration, retrievedSubject.Duration);
+            Assert.AreEqual(3, await _dbContext.Subjects.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -166,6 +179,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestCode2", result.Code);
             Assert.AreEqual(2, result.Duration);
             Assert.AreEqual(1, await _dbContext.Subjects.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -189,6 +204,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestCode2", result.Code);
             Assert.AreEqual(2, result.Duration);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -208,6 +225,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckSubject(idOfSubjectToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }
