@@ -24,8 +24,9 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size)
         {
             return await PagedList<LicenceCategoryGetDTO>.Create(
-                    _dbContext.LicenceCategories.
-                         Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name })
+                    _dbContext.LicenceCategories
+                         .AsNoTracking()
+                         .Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name })
                          .OrderBy(l => l.Id),
                     page, size);
         }
@@ -33,6 +34,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<LicenceCategoryGetDTO> GetLicenceCategory(int id)
         {
             return await _dbContext.LicenceCategories
+                              .AsNoTracking()
                               .Where(l => l.Id == id)
                               .Select(l => new LicenceCategoryGetDTO { Id = l.Id, Name = l.Name })
                               .FirstOrDefaultAsync();
@@ -50,8 +52,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId)
         {
             return await _dbContext.LicenceCategories
-                  .Where(l => l.Id == licenceCategoryId)
                   .AsNoTracking()
+                  .Where(l => l.Id == licenceCategoryId)
                   .FirstOrDefaultAsync();
         }
 

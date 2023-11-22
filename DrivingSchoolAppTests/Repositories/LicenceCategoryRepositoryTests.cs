@@ -43,6 +43,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(resultList.HasNextPage);
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -60,6 +62,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -69,6 +73,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new LicenceCategoryRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetLicenceCategories(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -90,6 +96,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual("Test2", result.Name);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -109,6 +117,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetLicenceCategory(idOfLicenceCategoryToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -133,6 +143,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(addedLicenceCategory.Id, retrievedLicenceCategory.Id);
             Assert.AreEqual(licenceCategoryToAdd.Name, addedLicenceCategory.Name);
             Assert.AreEqual(licenceCategoryToAdd.Name, retrievedLicenceCategory.Name);
+            Assert.AreEqual(3, await _dbContext.LicenceCategories.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -154,6 +167,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual("Test2", result.Name);
             Assert.AreEqual(1, await _dbContext.LicenceCategories.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -175,6 +190,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual("Test2", result.Name);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -194,6 +211,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckLicenceCategory(idOfLicenceCategoryToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }
