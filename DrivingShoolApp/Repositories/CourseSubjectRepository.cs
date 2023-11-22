@@ -26,8 +26,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId)
         {
             return await _dbContext.CourseSubjects
-                        .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
                         .AsNoTracking()
+                        .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
                         .FirstOrDefaultAsync();
         }
 
@@ -41,6 +41,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects()
         {
             return await _dbContext.CourseSubjects
+                                   .AsNoTracking()
                                    .Include(s => s.Course)
                                    .Include(s => s.Subject)
                                    .Select(s => new CourseSubjectGetDTO
@@ -57,6 +58,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId)
         {
             return await _dbContext.CourseSubjects
+                                   .AsNoTracking()
                                    .Include(s => s.Course)
                                    .Include(s => s.Subject)
                                    .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
@@ -74,6 +76,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId)
         {
             return await _dbContext.CourseSubjects
+                    .AsNoTracking()
                     .Include(s => s.Course)
                     .Include(s => s.Course.CourseType)
                     .Include(s => s.Subject)
@@ -127,7 +130,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<bool> TakenSeqNumber(int courseId, int seqNumber)
         {
-            var courseSubject = await _dbContext.CourseSubjects.SingleOrDefaultAsync(p => p.CourseId == courseId && p.SequenceNumber == seqNumber);
+            var courseSubject = await _dbContext.CourseSubjects.AsNoTracking().SingleOrDefaultAsync(p => p.CourseId == courseId && p.SequenceNumber == seqNumber);
             if (courseSubject == null)
                 return false;
             return true;

@@ -44,7 +44,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<int> GetCourseAssignedPeopleCount(int courseId)
         {
-            await CheckCourse(courseId);
+            var course = await CheckCourse(courseId);
             return await _courseRepository.GetCourseAssignedPeopleCount(courseId);
         }
 

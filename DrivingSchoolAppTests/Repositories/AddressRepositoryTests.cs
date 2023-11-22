@@ -156,6 +156,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(addressToAdd.Street, retrievedAddress.Street);
             Assert.AreEqual(addressToAdd.Number, retrievedAddress.Number);
             Assert.AreEqual(addressToAdd.PostalCode, retrievedAddress.PostalCode);
+            Assert.AreEqual(3, await _dbContext.Addresses.CountAsync());
 
             await _dbContext.DisposeAsync();
         }

@@ -261,6 +261,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseType1.MinimumAge, retrievedCourse.CourseType.MinimumAge);
             Assert.AreEqual(courseType1.LicenceCategoryId, retrievedCourse.CourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourse.CourseType.LicenceCategoryName);
+            Assert.AreEqual(3, await _dbContext.Courses.CountAsync());
 
             await _dbContext.DisposeAsync();
         }

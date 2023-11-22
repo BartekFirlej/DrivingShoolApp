@@ -56,6 +56,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList[1].SequenceNumber);
             Assert.AreEqual("TestCourse2", resultList[1].CourseName);
             Assert.AreEqual("TestSubject2", resultList[1].SubjectName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -70,6 +72,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCoursesSubjects();
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -105,6 +109,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.SequenceNumber);
             Assert.AreEqual("TestCourse1", result.CourseName);
             Assert.AreEqual("TestSubject1", result.SubjectName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -135,6 +141,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourseSubject(idOfCourseToFind, idOfSubjectToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -182,6 +190,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestSubject2", result.CourseSubjects[1].Subject.Name);
             Assert.AreEqual("TestCode2", result.CourseSubjects[1].Subject.Code);
             Assert.AreEqual(2, result.CourseSubjects[1].Sequence);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -211,6 +221,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourseSubjects(idOfCourseToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -244,6 +256,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.CourseId);
             Assert.AreEqual(1, result.SubjectId);
             Assert.AreEqual(1, result.SequenceNumber);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -274,6 +288,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCourseSubject(idOfCourseToCheck, idOfSubjectToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -305,6 +321,8 @@ namespace DrivingSchoolAppTests.Repositories
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -336,6 +354,8 @@ namespace DrivingSchoolAppTests.Repositories
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -376,6 +396,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseSubjectToAdd.CourseId, retrievedCourseSubject.CourseId);
             Assert.AreEqual(courseSubjectToAdd.SubjectId, retrievedCourseSubject.SubjectId);
             Assert.AreEqual(courseSubjectToAdd.SequenceNumber, retrievedCourseSubject.SequenceNumber);
+            Assert.AreEqual(3, await _dbContext.CourseSubjects.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -385,8 +408,6 @@ namespace DrivingSchoolAppTests.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
-            var idOfCourseToCheck = 1;
-            var idOfSubjectToCheck = 1;
             var licenceCategory1 = new LicenceCategory { Id = 1, Name = "TestLicence" };
             var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
             var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
@@ -409,7 +430,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CourseId);
             Assert.AreEqual(2, result.SubjectId);
             Assert.AreEqual(1, result.SequenceNumber);
-            Assert.AreEqual(1, _dbContext.CourseSubjects.Count());
+            Assert.AreEqual(1, await _dbContext.CourseSubjects.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

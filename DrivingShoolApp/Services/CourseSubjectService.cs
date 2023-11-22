@@ -37,8 +37,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId)
         {
-            var course = await _courseService.GetCourse(courseId);
-            var subject = await _subjectService.GetSubject(subjectId);
+            var course = await _courseService.CheckCourse(courseId);
+            var subject = await _subjectService.CheckSubject(subjectId);
             var courseSubject = await _courseSubjectRepository.GetCourseSubject(courseId, subjectId);
             if (courseSubject == null)
                 throw new NotFoundCourseSubjectException(courseId, subjectId);
@@ -47,7 +47,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId)
         {
-            var course = await _courseService.GetCourse(courseId);
+            var course = await _courseService.CheckCourse(courseId);
             var courseSubjects = await _courseSubjectRepository.GetCourseSubjects(courseId);
             if (courseSubjects == null)
                 throw new NotFoundCourseSubjectException(courseId);
@@ -58,9 +58,9 @@ namespace DrivingSchoolApp.Services
         {
             if (courseSubjectDetails.SequenceNumber <= 0)
                 throw new ValueMustBeGreaterThanZeroException("sequnce number");
-            var course = await _courseService.GetCourse(courseSubjectDetails.CourseId);
-            var subject = await _subjectService.GetSubject(courseSubjectDetails.SubjectId);
-            var courseSubject = await _courseSubjectRepository.GetCourseSubject(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
+            var course = await _courseService.CheckCourse(courseSubjectDetails.CourseId);
+            var subject = await _subjectService.CheckSubject(courseSubjectDetails.SubjectId);
+            var courseSubject = await _courseSubjectRepository.CheckCourseSubject(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
             if (courseSubject != null)
                 throw new SubjectAlreadyAssignedToCourseException(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
             if (await _courseSubjectRepository.TakenSeqNumber(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber))
