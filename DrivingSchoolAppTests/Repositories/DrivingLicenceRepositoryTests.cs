@@ -61,6 +61,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -78,6 +80,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
             Assert.IsFalse(result.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -87,6 +91,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new DrivingLicenceRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetDrivingLicences(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -120,6 +126,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("Test2", result.LicenceCategoryName);
             Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -145,6 +153,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetDrivingLicence(idOfDrivingLicenceToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -187,6 +197,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("Test2", resultList[1].LicenceCategoryName);
             Assert.AreEqual(new DateTime(2020, 11, 11), resultList[1].ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), resultList[1].ExpirationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -211,6 +223,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomerDrivingLicences(1, new DateTime(2023, 10, 10));
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -250,6 +264,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customer2.Name, retrievedDrivingLicence.CustomerName);
             Assert.AreEqual(customer2.SecondName, retrievedDrivingLicence.CutomserSecondName);
             Assert.AreEqual(licenceCategory1.Name, retrievedDrivingLicence.LicenceCategoryName);
+            Assert.AreEqual(3, await _dbContext.DrivingLicences.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -289,6 +306,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customer2.Name, retrievedDrivingLicence.CustomerName);
             Assert.AreEqual(customer2.SecondName, retrievedDrivingLicence.CutomserSecondName);
             Assert.AreEqual(licenceCategory1.Name, retrievedDrivingLicence.LicenceCategoryName);
+            Assert.AreEqual(3, await _dbContext.DrivingLicences.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -312,6 +332,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
             Assert.AreEqual(1, await _dbContext.DrivingLicences.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -335,6 +357,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CustomerId);
             Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -354,6 +378,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckDrivingLicence(idOfDrivingLicenceToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

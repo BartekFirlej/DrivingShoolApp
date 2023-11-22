@@ -26,6 +26,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<DrivingLicenceGetDTO>.Create(
                 _dbContext.DrivingLicences
+                    .AsNoTracking()
                     .Include(d => d.LicenceCategory)
                     .Include(d => d.Customer)
                     .Select(d => new DrivingLicenceGetDTO
@@ -45,6 +46,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<DrivingLicenceGetDTO> GetDrivingLicence(int id)
         {
             return await _dbContext.DrivingLicences
+                                   .AsNoTracking()
                                    .Include(d => d.LicenceCategory)
                                    .Include(d => d.Customer)
                                    .Where(d => d.Id == id)
@@ -92,6 +94,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
         {
             return await _dbContext.DrivingLicences
+                                    .AsNoTracking()
                                    .Include(d => d.LicenceCategory)
                                    .Include(d => d.Customer)
                                    .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= date || d.ExpirationDate == null))
@@ -118,8 +121,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId)
         {
             return await _dbContext.DrivingLicences
-                                   .Where(d => d.Id == drivingLicenceId)
                                    .AsNoTracking()
+                                   .Where(d => d.Id == drivingLicenceId)
                                    .FirstOrDefaultAsync();
         }
     }

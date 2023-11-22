@@ -66,8 +66,8 @@ namespace DrivingSchoolApp.Services
                 throw new DateTimeException("Expiration");
             if (drivingLicenceDetails.ReceivedDate > drivingLicenceDetails.ExpirationDate)
                 throw new DateTimeException("Received", "Expiration");
-            var customer = await _customerService.GetCustomer(drivingLicenceDetails.CustomerId);
-            var licenceCategory = await _licenceCategoryService.GetLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
+            var customer = await _customerService.CheckCustomer(drivingLicenceDetails.CustomerId);
+            var licenceCategory = await _licenceCategoryService.CheckLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
             var customerDrivingLicences  = await _drivingLicenceRepository.GetCustomerDrivingLicences(drivingLicenceDetails.CustomerId, drivingLicenceDetails.ReceivedDate);
             var meetsRequirements = await _requiredLicenceCategoryService.MeetRequirements(customerDrivingLicences, drivingLicenceDetails.LicenceCategoryId, drivingLicenceDetails.ReceivedDate);
             if (!meetsRequirements)

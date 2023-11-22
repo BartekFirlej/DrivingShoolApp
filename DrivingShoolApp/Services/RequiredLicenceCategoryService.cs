@@ -69,7 +69,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate)
         {
-            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(licenceCategoryId);
             var requiredDrivingLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
             if (!requiredDrivingLicenceCategories.Any())
                 return true;
