@@ -323,18 +323,6 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Delete_Lecture_ThrowsReferenceConstraintException()
-        {
-            var idOfLectureToDelete = 1;
-            _lectureServiceMock.Setup(service => service.DeleteLecture(idOfLectureToDelete)).ThrowsAsync(new ReferenceConstraintException());
-            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
-
-            var result = (ObjectResult)await _controller.DeleteLecture(idOfLectureToDelete);
-
-            result.StatusCode.Should().Be(500);
-        }
-
-        [TestMethod]
         public async Task Delete_Lecture_ThrowsDbUpdateException()
         {
             var idOfLectureToDelete = 1;

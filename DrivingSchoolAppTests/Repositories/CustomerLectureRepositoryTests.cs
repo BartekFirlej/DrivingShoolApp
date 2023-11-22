@@ -68,6 +68,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", resultList[1].CustomerName);
             Assert.AreEqual(2, resultList[1].LectureId);
             Assert.AreEqual(new DateTime(2023, 11, 11), resultList[1].LectureDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         
@@ -83,6 +85,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomersLectures();
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -136,6 +140,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", resultList[1].CustomerName);
             Assert.AreEqual(1, resultList[1].LectureId);
             Assert.AreEqual(new DateTime(2023, 10, 10), resultList[1].LectureDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -179,6 +185,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomersLecture(idOfLectureToFind);
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
         
         [TestMethod]
@@ -232,6 +240,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName1", resultList[1].CustomerName);
             Assert.AreEqual(2, resultList[1].LectureId);
             Assert.AreEqual(new DateTime(2023, 11, 11), resultList[1].LectureDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -275,6 +285,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomerLectures(idOfCustomerToFind);
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -323,6 +335,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName1", result.CustomerName);
             Assert.AreEqual(1, result.LectureId);
             Assert.AreEqual(new DateTime(2023, 10, 10), result.LectureDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         public async Task Get_CustomerLecture_ReturnsNull()
@@ -366,6 +380,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCustomerLecture(idOfCustomerToFind, idOfLectureToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -412,6 +428,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.CustomerId);
             Assert.AreEqual(1, result.LectureId);
+
+            await _dbContext.DisposeAsync();
         }
 
         public async Task Check_CustomerLecture_ReturnsNull()
@@ -455,6 +473,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCustomerLecture(idOfCustomerToFind, idOfLectureToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -502,6 +522,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(customerLectureToAdd.LectureId, addedCustomerLecture.LectureId);
             Assert.AreEqual(new DateTime(2023, 10, 10), addedCustomerLecture.LectureDate);
             Assert.AreEqual("TestName2", addedCustomerLecture.CustomerName);
+            Assert.AreEqual(2, await _dbContext.Lectures.Where(l => l.Id == 1).Include(l => l.Customers).SelectMany(l => l.Customers).CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -546,6 +569,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.CustomerId);
             Assert.AreEqual(1, result.LectureId);
+            Assert.AreEqual(0, await _dbContext.Lectures.Where(l => l.Id == 1).Include(l => l.Customers).SelectMany(l => l.Customers).CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

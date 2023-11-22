@@ -26,7 +26,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLectures()
         {
             return await _dbContext.Lectures
-                    .SelectMany(lecture => lecture.Customers, (lecture, customerLecture) => new CustomerLectureGetDTO
+                        .AsNoTracking()
+                        .SelectMany(lecture => lecture.Customers, (lecture, customerLecture) => new CustomerLectureGetDTO
                         {
                             LectureId = lecture.LecturerId,
                             LectureDate = lecture.LectureDate,
@@ -38,6 +39,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomerLectures(int customerId)
         {
             return await _dbContext.Customers
+                    .AsNoTracking()
                     .Where(customer => customer.Id == customerId)
                     .SelectMany(customer => customer.Lectures, (customer, lecture) => new CustomerLectureGetDTO
                     {
@@ -51,6 +53,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLecture(int lectureId)
         {
             return await _dbContext.Lectures
+                    .AsNoTracking()
                     .Where(lecture => lecture.Id == lectureId)
                     .SelectMany(lecture => lecture.Customers, (lecture, customer) => new CustomerLectureGetDTO
                     {
@@ -64,6 +67,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId)
         {
             return await _dbContext.Lectures
+                    .AsNoTracking()
                     .Where(lecture => lecture.Id == lectureId)
                     .SelectMany(lecture => lecture.Customers.Where(customer => customer.Id == customerId), (lecture, customer) => new CustomerLectureGetDTO
                     {
@@ -86,8 +90,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId)
         {
             return await _dbContext.Lectures
-                        .Where(l => l.Id == lectureId && l.Customers.Any(c => c.Id == customerId))
                         .AsNoTracking()
+                        .Where(l => l.Id == lectureId && l.Customers.Any(c => c.Id == customerId))
                         .Select(l => new CustomerLectureCheckDTO
                         {
                             CustomerId = customerId,

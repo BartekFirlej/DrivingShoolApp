@@ -39,7 +39,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomerLectures(int customerId)
         {
-            var customer = await _customerService.GetCustomer(customerId);
+            var customer = await _customerService.CheckCustomer(customerId);
             var customerLectures = await _customerLectureRepository.GetCustomerLectures(customerId);
             if (!customerLectures.Any())
                 throw new NotFoundCustomerLectureException(customerId);
@@ -48,7 +48,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLecture(int lectureId)
         {
-            var lecture = await _lectureService.GetLecture(lectureId);
+            var lecture = await _lectureService.CheckLecture(lectureId);
             var customersLecture = await _customerLectureRepository.GetCustomersLecture(lectureId);
             if (!customersLecture.Any())
                 throw new NotFoundCustomersLectureException(lectureId);
@@ -57,8 +57,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId)
         {
-            var lecture = await _lectureService.GetLecture(lectureId);
-            var customer = await _customerService.GetCustomer(customerId);
+            var lecture = await _lectureService.CheckLecture(lectureId);
+            var customer = await _customerService.CheckCustomer(customerId);
             var customerLecture = await _customerLectureRepository.GetCustomerLecture(customerId, lectureId);
             if (customerLecture == null)
                 throw new NotFoundCustomerLectureException(customerId, lectureId);
@@ -67,12 +67,12 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
         {
-            var customer = await _customerService.GetCustomer(customerLectureDetails.CustomerId);
-            var lecture = await _lectureService.GetLecture(customerLectureDetails.LectureId);
-            var customerLecture = await _customerLectureRepository.GetCustomerLecture(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
+            var customer = await _customerService.CheckCustomer(customerLectureDetails.CustomerId);
+            var lecture = await _lectureService.CheckLecture(customerLectureDetails.LectureId);
+            var registration = await _registrationService.CheckRegistration(customer.Id, lecture.CourseSubjectsCourseId);
+            var customerLecture = await _customerLectureRepository.CheckCustomerLecture(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             if (customerLecture != null)
                 throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
-            var registration = await _registrationService.GetRegistration(customer.Id, lecture.CourseId);
             return await _customerLectureRepository.PostCustomerLecture(customerLectureDetails);
         }
 
