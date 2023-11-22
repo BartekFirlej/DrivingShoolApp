@@ -82,6 +82,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -99,6 +101,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -108,6 +112,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new LectureRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetLectures(-1, 10));
+            
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -158,6 +164,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestCity1", result.City);
             Assert.AreEqual("TestStreet1", result.Street);
             Assert.AreEqual(10, result.Number);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -196,6 +204,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetLecture(idOfLectureToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -240,6 +250,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.LecturerId);
             Assert.AreEqual(idOfCourseToFind, result.CourseSubjectsCourseId);
             Assert.AreEqual(idOfSubjectToFind, result.CourseSubjectsSubjectId);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -279,6 +291,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourseLectureSubject(idOfCourseToFind, idOfSubjectToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -335,6 +349,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestCity1", retrievedLecture.City);
             Assert.AreEqual("TestStreet1", retrievedLecture.Street);
             Assert.AreEqual(10, retrievedLecture.Number);
+            Assert.AreEqual(2, await _dbContext.Lectures.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -360,6 +377,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.LecturerId);
             Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
             Assert.AreEqual(1, await _dbContext.Lectures.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -385,6 +404,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.CourseSubjectsSubjectId);
             Assert.AreEqual(2, result.LecturerId);
             Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -404,6 +425,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckLecture(idOfLectureToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

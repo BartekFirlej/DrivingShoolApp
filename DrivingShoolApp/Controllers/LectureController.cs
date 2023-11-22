@@ -140,12 +140,12 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpDelete("{lectureid}")]
-        public async Task<IActionResult> DeleteLecture(int lectureId)
+        public async Task<IActionResult> DeleteLecture(int lectureid)
         {
             Lecture deleted;
             try
             {
-                deleted = await _lectureService.DeleteLecture(lectureId);
+                deleted = await _lectureService.DeleteLecture(lectureid);
             }
             catch (NotFoundLectureException e)
             {

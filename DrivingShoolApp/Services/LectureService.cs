@@ -57,9 +57,9 @@ namespace DrivingSchoolApp.Services
         {
             if (lectureDetails.LectureDate == DateTime.MinValue)
                 throw new DateTimeException("lecture date");
-            var lecturer = await _lecturerService.GetLecturer(lectureDetails.LecturerId);
-            var courseSubject = await _courseSubjectService.GetCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
-            var classroom = await _classroomService.GetClassroom(lectureDetails.ClassroomId);
+            var lecturer = await _lecturerService.CheckLecturer(lectureDetails.LecturerId);
+            var courseSubject = await _courseSubjectService.CheckCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
+            var classroom = await _classroomService.CheckClassroom(lectureDetails.ClassroomId);
             if (!GetCourseLectureSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
                 throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);

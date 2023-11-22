@@ -26,6 +26,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await PagedList<LectureGetDTO>.Create(
                             _dbContext.Lectures
+                            .AsNoTracking()
                             .Include(l => l.Lecturer)
                             .Include(l => l.Classroom)
                             .Include(l => l.Classroom.Address)
@@ -53,6 +54,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<LectureGetDTO> GetLecture(int lectureId)
         {
             return await _dbContext.Lectures
+                 .AsNoTracking()
                 .Include(l => l.Lecturer)
                 .Include(l => l.Classroom)
                 .Include(l => l.Classroom.Address)
@@ -94,7 +96,10 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId)
         {
-            return await _dbContext.Lectures.FirstOrDefaultAsync(l => l.CourseSubjectsCourseId == courseId && l.CourseSubjectsSubjectId == subjectId);
+            return await _dbContext.Lectures
+                            .AsNoTracking()
+                            .Where(l => l.CourseSubjectsCourseId == courseId && l.CourseSubjectsSubjectId == subjectId)
+                            .FirstOrDefaultAsync();
         }
 
         public async Task<Lecture> CheckLecture(int lectureId)
