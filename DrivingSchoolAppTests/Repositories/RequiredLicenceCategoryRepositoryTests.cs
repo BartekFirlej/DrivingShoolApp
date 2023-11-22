@@ -50,6 +50,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, resultList[1].RequiredLicenceCategoryId);
             Assert.AreEqual("Test2", resultList[1].RequiredLicenceCategoryName);
             Assert.AreEqual(3, resultList[1].RequiredYears);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -64,6 +66,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetRequirements();
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -99,6 +103,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, resultList[1].RequiredLicenceCategoryId);
             Assert.AreEqual("Test2", resultList[1].RequiredLicenceCategoryName);
             Assert.AreEqual(3, resultList[1].RequiredYears);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -122,6 +128,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetRequirements(idOfLicenceCategory);
 
             Assert.IsFalse(result.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -151,6 +159,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.RequiredLicenceCategoryId);
             Assert.AreEqual("Test2", result.RequiredLicenceCategoryName);
             Assert.AreEqual(3, result.RequiredYears);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -175,6 +185,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -202,6 +214,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(3, result.LicenceCategoryId);
             Assert.AreEqual(2, result.RequiredLicenceCategoryId);
             Assert.AreEqual(3, result.RequiredYears);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -226,6 +240,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -235,8 +251,6 @@ namespace DrivingSchoolAppTests.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
-            var idOfLicenceCategory = 2;
-            var idOfRequiredLicenceCategory = 1;
             var licenceCategory1 = new LicenceCategory { Id = 1, Name = "Test1" };
             var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
             var licenceCategory3 = new LicenceCategory { Id = 3, Name = "Test3" };
@@ -263,6 +277,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(requirementToAdd.RequiredYears, retrievedRequirement.RequiredYears);
             Assert.AreEqual("Test2", retrievedRequirement.LicenceCategoryName);
             Assert.AreEqual("Test1", retrievedRequirement.RequiredLicenceCategoryName);
+            Assert.AreEqual(3, _dbContext.RequiredLicenceCategories.Count());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -272,8 +289,6 @@ namespace DrivingSchoolAppTests.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
-            var idOfLicenceCategory = 3;
-            var idOfRequiredLicenceCategory = 2;
             var licenceCategory1 = new LicenceCategory { Id = 1, Name = "Test1" };
             var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
             var licenceCategory3 = new LicenceCategory { Id = 3, Name = "Test3" };
@@ -291,6 +306,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.RequiredLicenceCategoryId);
             Assert.AreEqual(3, result.RequiredYears);
             Assert.AreEqual(1, _dbContext.RequiredLicenceCategories.Count());
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

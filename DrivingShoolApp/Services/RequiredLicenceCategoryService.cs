@@ -37,8 +37,8 @@ namespace DrivingSchoolApp.Services
 
         public async Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
         {
-            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
-            await _licenceCategoryService.GetLicenceCategory(requiredLicenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(licenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(requiredLicenceCategoryId);
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirement(licenceCategoryId, requiredLicenceCategoryId);
             if (requiredLicenceCategories == null)
                 throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId, requiredLicenceCategoryId);
@@ -47,7 +47,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId)
         {
-            await _licenceCategoryService.GetLicenceCategory(licenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(licenceCategoryId);
             var requiredLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
             if (!requiredLicenceCategories.Any())
                 throw new NotFoundRequiredLicenceCategoryException(licenceCategoryId);
@@ -58,9 +58,9 @@ namespace DrivingSchoolApp.Services
         {
             if (requirementDetails.RequiredYears <= 0)
                 throw new ValueMustBeGreaterThanZeroException("required years");
-            var licenceCategory = await _licenceCategoryService.GetLicenceCategory(requirementDetails.LicenceCategoryId);
-            var requiredLicenceCategory = await _licenceCategoryService.GetLicenceCategory(requirementDetails.RequiredLicenceCategoryId);
-            var requirementExists = await _requiredLicenceCategoryRepository.GetRequirement(requirementDetails.LicenceCategoryId, requirementDetails.RequiredLicenceCategoryId);
+            var licenceCategory = await _licenceCategoryService.CheckLicenceCategory(requirementDetails.LicenceCategoryId);
+            var requiredLicenceCategory = await _licenceCategoryService.CheckLicenceCategory(requirementDetails.RequiredLicenceCategoryId);
+            var requirementExists = await _requiredLicenceCategoryRepository.CheckRequirement(requirementDetails.LicenceCategoryId, requirementDetails.RequiredLicenceCategoryId);
             if (requirementExists != null)
                 throw new RequirementAlreadyExistsException(requirementDetails.RequiredLicenceCategoryId, requirementDetails.LicenceCategoryId);
             var addedRequiredLicenceCategory = await _requiredLicenceCategoryRepository.PostRequirement(requirementDetails);

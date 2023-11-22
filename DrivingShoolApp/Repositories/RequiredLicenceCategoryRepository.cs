@@ -24,7 +24,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements()
         {
-            return await (from rlc in _dbContext.RequiredLicenceCategories
+            return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
                     join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
                     join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
                     select new RequiredLicenceCategoryGetDTO
@@ -39,7 +39,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
         {
-            return await (from rlc in _dbContext.RequiredLicenceCategories
+            return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
                           join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
                           join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
                           where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
@@ -57,7 +57,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId)
         {
-            return await (from rlc in _dbContext.RequiredLicenceCategories
+            return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
                    join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
                    join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
                    where rlc.LicenceCategoryId == licenceCategoryId
@@ -86,7 +86,7 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId)
         {
-            return await (from rlc in _dbContext.RequiredLicenceCategories
+            return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
                           join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
                           join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
                           where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
