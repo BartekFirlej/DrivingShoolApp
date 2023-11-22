@@ -197,15 +197,15 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (ReferenceConstraintException e)
+            catch (ReferenceConstraintException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course refers to something." } });
             }
-            catch (DbUpdateException e)
+            catch (DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }
@@ -232,15 +232,15 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (ReferenceConstraintException e)
+            catch (ReferenceConstraintException)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course refers to something." } });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course subject refers to something." } });
             }
-            catch (DbUpdateException e)
+            catch (DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }
@@ -267,15 +267,15 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (ReferenceConstraintException e)
+            catch (ReferenceConstraintException)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course refers to something." } });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This course registration refers to something." } });
             }
-            catch (DbUpdateException e)
+            catch (DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }

@@ -84,11 +84,11 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (ReferenceConstraintException e)
+            catch (ReferenceConstraintException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This classroom refers to something." } });
             }
-            catch (DbUpdateException e)
+            catch (DbUpdateException)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something is wrong with your request or database." } });
             }

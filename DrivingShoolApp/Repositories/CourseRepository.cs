@@ -24,7 +24,9 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<CourseGetDTO>> GetCourses(int page, int size)
         {
             return await PagedList<CourseGetDTO>.Create(
-                            _dbContext.Courses.Include(c => c.CourseType)
+                               _dbContext.Courses
+                               .AsNoTracking()
+                               .Include(c => c.CourseType)
                                .Include(c => c.CourseType.LicenceCategory)
                                .Select(c => new CourseGetDTO
                                {
@@ -50,7 +52,9 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<CourseGetDTO> GetCourse(int courseId)
         {
-            return await _dbContext.Courses.Include(c => c.CourseType)
+            return await _dbContext.Courses
+                                           .AsNoTracking()
+                                           .Include(c => c.CourseType)
                                            .Include(c => c.CourseType.LicenceCategory)
                                            .Where(c => c.Id == courseId)
                                            .Select(c => new CourseGetDTO
@@ -75,7 +79,11 @@ namespace DrivingSchoolApp.Repositories
 
         public async Task<int> GetCourseAssignedPeopleCount(int courseId)
         {
-            return await _dbContext.Courses.Where(c => c.Id == courseId).Select(c => c.Registrations.Count()).FirstOrDefaultAsync();  
+            return await _dbContext.Courses
+                .AsNoTracking()
+                .Where(c => c.Id == courseId)
+                .Select(c => c.Registrations.Count())
+                .FirstOrDefaultAsync();  
         }
 
         public async Task<Course> PostCourse(CoursePostDTO courseDetails)
@@ -96,8 +104,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Course> CheckCourse(int courseId)
         {
             return await _dbContext.Courses
-                         .Where(c => c.Id == courseId)
                          .AsNoTracking()
+                         .Where(c => c.Id == courseId)
                          .FirstOrDefaultAsync();
         }
 

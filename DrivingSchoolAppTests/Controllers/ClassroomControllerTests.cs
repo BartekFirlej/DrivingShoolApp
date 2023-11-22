@@ -164,7 +164,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Delete_Address_ThrowsDbUpdateException()
+        public async Task Delete_Classroom_ThrowsDbUpdateException()
         {
             var idOfClassroomToDelete = 1;
             _classroomServiceMock.Setup(service => service.DeleteClassroom(idOfClassroomToDelete)).ThrowsAsync(new DbUpdateException());
@@ -176,7 +176,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task Delete_Address_ThrowsException()
+        public async Task Delete_Classroom_ThrowsException()
         {
             var idOfClassroomToDelete = 1;
             _classroomServiceMock.Setup(service => service.DeleteClassroom(idOfClassroomToDelete)).ThrowsAsync(new Exception());

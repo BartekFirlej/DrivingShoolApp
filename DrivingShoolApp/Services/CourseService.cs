@@ -44,9 +44,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<int> GetCourseAssignedPeopleCount(int courseId)
         {
-            var course = await _courseRepository.GetCourse(courseId);
-            if(course == null)
-                throw new NotFoundCourseException(courseId);
+            await CheckCourse(courseId);
             return await _courseRepository.GetCourseAssignedPeopleCount(courseId);
         }
 
@@ -58,7 +56,7 @@ namespace DrivingSchoolApp.Services
                 throw new DateTimeException("begin date");
             if (courseDetails.Limit <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Limit");
-            await _courseTypeService.GetCourseType(courseDetails.CourseTypeId);
+            await _courseTypeService.CheckCourseType(courseDetails.CourseTypeId);
             var addedCourse = await _courseRepository.PostCourse(courseDetails);
             return await _courseRepository.GetCourse(addedCourse.Id);
         }

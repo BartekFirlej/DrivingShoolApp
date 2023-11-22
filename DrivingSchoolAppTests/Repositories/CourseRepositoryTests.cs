@@ -65,6 +65,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -79,6 +81,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourses(1, 10);
 
             Assert.IsFalse(result.PagedItems.Any());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -88,6 +92,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new CourseRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetCourses(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -122,6 +128,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(18, result.CourseType.MinimumAge);
             Assert.AreEqual(1, result.CourseType.LicenceCategoryId);
             Assert.AreEqual("TestLicence", result.CourseType.LicenceCategoryName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -145,6 +153,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.GetCourse(idOfCourseToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -175,6 +185,8 @@ namespace DrivingSchoolAppTests.Repositories
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -205,6 +217,8 @@ namespace DrivingSchoolAppTests.Repositories
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -247,6 +261,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(courseType1.MinimumAge, retrievedCourse.CourseType.MinimumAge);
             Assert.AreEqual(courseType1.LicenceCategoryId, retrievedCourse.CourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourse.CourseType.LicenceCategoryName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -272,6 +288,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(20, result.Limit);
             Assert.AreEqual(200, result.Price);
             Assert.AreEqual(1, await _dbContext.Courses.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -297,6 +315,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, result.CourseTypeId);
             Assert.AreEqual(20, result.Limit);
             Assert.AreEqual(200, result.Price);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -316,6 +336,8 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCourse(idOfCourseToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }
