@@ -45,6 +45,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(1, resultList.PageIndex);
             Assert.AreEqual(10, resultList.PageSize);
             Assert.IsFalse(resultList.HasNextPage);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -62,6 +64,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsFalse(result.HasNextPage);
             Assert.AreEqual(1, result.PageIndex);
             Assert.AreEqual(10, result.PageSize);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -71,6 +75,8 @@ namespace DrivingSchoolAppTests.Repositories
             _repository = new LecturerRepository(_dbContext);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _repository.GetLecturers(-1, 10));
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -93,6 +99,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -113,6 +121,8 @@ namespace DrivingSchoolAppTests.Repositories
 
 
             Assert.IsNull(result);
+            
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -139,6 +149,9 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(lecturerToAdd.SecondName, addedLecturer.SecondName);
             Assert.AreEqual(lecturerToAdd.Name, retrievedLecturer.Name);
             Assert.AreEqual(lecturerToAdd.SecondName, retrievedLecturer.SecondName);
+            Assert.AreEqual(3, await _dbContext.Lecturers.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -161,6 +174,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
             Assert.AreEqual(1, await _dbContext.Lecturers.CountAsync());
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -183,6 +198,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual("TestName2", result.Name);
             Assert.AreEqual("TestSName2", result.SecondName);
+
+            await _dbContext.DisposeAsync();
         }
 
         [TestMethod]
@@ -201,8 +218,9 @@ namespace DrivingSchoolAppTests.Repositories
 
             var result = await _repository.CheckLecturer(idOfLecturerToCheck);
 
-
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
         }
     }
 }

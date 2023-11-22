@@ -24,7 +24,9 @@ namespace DrivingSchoolApp.Repositories
         public async Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size)
         {
             return await PagedList<LecturerGetDTO>.Create(
-                            _dbContext.Lecturers.Select(l => new LecturerGetDTO
+                            _dbContext.Lecturers
+                            .AsNoTracking()
+                            .Select(l => new LecturerGetDTO
                             {
                                 Id = l.Id,
                                 Name = l.Name,
@@ -36,6 +38,7 @@ namespace DrivingSchoolApp.Repositories
         public async Task<LecturerGetDTO> GetLecturer(int lecturerId)
         {
             return await _dbContext.Lecturers
+                             .AsNoTracking()
                              .Where(l => l.Id == lecturerId)
                              .Select(l => new LecturerGetDTO
                                {
@@ -60,8 +63,8 @@ namespace DrivingSchoolApp.Repositories
         public async Task<Lecturer> CheckLecturer(int lecturerId)
         {
             return await _dbContext.Lecturers
-                             .Where(l => l.Id == lecturerId)
                              .AsNoTracking()
+                             .Where(l => l.Id == lecturerId)
                              .FirstOrDefaultAsync();
         }
 
