@@ -10,7 +10,7 @@ namespace DrivingSchoolApp.Services
         public Task<PagedList<LectureGetDTO>> GetLectures(int page, int size);
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails);
-        public Task<bool> GetCourseLectureSubject(int courseId, int subjectId);
+        public Task<bool> CheckLectureAtCourseAboutSubject(int courseId, int subjectId);
         public Task<Lecture> CheckLecture(int lectureId);
         public Task<Lecture> DeleteLecture(int lectureId);
     }
@@ -45,9 +45,9 @@ namespace DrivingSchoolApp.Services
             return lecture;
         }
 
-        public async Task<bool> GetCourseLectureSubject(int courseId, int subjectId)
+        public async Task<bool> CheckLectureAtCourseAboutSubject(int courseId, int subjectId)
         {
-            var lecture = await _lectureRepository.GetCourseLectureSubject(courseId, subjectId);
+            var lecture = await _lectureRepository.CheckLectureAtCourseAboutSubject(courseId, subjectId);
             if (lecture == null)
                 return false;
             return true;
@@ -60,7 +60,7 @@ namespace DrivingSchoolApp.Services
             var lecturer = await _lecturerService.CheckLecturer(lectureDetails.LecturerId);
             var courseSubject = await _courseSubjectService.CheckCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
             var classroom = await _classroomService.CheckClassroom(lectureDetails.ClassroomId);
-            if (!GetCourseLectureSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
+            if (!CheckLectureAtCourseAboutSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
                 throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);
             return await _lectureRepository.GetLecture(addedLecture.Id);

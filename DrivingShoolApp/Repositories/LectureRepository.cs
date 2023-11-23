@@ -9,7 +9,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<PagedList<LectureGetDTO>> GetLectures(int page, int size);
         public Task<LectureGetDTO> GetLecture(int lectureId);
         public Task<Lecture> PostLecture(LecturePostDTO lectureDetails);
-        public Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId);
+        public Task<Lecture> CheckLectureAtCourseAboutSubject(int courseId, int subjectId);
         public Task<Lecture> CheckLecture(int lectureId);
         public Task<Lecture> DeleteLecture(Lecture lectureToDelete);
     }
@@ -94,7 +94,7 @@ namespace DrivingSchoolApp.Repositories
             return lectureToAdd;
         }
 
-        public async Task<Lecture> GetCourseLectureSubject(int courseId, int subjectId)
+        public async Task<Lecture> CheckLectureAtCourseAboutSubject(int courseId, int subjectId)
         {
             return await _dbContext.Lectures
                             .AsNoTracking()

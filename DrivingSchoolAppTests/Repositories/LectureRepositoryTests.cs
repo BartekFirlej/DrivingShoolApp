@@ -242,7 +242,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
 
-            var result = await _repository.GetCourseLectureSubject(idOfCourseToFind, idOfSubjectToFind);
+            var result = await _repository.CheckLectureAtCourseAboutSubject(idOfCourseToFind, idOfSubjectToFind);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
@@ -288,7 +288,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
 
-            var result = await _repository.GetCourseLectureSubject(idOfCourseToFind, idOfSubjectToFind);
+            var result = await _repository.CheckLectureAtCourseAboutSubject(idOfCourseToFind, idOfSubjectToFind);
 
             Assert.IsNull(result);
 
@@ -425,6 +425,92 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckLecture(idOfLectureToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task CheckLectureCourseSubject_ReturnsLecture()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+               .UseInMemoryDatabase(Guid.NewGuid().ToString())
+               .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var classroom1 = new Classroom { Id = 1, AddressId = 1, Number = 1, Size = 10 };
+            var licenceCategory1 = new LicenceCategory { Id = 1, Name = "TestLicence" };
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var subject1 = new Subject { Id = 1, Name = "TestSubject1", Code = "TestCode1", Duration = 1 };
+            var subject2 = new Subject { Id = 2, Name = "TestSubject2", Code = "TestCode2", Duration = 2 };
+            var courseSubject1 = new CourseSubject { CourseId = 1, SubjectId = 1, SequenceNumber = 1 };
+            var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            await _dbContext.Addresses.AddAsync(address1);
+            await _dbContext.Classrooms.AddAsync(classroom1);
+            await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
+            await _dbContext.CourseTypes.AddAsync(courseType1);
+            await _dbContext.Courses.AddAsync(course1);
+            await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
+            await _dbContext.CourseSubjects.AddRangeAsync(courseSubject1, courseSubject2);
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.Lectures.AddAsync(lecture1);
+            await _dbContext.SaveChangesAsync();
+            var idOfCourse = 1;
+            var idOfSubject = 1;
+            _repository = new LectureRepository(_dbContext);
+
+            var lecture = await _repository.CheckLectureAtCourseAboutSubject(idOfCourse, idOfSubject);
+
+            Assert.IsNotNull(lecture);
+            Assert.AreEqual(1, lecture.Id);
+            Assert.AreEqual(1, lecture.LecturerId);
+            Assert.AreEqual(1, lecture.CourseSubjectsSubjectId);
+            Assert.AreEqual(1, lecture.CourseSubjectsCourseId);
+            Assert.AreEqual(1, lecture.ClassroomId);
+            Assert.AreEqual(new DateTime(2023, 10, 10), lecture.LectureDate);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task CheckLectureCourseSubject_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+               .UseInMemoryDatabase(Guid.NewGuid().ToString())
+               .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var classroom1 = new Classroom { Id = 1, AddressId = 1, Number = 1, Size = 10 };
+            var licenceCategory1 = new LicenceCategory { Id = 1, Name = "TestLicence" };
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var subject1 = new Subject { Id = 1, Name = "TestSubject1", Code = "TestCode1", Duration = 1 };
+            var subject2 = new Subject { Id = 2, Name = "TestSubject2", Code = "TestCode2", Duration = 2 };
+            var courseSubject1 = new CourseSubject { CourseId = 1, SubjectId = 1, SequenceNumber = 1 };
+            var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            await _dbContext.Addresses.AddAsync(address1);
+            await _dbContext.Classrooms.AddAsync(classroom1);
+            await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
+            await _dbContext.CourseTypes.AddAsync(courseType1);
+            await _dbContext.Courses.AddAsync(course1);
+            await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
+            await _dbContext.CourseSubjects.AddRangeAsync(courseSubject1, courseSubject2);
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.Lectures.AddAsync(lecture1);
+            await _dbContext.SaveChangesAsync();
+            var idOfCourse = 2;
+            var idOfSubject = 2;
+            _repository = new LectureRepository(_dbContext);
+
+            var lecture = await _repository.CheckLectureAtCourseAboutSubject(idOfCourse, idOfSubject);
+
+            Assert.IsNull(lecture);
 
             await _dbContext.DisposeAsync();
         }
