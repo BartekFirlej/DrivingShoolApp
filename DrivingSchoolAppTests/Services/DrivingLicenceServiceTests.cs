@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Castle.Core.Resource;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -15,6 +16,7 @@ namespace DrivingSchoolAppTests.Services
         private Mock<ICustomerService> _customerServiceMock;
         private Mock<ILicenceCategoryService> _licenceCategoryServiceMock;
         private Mock<IRequiredLicenceCategoryService> _requiredLicenceCategoryServiceMock;
+        private Mock<IDateTimeHelper> _dateTimeHelperMock;
         private Fixture _fixture;
         private DrivingLicenceService _service;
 
@@ -25,6 +27,7 @@ namespace DrivingSchoolAppTests.Services
             _customerServiceMock = new Mock<ICustomerService>();
             _licenceCategoryServiceMock = new Mock<ILicenceCategoryService>();
             _requiredLicenceCategoryServiceMock = new Mock<IRequiredLicenceCategoryService>();
+            _dateTimeHelperMock = new Mock<IDateTimeHelper>();
         }
 
         [TestMethod]
@@ -85,6 +88,51 @@ namespace DrivingSchoolAppTests.Services
                                                  _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.GetDrivingLicence(idOfDrivingLicenceToFind));
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ReturnsDrivingLicences()
+        {
+            var idOfCustomerToFind = 1;
+            var customer = new Customer();
+            var drivingLicence = new DrivingLicenceGetDTO();
+            var drivingLicencesList = new List<DrivingLicenceGetDTO> { drivingLicence };
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _dateTimeHelperMock.Setup(service => service.GetDateTimeNow()).Returns(new DateTime(2023, 11, 9));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(idOfCustomerToFind, _dateTimeHelperMock.Object.GetDateTimeNow())).ReturnsAsync(drivingLicencesList);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = await _service.GetCustomerDrivingLicences(idOfCustomerToFind, _dateTimeHelperMock.Object.GetDateTimeNow());
+
+            Assert.AreEqual(drivingLicencesList, result);
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ThrowsNotFoundDrivingLicencesException()
+        {
+            var idOfCustomerToFind = 1;
+            var customer = new Customer();
+            var drivingLicencesList = new List<DrivingLicenceGetDTO>();
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ReturnsAsync(customer);
+            _dateTimeHelperMock.Setup(service => service.GetDateTimeNow()).Returns(new DateTime(2023, 11, 9));
+            _drivingLicenceRepositoryMock.Setup(repo => repo.GetCustomerDrivingLicences(idOfCustomerToFind, _dateTimeHelperMock.Object.GetDateTimeNow())).ReturnsAsync(drivingLicencesList);
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLicenceException>(async () => await _service.GetCustomerDrivingLicences(idOfCustomerToFind, _dateTimeHelperMock.Object.GetDateTimeNow()));
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomerToFind = 1;
+            _customerServiceMock.Setup(service => service.CheckCustomer(idOfCustomerToFind)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToFind));
+            _dateTimeHelperMock.Setup(service => service.GetDateTimeNow()).Returns(new DateTime(2023, 11, 9));
+            _service = new DrivingLicenceService(_drivingLicenceRepositoryMock.Object, _customerServiceMock.Object,
+                                                 _licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.GetCustomerDrivingLicences(idOfCustomerToFind, _dateTimeHelperMock.Object.GetDateTimeNow()));
         }
 
         [TestMethod]

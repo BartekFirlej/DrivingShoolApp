@@ -19,6 +19,8 @@ namespace DrivingSchoolAppTests.Controllers
         private Mock<ICustomerService> _customerServiceMock;
         private Mock<IRegistrationService> _registrationServiceMock;
         private Mock<ICustomerLectureService> _customerLectureServiceMock;
+        private Mock<IDrivingLicenceService> _drivingLicenceServiceMock;
+        private Mock<IDateTimeHelper> _dateTimeHelperMock;
         private Fixture _fixture;
         private CustomerController _controller;
 
@@ -28,6 +30,8 @@ namespace DrivingSchoolAppTests.Controllers
             _customerServiceMock = new Mock<ICustomerService>();
             _registrationServiceMock = new Mock<IRegistrationService>();
             _customerLectureServiceMock = new Mock<ICustomerLectureService>();
+            _drivingLicenceServiceMock = new Mock<IDrivingLicenceService>();
+            _dateTimeHelperMock = new Mock<IDateTimeHelper>();
         }
 
         [TestMethod]
@@ -35,7 +39,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var usersList = new PagedList<CustomerGetDTO>();
             _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).ReturnsAsync(usersList);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomers(1, 10);
 
@@ -46,7 +50,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Customers_ThrowsNotFoundCustomersException()
         {
             _customerServiceMock.Setup(service => service.GetCustomers(1, 10)).ThrowsAsync(new NotFoundCustomerException());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomers(1, 10);
 
@@ -57,7 +61,7 @@ namespace DrivingSchoolAppTests.Controllers
         public async Task Get_Customers_ThrowsPageIndexMustBeGreaterThanZeroException()
         {
             _customerServiceMock.Setup(service => service.GetCustomers(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.GetCustomers(-1, 10);
 
@@ -70,7 +74,7 @@ namespace DrivingSchoolAppTests.Controllers
             var foundCustomer = new CustomerGetDTO();
             var idOfCustomerToFind = 1;
             _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).ReturnsAsync(foundCustomer);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomer(idOfCustomerToFind);
 
@@ -82,7 +86,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFind = 1;
             _customerServiceMock.Setup(service => service.GetCustomer(idOfCustomerToFind)).ThrowsAsync(new NotFoundCustomerException(1));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomer(idOfCustomerToFind);
 
@@ -95,7 +99,7 @@ namespace DrivingSchoolAppTests.Controllers
             var customerRegistrations = new PagedList<RegistrationGetDTO>();
             var idOfCustomerToFindHisRegistrations = 1;
             _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).ReturnsAsync(customerRegistrations);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
@@ -107,7 +111,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFindHisRegistrations = 1;
             _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).ThrowsAsync(new NotFoundRegistrationException(idOfCustomerToFindHisRegistrations));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
@@ -119,7 +123,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFindHisRegistrations = 1;
             _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToFindHisRegistrations));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, 1, 10);
 
@@ -131,7 +135,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFindHisRegistrations = 1;
             _registrationServiceMock.Setup(service => service.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, -1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.GetCustomerRegistrations(idOfCustomerToFindHisRegistrations, -1, 10);
 
@@ -144,7 +148,7 @@ namespace DrivingSchoolAppTests.Controllers
             var customerLectures = new List<CustomerLectureGetDTO>();
             var idOfCustomerToFindHisLectures = 1;
             _customerLectureServiceMock.Setup(service => service.GetCustomerLectures(idOfCustomerToFindHisLectures)).ReturnsAsync(customerLectures);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisLectures);
 
@@ -156,7 +160,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFindHisLectures = 1;
             _customerLectureServiceMock.Setup(service => service.GetCustomerLectures(idOfCustomerToFindHisLectures)).ThrowsAsync(new NotFoundCustomerLectureException());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisLectures);
 
@@ -168,14 +172,50 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToFindHisLectures = 1;
             _customerLectureServiceMock.Setup(service => service.GetCustomerLectures(idOfCustomerToFindHisLectures)).ThrowsAsync(new NotFoundCustomerException());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisLectures);
 
             result.StatusCode.Should().Be(404);
         }
 
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ReturnsOk()
+        {
+            var customerDrivingLicences = new List<DrivingLicenceGetDTO>();
+            var idOfCustomerToFindHisDrivingLicences = 1;
+            _dateTimeHelperMock.Setup(service => service.GetDateTimeNow()).Returns(new DateTime(2023,11,9));
+            _drivingLicenceServiceMock.Setup(service => service.GetCustomerDrivingLicences(idOfCustomerToFindHisDrivingLicences, _dateTimeHelperMock.Object.GetDateTimeNow())).ReturnsAsync(customerDrivingLicences);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
+            var result = (OkObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisDrivingLicences);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ThrowsNotFoundCustomerDrivingLicencesException()
+        {
+            var idOfCustomerToFindHisLectures = 1;
+            _customerLectureServiceMock.Setup(service => service.GetCustomerLectures(idOfCustomerToFindHisLectures)).ThrowsAsync(new NotFoundCustomerLectureException());
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisLectures);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Get_CustomerDrivingLicences_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomerToFindHisLectures = 1;
+            _customerLectureServiceMock.Setup(service => service.GetCustomerLectures(idOfCustomerToFindHisLectures)).ThrowsAsync(new NotFoundCustomerException());
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisLectures);
+
+            result.StatusCode.Should().Be(404);
+        }
 
         [TestMethod]
         public async Task Post_Customer_ReturnsCreatedAtAction()
@@ -183,7 +223,7 @@ namespace DrivingSchoolAppTests.Controllers
             var customerToAdd = new CustomerPostDTO();
             var addedCustomer = new CustomerGetDTO();
             _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ReturnsAsync(addedCustomer);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (CreatedAtActionResult)await _controller.PostCustomer(customerToAdd);
 
@@ -196,7 +236,7 @@ namespace DrivingSchoolAppTests.Controllers
             var customerToAdd = new CustomerPostDTO();
             var wrongDate = "begin date";
             _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ThrowsAsync(new DateTimeException(wrongDate));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (BadRequestObjectResult)await _controller.PostCustomer(customerToAdd);
 
@@ -209,7 +249,7 @@ namespace DrivingSchoolAppTests.Controllers
             var deletedCustomer = new Customer();
             var idOfCustomerToDelete = 1;
             _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ReturnsAsync(deletedCustomer);
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NoContentResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
 
@@ -221,7 +261,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToDelete = 1;
             _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToDelete));
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (NotFoundObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
 
@@ -233,7 +273,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToDelete = 1;
             _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new ReferenceConstraintException());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
 
@@ -245,7 +285,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToDelete = 1;
             _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new DbUpdateException());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
 
@@ -257,7 +297,7 @@ namespace DrivingSchoolAppTests.Controllers
         {
             var idOfCustomerToDelete = 1;
             _customerServiceMock.Setup(service => service.DeleteCustomer(idOfCustomerToDelete)).ThrowsAsync(new Exception());
-            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (ObjectResult)await _controller.DeleteCustomer(idOfCustomerToDelete);
 

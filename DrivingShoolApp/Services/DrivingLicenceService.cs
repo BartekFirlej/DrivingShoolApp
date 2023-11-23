@@ -44,6 +44,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
         {
+            var customer = await _customerService.CheckCustomer(customerId);
             var drivingLicences = await _drivingLicenceRepository.GetCustomerDrivingLicences(customerId, date);
             if (!drivingLicences.Any())
                 throw new NotFoundDrivingLicenceException();

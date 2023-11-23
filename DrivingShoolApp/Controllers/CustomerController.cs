@@ -16,12 +16,17 @@ namespace DrivingSchoolApp.Controllers
         private readonly ICustomerService _customerService;
         private readonly IRegistrationService _registrationService;
         private readonly ICustomerLectureService _customerLectureService;
+        private readonly IDrivingLicenceService _drivingLicenceService;
+        private readonly IDateTimeHelper _dateTimeHelper;
 
-        public CustomerController(ICustomerService userService, IRegistrationService registrationService, ICustomerLectureService customerLectureService)
+        public CustomerController(ICustomerService userService, IRegistrationService registrationService, ICustomerLectureService customerLectureService, 
+                                  IDrivingLicenceService drivingLicenceService, IDateTimeHelper dateTimeHelper)
         {
             _customerService = userService;
             _registrationService = registrationService;
             _customerLectureService = customerLectureService;
+            _drivingLicenceService = drivingLicenceService;
+            _dateTimeHelper = dateTimeHelper;
         }
 
         [HttpGet]
@@ -98,6 +103,25 @@ namespace DrivingSchoolApp.Controllers
                 return NotFound(e.ToJson());
             }
             return Ok(customerLectures);
+        }
+
+        [HttpGet("{customerid}/drivinglicences")]
+        public async Task<IActionResult> GetCustomerDrivingLicences(int customerid)
+        {
+            ICollection<DrivingLicenceGetDTO> customerDrivingLicences;
+            try
+            {
+                customerDrivingLicences = await _drivingLicenceService.GetCustomerDrivingLicences(customerid, _dateTimeHelper.GetDateTimeNow());
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundDrivingLicenceException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(customerDrivingLicences);
         }
 
         [HttpPost]
