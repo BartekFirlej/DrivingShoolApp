@@ -7,7 +7,8 @@ namespace DrivingSchoolApp.Repositories
     public interface IDrivingLicenceRepository
     {
         public Task<PagedList<DrivingLicenceGetDTO>> GetDrivingLicences(int page, int size);
-        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
+        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
+        public Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
         public Task<DrivingLicence> DeleteDrivingLicence(DrivingLicence drivingLicenceToDelete);
@@ -91,13 +92,13 @@ namespace DrivingSchoolApp.Repositories
             return drivingLicenceToAdd;
         }
 
-        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
+        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId)
         {
             return await _dbContext.DrivingLicences
-                                    .AsNoTracking()
+                                   .AsNoTracking()
                                    .Include(d => d.LicenceCategory)
                                    .Include(d => d.Customer)
-                                   .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= date || d.ExpirationDate == null))
+                                   .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= DateTime.Now || d.ExpirationDate == null))
                                    .Select(d => new DrivingLicenceGetDTO
                                    {
                                        Id = d.Id,
@@ -124,6 +125,14 @@ namespace DrivingSchoolApp.Repositories
                                    .AsNoTracking()
                                    .Where(d => d.Id == drivingLicenceId)
                                    .FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date)
+        {
+            return await _dbContext.DrivingLicences
+                                  .AsNoTracking()
+                                  .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= date || d.ExpirationDate == null))
+                                  .ToListAsync();
         }
     }
 }

@@ -185,7 +185,7 @@ namespace DrivingSchoolAppTests.Controllers
             var customerDrivingLicences = new List<DrivingLicenceGetDTO>();
             var idOfCustomerToFindHisDrivingLicences = 1;
             _dateTimeHelperMock.Setup(service => service.GetDateTimeNow()).Returns(new DateTime(2023,11,9));
-            _drivingLicenceServiceMock.Setup(service => service.GetCustomerDrivingLicences(idOfCustomerToFindHisDrivingLicences, _dateTimeHelperMock.Object.GetDateTimeNow())).ReturnsAsync(customerDrivingLicences);
+            _drivingLicenceServiceMock.Setup(service => service.GetCustomerDrivingLicences(idOfCustomerToFindHisDrivingLicences)).ReturnsAsync(customerDrivingLicences);
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object, _dateTimeHelperMock.Object);
 
             var result = (OkObjectResult)await _controller.GetCustomerLectures(idOfCustomerToFindHisDrivingLicences);

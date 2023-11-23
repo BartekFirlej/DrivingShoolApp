@@ -111,7 +111,7 @@ namespace DrivingSchoolApp.Controllers
             ICollection<DrivingLicenceGetDTO> customerDrivingLicences;
             try
             {
-                customerDrivingLicences = await _drivingLicenceService.GetCustomerDrivingLicences(customerid, _dateTimeHelper.GetDateTimeNow());
+                customerDrivingLicences = await _drivingLicenceService.GetCustomerDrivingLicences(customerid);
             }
             catch (NotFoundCustomerException e)
             {

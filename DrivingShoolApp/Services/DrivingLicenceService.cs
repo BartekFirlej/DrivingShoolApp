@@ -8,7 +8,8 @@ namespace DrivingSchoolApp.Services
     public interface IDrivingLicenceService
     {
         public Task<PagedList<DrivingLicenceGetDTO>> GetDrivingLicences(int page, int size);
-        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date);
+        public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
+        public Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
         public Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
         public Task<DrivingLicence> DeleteDrivingLicence(int drivingLicenceId);
@@ -42,10 +43,10 @@ namespace DrivingSchoolApp.Services
             return drivingLicences;
         }
 
-        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId, DateTime date)
+        public async Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId)
         {
             var customer = await _customerService.CheckCustomer(customerId);
-            var drivingLicences = await _drivingLicenceRepository.GetCustomerDrivingLicences(customerId, date);
+            var drivingLicences = await _drivingLicenceRepository.GetCustomerDrivingLicences(customerId);
             if (!drivingLicences.Any())
                 throw new NotFoundDrivingLicenceException();
             return drivingLicences;
@@ -69,7 +70,7 @@ namespace DrivingSchoolApp.Services
                 throw new DateTimeException("Received", "Expiration");
             var customer = await _customerService.CheckCustomer(drivingLicenceDetails.CustomerId);
             var licenceCategory = await _licenceCategoryService.CheckLicenceCategory(drivingLicenceDetails.LicenceCategoryId);
-            var customerDrivingLicences  = await _drivingLicenceRepository.GetCustomerDrivingLicences(drivingLicenceDetails.CustomerId, drivingLicenceDetails.ReceivedDate);
+            var customerDrivingLicences  = await _drivingLicenceRepository.CheckCustomerDrivingLicences(drivingLicenceDetails.CustomerId, drivingLicenceDetails.ReceivedDate);
             var meetsRequirements = await _requiredLicenceCategoryService.MeetRequirements(customerDrivingLicences, drivingLicenceDetails.LicenceCategoryId, drivingLicenceDetails.ReceivedDate);
             if (!meetsRequirements)
                 throw new CustomerDoesntMeetRequirementsException(drivingLicenceDetails.CustomerId, drivingLicenceDetails.LicenceCategoryId);
@@ -89,6 +90,12 @@ namespace DrivingSchoolApp.Services
             if (drivingLicence == null)
                 throw new NotFoundDrivingLicenceException(drivingLicenceId);
             return drivingLicence;
+        }
+        public async Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date)
+        {
+            var customer = await _customerService.CheckCustomer(customerId);
+            var drivingLicences = await _drivingLicenceRepository.CheckCustomerDrivingLicences(customerId, date);
+            return drivingLicences;
         }
     }
 }

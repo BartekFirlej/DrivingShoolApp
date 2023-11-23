@@ -14,7 +14,7 @@ namespace DrivingSchoolApp.Services
         public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
         public Task<RequiredLicenceCategory> DeleteRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
-        public Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate);
+        public Task<bool> MeetRequirements(ICollection<DrivingLicence> drivingLicences, int licenceCategoryId, DateTime receiveDate);
     }
     public class RequiredLicenceCategoryService : IRequiredLicenceCategoryService
     {
@@ -67,7 +67,7 @@ namespace DrivingSchoolApp.Services
             return await _requiredLicenceCategoryRepository.GetRequirement(addedRequiredLicenceCategory.LicenceCategoryId, addedRequiredLicenceCategory.RequiredLicenceCategoryId);
         }
 
-        public async Task<bool> MeetRequirements(ICollection<DrivingLicenceGetDTO> drivingLicences, int licenceCategoryId, DateTime receiveDate)
+        public async Task<bool> MeetRequirements(ICollection<DrivingLicence> drivingLicences, int licenceCategoryId, DateTime receiveDate)
         {
             await _licenceCategoryService.CheckLicenceCategory(licenceCategoryId);
             var requiredDrivingLicenceCategories = await _requiredLicenceCategoryRepository.GetRequirements(licenceCategoryId);
@@ -77,7 +77,7 @@ namespace DrivingSchoolApp.Services
                 return false;
             foreach(var requiredDrivingLicenceCategory in requiredDrivingLicenceCategories)
             {
-                DrivingLicenceGetDTO drivingLicence = drivingLicences.Where(d => d.LicenceCategoryId == requiredDrivingLicenceCategory.RequiredLicenceCategoryId).FirstOrDefault();
+                DrivingLicence drivingLicence = drivingLicences.Where(d => d.LicenceCategoryId == requiredDrivingLicenceCategory.RequiredLicenceCategoryId).FirstOrDefault();
                 if (drivingLicence == null)
                     return false;
                 DateTime StartDate = drivingLicence.ReceivedDate;
