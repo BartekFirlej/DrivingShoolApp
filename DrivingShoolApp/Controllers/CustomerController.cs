@@ -17,16 +17,14 @@ namespace DrivingSchoolApp.Controllers
         private readonly IRegistrationService _registrationService;
         private readonly ICustomerLectureService _customerLectureService;
         private readonly IDrivingLicenceService _drivingLicenceService;
-        private readonly IDateTimeHelper _dateTimeHelper;
 
         public CustomerController(ICustomerService userService, IRegistrationService registrationService, ICustomerLectureService customerLectureService, 
-                                  IDrivingLicenceService drivingLicenceService, IDateTimeHelper dateTimeHelper)
+                                  IDrivingLicenceService drivingLicenceService)
         {
             _customerService = userService;
             _registrationService = registrationService;
             _customerLectureService = customerLectureService;
             _drivingLicenceService = drivingLicenceService;
-            _dateTimeHelper = dateTimeHelper;
         }
 
         [HttpGet]
