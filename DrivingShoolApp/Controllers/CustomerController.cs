@@ -15,11 +15,13 @@ namespace DrivingSchoolApp.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly IRegistrationService _registrationService;
+        private readonly ICustomerLectureService _customerLectureService;
 
-        public CustomerController(ICustomerService userService, IRegistrationService registrationService)
+        public CustomerController(ICustomerService userService, IRegistrationService registrationService, ICustomerLectureService customerLectureService)
         {
             _customerService = userService;
             _registrationService = registrationService;
+            _customerLectureService = customerLectureService;
         }
 
         [HttpGet]
@@ -77,6 +79,25 @@ namespace DrivingSchoolApp.Controllers
                 return BadRequest(e.ToJson());
             }
             return Ok(customerRegistrations);
+        }
+
+        [HttpGet("{customerid}/lectures")]
+        public async Task<IActionResult> GetCustomerLectures(int customerid)
+        {
+            ICollection<CustomerLectureGetDTO> customerLectures;
+            try
+            {
+                customerLectures = await _customerLectureService.GetCustomerLectures(customerid);
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCustomerLectureException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(customerLectures);
         }
 
         [HttpPost]
