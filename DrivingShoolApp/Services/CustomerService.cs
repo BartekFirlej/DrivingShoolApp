@@ -72,9 +72,9 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerPostDTO customerUpdate)
         {
+            await CheckCustomer(customerId);
             if (customerUpdate.BirthDate == DateTime.MinValue)
                 throw new DateTimeException("birth");
-            await CheckCustomer(customerId);
             await _customerRepository.UpdateCustomer(customerId, customerUpdate);
             return await _customerRepository.GetCustomer(customerId);
         }

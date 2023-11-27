@@ -78,13 +78,13 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseGetDTO> UpdateCourse(int courseId, CoursePostDTO courseUpdate)
         {
+            await CheckCourse(courseId);
             if (courseUpdate.Price <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Price");
             if (courseUpdate.BeginDate == DateTime.MinValue)
                 throw new DateTimeException("begin date");
             if (courseUpdate.Limit <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Limit");
-            await CheckCourse(courseId);
             await _courseTypeService.CheckCourseType(courseUpdate.CourseTypeId);
             await _courseRepository.UpdateCourse(courseId, courseUpdate);
             return await _courseRepository.GetCourse(courseId);

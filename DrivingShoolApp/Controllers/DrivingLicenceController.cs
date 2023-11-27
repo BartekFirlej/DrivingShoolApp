@@ -99,5 +99,40 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{drivinglicenceid}")]
+        public async Task<IActionResult> UpdateDrivingLicence(int drivinglicenceid, DrivingLicencePostDTO drivingLicenceUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            DrivingLicenceGetDTO updatedDrivingLicence;
+            try
+            {
+                updatedDrivingLicence = await _drivingLicenceService.UpdateDrivingLicence(drivinglicenceid, drivingLicenceUpdate);
+            }
+            catch (NotFoundDrivingLicenceException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (CustomerDoesntMeetRequirementsException e)
+            {
+                return Conflict(e.ToJson());
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedDrivingLicence);
+        }
     }
 }

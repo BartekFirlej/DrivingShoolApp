@@ -2,6 +2,7 @@
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
+using Microsoft.Identity.Client;
 
 namespace DrivingSchoolApp.Services
 {
@@ -69,6 +70,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseTypeGetDTO> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate)
         {
+            await CheckCourseType(courseTypeId);
             if (courseTypeUpdate.LecturesHours <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Lecture hours");
             if (courseTypeUpdate.DrivingHours <= 0)

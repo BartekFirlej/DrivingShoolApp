@@ -13,6 +13,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
         public Task<DrivingLicence> DeleteDrivingLicence(DrivingLicence drivingLicenceToDelete);
         public Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId);
+        public Task<DrivingLicence> UpdateDrivingLicence(int drivingLicenceId, DrivingLicencePostDTO drivingLicenceUpdate);
     }
     public class DrivingLicenceRepository : IDrivingLicenceRepository
     {
@@ -133,6 +134,19 @@ namespace DrivingSchoolApp.Repositories
                                   .AsNoTracking()
                                   .Where(d => d.CustomerId == customerId && (d.ExpirationDate >= date || d.ExpirationDate == null))
                                   .ToListAsync();
+        }
+
+        public async Task<DrivingLicence> UpdateDrivingLicence(int drivingLicenceId, DrivingLicencePostDTO drivingLicenceUpdate)
+        {
+            var drivingLicence = await _dbContext.DrivingLicences
+                                   .Where(d => d.Id == drivingLicenceId)
+                                   .FirstOrDefaultAsync();
+            drivingLicence.ExpirationDate = drivingLicenceUpdate.ExpirationDate;
+            drivingLicence.ReceivedDate = drivingLicenceUpdate.ReceivedDate;
+            drivingLicence.LicenceCategoryId = drivingLicenceUpdate.LicenceCategoryId;
+            drivingLicence.CustomerId = drivingLicenceUpdate.CustomerId;
+            await _dbContext.SaveChangesAsync();
+            return drivingLicence;
         }
     }
 }
