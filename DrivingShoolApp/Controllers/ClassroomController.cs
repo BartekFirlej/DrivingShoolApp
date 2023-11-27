@@ -98,5 +98,27 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{classroomid}")]
+        public async Task<IActionResult> UpdateClassroom(int classroomid, ClassroomPostDTO classroomUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            ClassroomGetDTO updatedClassroom;
+            try
+            {
+                updatedClassroom = await _classroomService.UpdateClassroom(classroomid, classroomUpdate);
+            }catch(NotFoundAddressException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundClassroomException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(classroom);
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
         public Task<Classroom> DeleteClassroom(int classroomId);
+        public Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate);
     }
     public class ClassroomService : IClassroomService
     {
@@ -63,6 +64,14 @@ namespace DrivingSchoolApp.Services
         {
             var classroomToDelete = await CheckClassroom(classroomId);
             return await _classroomRepository.DeleteClassroom(classroomToDelete);
+        }
+
+        public async Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate)
+        {
+            await CheckClassroom(classroomId);
+            await _addressService.CheckAddress(classroomUpdate.AddressID);
+            await _classroomRepository.UpdateClassroom(classroomId, classroomUpdate);
+            return await _classroomRepository.GetClassroom(classroomId);
         }
     }
 }

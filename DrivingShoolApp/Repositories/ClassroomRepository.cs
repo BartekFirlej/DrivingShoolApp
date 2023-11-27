@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<Classroom> PostClassroom(ClassroomPostDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
         public Task<Classroom> DeleteClassroom(Classroom classroomToDelete);
+        public Task<Classroom> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate);
     }
     public class ClassroomRepository : IClassroomRepository
     {
@@ -92,6 +93,18 @@ namespace DrivingSchoolApp.Repositories
             var deletedClassroom = _dbContext.Classrooms.Remove(classroomToDelete);
             await _dbContext.SaveChangesAsync();
             return deletedClassroom.Entity;
+        }
+
+        public async Task<Classroom> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate)
+        {
+            var classroom = await _dbContext.Classrooms
+                      .Where(c => c.Id == classroomId)
+                      .FirstOrDefaultAsync();
+            classroom.Size = classroomUpdate.Size;
+            classroom.Number = classroomUpdate.Number;
+            classroom.AddressId = classroomUpdate.AddressID;
+            await _dbContext.SaveChangesAsync();
+            return classroom;
         }
     }
 }

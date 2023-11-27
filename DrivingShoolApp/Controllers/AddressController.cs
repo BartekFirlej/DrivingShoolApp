@@ -106,8 +106,16 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var address = await _addressService.UpdateAddress(addressid, addressUpdate);
-            return Ok(address);
+            AddressGetDTO updatedAddress;
+            try
+            {
+                updatedAddress = await _addressService.UpdateAddress(addressid, addressUpdate);
+            }
+            catch(NotFoundAddressException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(updatedAddress);
         }
     }
 }
