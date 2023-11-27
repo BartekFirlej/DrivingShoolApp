@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<CourseType> PostCourseType(CourseTypePostDTO courseTypeDetails);
         public Task<CourseType> CheckCourseType(int courseTypeId);
         public Task<CourseType> DeleteCourseType(CourseType courseTypeToDelete);
+        public Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate);
     }
     public class CourseTypeRepository : ICourseTypeRepository
     {
@@ -85,6 +86,20 @@ namespace DrivingSchoolApp.Repositories
             var deletedCourseType = _dbContext.CourseTypes.Remove(courseTypeToDelete);
             await _dbContext.SaveChangesAsync();
             return deletedCourseType.Entity;
+        }
+
+        public async Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate)
+        {
+            var courseType = await _dbContext.CourseTypes
+                             .Where(c => c.Id == courseTypeId)
+                             .FirstOrDefaultAsync();
+            courseType.DrivingHours = courseTypeUpdate.DrivingHours;
+            courseType.LectureHours = courseTypeUpdate.LecturesHours;
+            courseType.LicenceCategoryId = courseTypeUpdate.LicenceCategoryId;
+            courseType.MinimumAge = courseTypeUpdate.MinimumAge;
+            courseType.Name = courseTypeUpdate.Name;
+            await _dbContext.SaveChangesAsync();
+            return courseType;
         }
     }
 }

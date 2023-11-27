@@ -97,5 +97,28 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{coursetypeid}")]
+        public async Task<IActionResult> UpdateCourseType(int coursetypeid, CourseTypePostDTO courseTypeUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            CourseTypeGetDTO updatedCourseType;
+            try
+            {
+                updatedCourseType = await _courseTypeService.UpdateCourseType(coursetypeid, courseTypeUpdate);
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedCourseType);
+        }
     }
 }

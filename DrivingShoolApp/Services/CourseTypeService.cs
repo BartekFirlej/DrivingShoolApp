@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Services
         public Task<CourseTypeGetDTO> PostCourseType(CourseTypePostDTO newCourseType);
         public Task<CourseType> CheckCourseType(int courseTypeId);
         public Task<CourseType> DeleteCourseType(int courseTypeId);
+        public Task<CourseTypeGetDTO> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate);
     }
     public class CourseTypeService : ICourseTypeService
     {
@@ -64,6 +65,19 @@ namespace DrivingSchoolApp.Services
         {
             var courseTypeToDelete = await CheckCourseType(courseTypeId);
             return await _courseTypeRepository.DeleteCourseType(courseTypeToDelete);
+        }
+
+        public async Task<CourseTypeGetDTO> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate)
+        {
+            if (courseTypeUpdate.LecturesHours <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Lecture hours");
+            if (courseTypeUpdate.DrivingHours <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Driving hours");
+            if (courseTypeUpdate.MinimumAge <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Minimum age");
+            await _licenceCategoryService.CheckLicenceCategory(courseTypeUpdate.LicenceCategoryId);
+            await _courseTypeRepository.UpdateCourseType(courseTypeId, courseTypeUpdate);
+            return await _courseTypeRepository.GetCourseType(courseTypeId);
         }
     }
 }
