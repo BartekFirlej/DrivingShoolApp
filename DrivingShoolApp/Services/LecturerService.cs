@@ -12,6 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<LecturerGetDTO> PostLecturer(LecturerPostDTO lecturerDetails);
         public Task<Lecturer> CheckLecturer(int lecturerId);
         public Task<Lecturer> DeleteLecturer(int lecturerId);
+        public Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate);
     }
     public class LecturerService : ILecturerService
     {
@@ -56,6 +57,13 @@ namespace DrivingSchoolApp.Services
         {
             var lecturerToDelete = await CheckLecturer(lecturerId);
             return await _lecturerRepository.DeleteLecturer(lecturerToDelete);
+        }
+
+        public async Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate)
+        {
+            await CheckLecturer(lecturerId);
+            await _lecturerRepository.UpdateLecturer(lecturerId, lecturerUpdate);
+            return await _lecturerRepository.GetLecturer(lecturerId);
         }
     }
 }

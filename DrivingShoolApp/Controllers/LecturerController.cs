@@ -86,5 +86,24 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{lecturerid}")]
+        public async Task<IActionResult> UpdateAddress(int lecturerid, LecturerPostDTO lecturerUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            Lecturer updatedLecturer;
+            try
+            {
+                updatedLecturer = await _lecturerService.UpdateLecturer(lecturerid, lecturerUpdate);
+            }
+            catch (NotFoundLecturerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(updatedLecturer);
+        }
     }
 }
