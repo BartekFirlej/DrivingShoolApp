@@ -2,8 +2,6 @@
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.OpenApi.Expressions;
 
 namespace DrivingSchoolApp.Services
 {
@@ -14,6 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<SubjectGetDTO> PostSubject(SubjectPostDTO subjectDetails);
         public Task<Subject> CheckSubject(int subjectId);
         public Task<Subject> DeleteSubject(int subjectId);
+        public Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate);
 
     }
     public class SubjectService : ISubjectService
@@ -61,6 +60,15 @@ namespace DrivingSchoolApp.Services
             if (subject == null)
                 throw new NotFoundSubjectException(subjectId);
             return subject;
+        }
+
+        public async Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate)
+        {
+            await CheckSubject(subjectId);
+            if (subjectUpdate.Duration <= 0)
+                throw new ValueMustBeGreaterThanZeroException("duration");
+            await _subjectRepository.UpdateSubject(subjectId, subjectUpdate);
+            return await _subjectRepository.GetSubject(subjectId);
         }
     }
 }

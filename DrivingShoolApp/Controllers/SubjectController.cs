@@ -5,7 +5,6 @@ using DrivingSchoolApp.Services;
 using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -94,6 +93,29 @@ namespace DrivingSchoolApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }
             return NoContent();
+        }
+
+        [HttpPut("{subjectid}")]
+        public async Task<IActionResult> UpdateSubject(int subjectid, SubjectPostDTO subjectUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            SubjectGetDTO updatedSubject;
+            try
+            {
+                updatedSubject = await _subjectService.UpdateSubject(subjectid, subjectUpdate);
+            }
+            catch (NotFoundSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedSubject);
         }
     }
 }
