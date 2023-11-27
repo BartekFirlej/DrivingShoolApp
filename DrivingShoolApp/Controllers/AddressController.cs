@@ -98,5 +98,16 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{addressid}")]
+        public async Task<IActionResult> UpdateAddress(int addressid, AddressPostDTO addressUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var address = await _addressService.UpdateAddress(addressid, addressUpdate);
+            return Ok(address);
+        }
     }
 }

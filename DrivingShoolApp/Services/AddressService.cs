@@ -13,6 +13,7 @@ namespace DrivingSchoolApp.Services
         public Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
         public Task<Address> DeleteAddress(int addressId);
+        public Task<AddressGetDTO> UpdateAddress(int addressId, AddressPostDTO addressUpdate);
     }
     public class AddressService : IAddressService
     {
@@ -62,6 +63,13 @@ namespace DrivingSchoolApp.Services
         {
             var addressToDelete = await CheckAddress(addressId);
             return await _addressRepository.DeleteAddress(addressToDelete);
+        }
+
+        public async Task<AddressGetDTO> UpdateAddress(int addressId, AddressPostDTO addressUpdate)
+        {
+            await CheckAddress(addressId);
+            await _addressRepository.UpdateAddress(addressId, addressUpdate);
+            return await _addressRepository.GetAddress(addressId);
         }
     }
 }

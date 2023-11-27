@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<Address> PostAddress(AddressPostDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
         public Task<Address> DeleteAddress(Address addressToDelete);
+        public Task<Address> UpdateAddress(int addressId, AddressPostDTO addressUpdate);
     }
     public class AddressRepository : IAddressRepository
     {
@@ -80,6 +81,19 @@ namespace DrivingSchoolApp.Repositories
             var deletedAddress = _dbContext.Addresses.Remove(addressToDelete);
             await _dbContext.SaveChangesAsync();
             return deletedAddress.Entity;
+        }
+
+        public async Task<Address> UpdateAddress(int addressId, AddressPostDTO addressUpdate)
+        {
+            var address = await _dbContext.Addresses
+                                  .Where(a => a.Id == addressId)
+                                  .FirstOrDefaultAsync();
+            address.City = addressUpdate.City;
+            address.Street = addressUpdate.Street;
+            address.Number = addressUpdate.Number;
+            address.PostalCode = addressUpdate.PostalCode;
+            await _dbContext.SaveChangesAsync();
+            return address;
         }
     } 
 }
