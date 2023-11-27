@@ -84,6 +84,7 @@ namespace DrivingSchoolApp.Services
                 throw new DateTimeException("begin date");
             if (courseUpdate.Limit <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Limit");
+            await CheckCourse(courseId);
             await _courseTypeService.CheckCourseType(courseUpdate.CourseTypeId);
             await _courseRepository.UpdateCourse(courseId, courseUpdate);
             return await _courseRepository.GetCourse(courseId);

@@ -13,6 +13,7 @@ namespace DrivingSchoolApp.Services
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
         public Task<Customer> CheckCustomer(int customerId);
         public Task<Customer> DeleteCustomer(int customerId);
+        public Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerPostDTO customerUpdate);
     }
     public class CustomerService : ICustomerService
     {
@@ -67,6 +68,15 @@ namespace DrivingSchoolApp.Services
         {
             var customerToDelete = await CheckCustomer(customerId);
             return await _customerRepository.DeleteCustomer(customerToDelete);
+        }
+
+        public async Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerPostDTO customerUpdate)
+        {
+            if (customerUpdate.BirthDate == DateTime.MinValue)
+                throw new DateTimeException("birth");
+            await CheckCustomer(customerId);
+            await _customerRepository.UpdateCustomer(customerId, customerUpdate);
+            return await _customerRepository.GetCustomer(customerId);
         }
     }
 }

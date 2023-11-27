@@ -163,5 +163,24 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{customerid}")]
+        public async Task<IActionResult> UpdateCustomer(int customerid, CustomerPostDTO customerUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            CustomerGetDTO updatedCustomer;
+            try
+            {
+                updatedCustomer = await _customerService.UpdateCustomer(customerid, customerUpdate);
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedCustomer);
+        }
     }
 }
