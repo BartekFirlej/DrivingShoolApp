@@ -196,5 +196,52 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{lectureid}")]
+        public async Task<IActionResult> UpdateSubject(int lectureid, LecturePostDTO lectureUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            LectureGetDTO updatedLecture;
+            try
+            {
+                updatedLecture = await _lectureService.UpdateLecture(lectureid, lectureUpdate);
+            }
+            catch (NotFoundLectureException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundClassroomException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundLecturerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            catch (SubjectAlreadyConductedLectureException e)
+            {
+                return Conflict(e.ToJson());
+            }
+            return Ok(lectureUpdate);
+        }
     }
 }

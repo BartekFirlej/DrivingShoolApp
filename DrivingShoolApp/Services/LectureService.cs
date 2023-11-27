@@ -13,6 +13,7 @@ namespace DrivingSchoolApp.Services
         public Task<bool> CheckLectureAtCourseAboutSubject(int courseId, int subjectId);
         public Task<Lecture> CheckLecture(int lectureId);
         public Task<Lecture> DeleteLecture(int lectureId);
+        public Task<LectureGetDTO> UpdateLecture(int lectureId, LecturePostDTO lectureUpdate);
     }
     public class LectureService : ILectureService
     {
@@ -57,9 +58,9 @@ namespace DrivingSchoolApp.Services
         {
             if (lectureDetails.LectureDate == DateTime.MinValue)
                 throw new DateTimeException("lecture date");
-            var lecturer = await _lecturerService.CheckLecturer(lectureDetails.LecturerId);
-            var courseSubject = await _courseSubjectService.CheckCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
-            var classroom = await _classroomService.CheckClassroom(lectureDetails.ClassroomId);
+            await _lecturerService.CheckLecturer(lectureDetails.LecturerId);
+            await _courseSubjectService.CheckCourseSubject(lectureDetails.CourseId, lectureDetails.SubjectId);
+            await _classroomService.CheckClassroom(lectureDetails.ClassroomId);
             if (!CheckLectureAtCourseAboutSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
                 throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);
@@ -78,6 +79,20 @@ namespace DrivingSchoolApp.Services
         {
             var lectureToDelete = await CheckLecture(lectureId);
             return await _lectureRepository.DeleteLecture(lectureToDelete);
+        }
+
+        public async Task<LectureGetDTO> UpdateLecture(int lectureId, LecturePostDTO lectureUpdate)
+        {
+            await CheckLecture(lectureId);
+            if (lectureUpdate.LectureDate == DateTime.MinValue)
+                throw new DateTimeException("lecture date");
+            await _lecturerService.CheckLecturer(lectureUpdate.LecturerId);
+            await _courseSubjectService.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId);
+            await _classroomService.CheckClassroom(lectureUpdate.ClassroomId);
+            if (!CheckLectureAtCourseAboutSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId).Result)
+                throw new SubjectAlreadyConductedLectureException(lectureUpdate.CourseId, lectureUpdate.SubjectId);
+            await _lectureRepository.UpdateLecture(lectureId, lectureUpdate);
+            return await _lectureRepository.GetLecture(lectureId);
         }
     }
 }
