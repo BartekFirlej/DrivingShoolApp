@@ -14,6 +14,7 @@ namespace DrivingSchoolApp.Services
         public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails);
         public Task<RequiredLicenceCategory> DeleteRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
+        public Task<RequiredLicenceCategoryGetDTO> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryPostDTO requirementUpdate);
         public Task<bool> MeetRequirements(ICollection<DrivingLicence> drivingLicences, int licenceCategoryId, DateTime receiveDate);
     }
     public class RequiredLicenceCategoryService : IRequiredLicenceCategoryService
@@ -102,6 +103,21 @@ namespace DrivingSchoolApp.Services
         {
             var requirementToDelete = await CheckRequirement(licenceCategoryId, requiredLicenceCategoryId);
             return await _requiredLicenceCategoryRepository.DeleteRequirement(requirementToDelete);
+        }
+
+        public async Task<RequiredLicenceCategoryGetDTO> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryPostDTO requirementUpdate)
+        {
+            await CheckRequirement(licenceCategoryId, requiredLicenceCategoryId);
+            if (requirementUpdate.RequiredYears <= 0)
+                throw new ValueMustBeGreaterThanZeroException("required years");
+            await _licenceCategoryService.CheckLicenceCategory(requirementUpdate.LicenceCategoryId);
+            await _licenceCategoryService.CheckLicenceCategory(requirementUpdate.RequiredLicenceCategoryId);
+            var requirementExists = await _requiredLicenceCategoryRepository.CheckRequirement(requirementUpdate.LicenceCategoryId, requirementUpdate.RequiredLicenceCategoryId);
+            if (requirementExists != null)
+                throw new RequirementAlreadyExistsException(requirementUpdate.RequiredLicenceCategoryId, requirementUpdate.LicenceCategoryId);
+            await _requiredLicenceCategoryRepository.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate);
+            return await _requiredLicenceCategoryRepository.GetRequirement(licenceCategoryId, requiredLicenceCategoryId);
+
         }
     }
 }

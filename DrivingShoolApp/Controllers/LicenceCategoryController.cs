@@ -159,7 +159,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{licencecategoryid}")]
-        public async Task<IActionResult> UpdateAddress(int licencecategoryid, LicenceCategoryPostDTO licenceCategoryUpdate)
+        public async Task<IActionResult> UpdateLicenceCategory(int licencecategoryid, LicenceCategoryPostDTO licenceCategoryUpdate)
         {
             if (!ModelState.IsValid)
             {
@@ -175,6 +175,37 @@ namespace DrivingSchoolApp.Controllers
                 return NotFound(e.ToJson());
             }
             return Ok(updatedLicenceCategory);
+        }
+
+        [HttpPut("{licencecategoryid}/requirements/{requiredlicencecategoryid}")]
+        public async Task<IActionResult> UpdateRequirement(int licencecategoryid, int requiredlicencecategoryid, RequiredLicenceCategoryPostDTO requirementUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            RequiredLicenceCategoryGetDTO updatedRequirerdLicenceCategory;
+            try
+            {
+                updatedRequirerdLicenceCategory = await _requirededLicenceCategoryService.UpdateRequirement(licencecategoryid, requiredlicencecategoryid, requirementUpdate);
+            }
+            catch (NotFoundRequiredLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (RequirementAlreadyExistsException e)
+            {
+                return Conflict(e.ToJson());
+            }
+            return Ok(updatedRequirerdLicenceCategory);
         }
     }
 }

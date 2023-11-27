@@ -94,7 +94,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Lecturer updatedLecturer;
+            LecturerGetDTO updatedLecturer;
             try
             {
                 updatedLecturer = await _lecturerService.UpdateLecturer(lecturerid, lecturerUpdate);
