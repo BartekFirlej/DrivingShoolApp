@@ -119,10 +119,6 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            catch (NotFoundClassroomException e)
-            {
-                return NotFound(e.ToJson());
-            }
             return Ok(updatedClassroom);
         }
     }

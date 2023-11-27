@@ -12,6 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
         public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId);
+        public Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate);
     }
     public class LicenceCategoryService : ILicenceCategoryService
     {
@@ -56,6 +57,13 @@ namespace DrivingSchoolApp.Services
         {
             var licenceCategoryToDelete = await CheckLicenceCategory(licenceCategoryId);
             return await _licenceCategoryRepository.DeleteLicenceCategory(licenceCategoryToDelete);
+        }
+
+        public async Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate)
+        {
+            await CheckLicenceCategory(licenceCategoryId);
+            await _licenceCategoryRepository.UpdateLicenceCategory(licenceCategoryId, licenceCategoryUpdate);
+            return await _licenceCategoryRepository.GetLicenceCategory(licenceCategoryId);
         }
     }
 }

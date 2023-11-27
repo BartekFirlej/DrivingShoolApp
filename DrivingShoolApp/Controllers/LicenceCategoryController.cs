@@ -157,5 +157,24 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{licencecategoryid}")]
+        public async Task<IActionResult> UpdateAddress(int licencecategoryid, LicenceCategoryPostDTO licenceCategoryUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            LicenceCategoryGetDTO updatedLicenceCategory;
+            try
+            {
+                updatedLicenceCategory = await _licenceCategoryService.UpdateLicenceCategory(licencecategoryid, licenceCategoryUpdate);
+            }
+            catch (NotFoundLicenceCategoryException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            return Ok(updatedLicenceCategory);
+        }
     }
 }
