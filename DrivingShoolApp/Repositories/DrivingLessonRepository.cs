@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<DrivingLesson> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(DrivingLesson drivingLessonToDelete);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
+        public Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate);
     }
     public class DrivingLessonRepository : IDrivingLessonRepository
     {
@@ -90,6 +91,20 @@ namespace DrivingSchoolApp.Repositories
                .AsNoTracking()
                .Where(d => d.Id == drivingLessonId)
                .FirstOrDefaultAsync();
+        }
+
+        public async Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate)
+        {
+            var drivingLesson = await _dbContext.DrivingLessons
+                                        .Where(d => d.Id == drivingLessonId)
+                                        .FirstOrDefaultAsync();
+            drivingLesson.LecturerId = drivingLessonUpdate.LecturerId;
+            drivingLesson.CourseId = drivingLessonUpdate.CourseId;
+            drivingLesson.AddressId = drivingLessonUpdate.AddressId;
+            drivingLesson.CustomerId = drivingLessonUpdate.CustomerId;
+            drivingLesson.LessonDate = drivingLessonUpdate.LessonDate;
+            await _dbContext.SaveChangesAsync();
+            return drivingLesson;
         }
     }
 }

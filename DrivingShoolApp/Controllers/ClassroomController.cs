@@ -111,7 +111,11 @@ namespace DrivingSchoolApp.Controllers
             {
                 updatedClassroom = await _classroomService.UpdateClassroom(classroomid, classroomUpdate);
             }
-            catch(NotFoundAddressException e)
+            catch (NotFoundClassroomException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundAddressException e)
             {
                 return NotFound(e.ToJson());
             }

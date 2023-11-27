@@ -111,7 +111,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 updatedAddress = await _addressService.UpdateAddress(addressid, addressUpdate);
             }
-            catch(NotFoundAddressException e)
+            catch (NotFoundAddressException e)
             {
                 return NotFound(e.ToJson());
             }

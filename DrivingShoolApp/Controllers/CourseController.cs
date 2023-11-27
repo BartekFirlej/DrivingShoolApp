@@ -290,6 +290,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 updatedCourse = await _courseService.UpdateCourse(courseid, courseUpdate);
             }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
             catch (NotFoundCourseTypeException e)
             {
                 return NotFound(e.ToJson());

@@ -1,10 +1,8 @@
 ﻿using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Services;
-using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace DrivingSchoolApp.Controllers
 {
@@ -104,6 +102,45 @@ namespace DrivingSchoolApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "Something gone wrong." } });
             }
             return NoContent();
+        }
+
+        [HttpPut("{drivinglessonid}")]
+        public async Task<IActionResult> UpdateDrivingLesson(int drivinglessonid, DrivingLessonPostDTO drivingLessonUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            DrivingLessonGetDTO updatedDrivingLesson;
+            try
+            {
+                updatedDrivingLesson = await _drivingLessonService.UpdateDrivingLesson(drivinglessonid, drivingLessonUpdate);
+            }
+            catch(NotFoundDrivingLessonException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundLecturerException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundAddressException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedDrivingLesson);
         }
     }
 }

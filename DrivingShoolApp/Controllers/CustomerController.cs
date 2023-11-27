@@ -176,6 +176,10 @@ namespace DrivingSchoolApp.Controllers
             {
                 updatedCustomer = await _customerService.UpdateCustomer(customerid, customerUpdate);
             }
+            catch (NotFoundCustomerException e)
+            {
+                return NotFound(e.ToJson());
+            }
             catch (DateTimeException e)
             {
                 return BadRequest(e.ToJson());

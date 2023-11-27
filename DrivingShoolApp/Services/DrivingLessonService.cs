@@ -12,6 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<DrivingLessonGetDTO> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
+        public Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate);
     }
     public class DrivingLessonService : IDrivingLessonService
     {
@@ -51,10 +52,10 @@ namespace DrivingSchoolApp.Services
         {
             if (drivingLessonDetails.LessonDate == DateTime.MinValue)
                 throw new DateTimeException("lesson date");
-            var customer = await _customerService.CheckCustomer(drivingLessonDetails.CustomerId);
-            var lecturer = await _lecturerService.CheckLecturer(drivingLessonDetails.LecturerId);
-            var address = await _addressService.CheckAddress(drivingLessonDetails.AddressId);
-            var course = await _courseService.CheckCourse(drivingLessonDetails.CourseId);
+            await _customerService.CheckCustomer(drivingLessonDetails.CustomerId);
+            await _lecturerService.CheckLecturer(drivingLessonDetails.LecturerId);
+            await _addressService.CheckAddress(drivingLessonDetails.AddressId);
+            await _courseService.CheckCourse(drivingLessonDetails.CourseId);
             var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
             return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
         }
@@ -71,6 +72,19 @@ namespace DrivingSchoolApp.Services
             if (drivingLesson == null)
                 throw new NotFoundDrivingLessonException(drivingLessonId);
             return drivingLesson;
+        }
+
+        public async Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate)
+        {
+            if (drivingLessonUpdate.LessonDate == DateTime.MinValue)
+                throw new DateTimeException("lesson date");
+            await CheckDrivingLesson(drivingLessonId);
+            await _customerService.CheckCustomer(drivingLessonUpdate.CustomerId);
+            await _lecturerService.CheckLecturer(drivingLessonUpdate.LecturerId);
+            await _addressService.CheckAddress(drivingLessonUpdate.AddressId);
+            await _courseService.CheckCourse(drivingLessonUpdate.CourseId);
+            await _drivingLessonRepository.UpdateDrivingLesson(drivingLessonId, drivingLessonUpdate);
+            return await _drivingLessonRepository.GetDrivingLesson(drivingLessonId);
         }
     }
 }
