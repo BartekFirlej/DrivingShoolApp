@@ -110,7 +110,8 @@ namespace DrivingSchoolApp.Controllers
             try
             {
                 updatedClassroom = await _classroomService.UpdateClassroom(classroomid, classroomUpdate);
-            }catch(NotFoundAddressException e)
+            }
+            catch(NotFoundAddressException e)
             {
                 return NotFound(e.ToJson());
             }
@@ -118,7 +119,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
-            return Ok(classroom);
+            return Ok(updatedClassroom);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace DrivingSchoolApp.Services
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
         public Task<Course> CheckCourse(int courseId);
         public Task<Course> DeleteCourse(int courseId);
+        public Task<CourseGetDTO> UpdateCourse(int courseId, CoursePostDTO courseUpdate);
 
     }
     public class CourseService : ICourseService
@@ -73,6 +74,19 @@ namespace DrivingSchoolApp.Services
         {
             var courseToDelete = await CheckCourse(courseId);
             return await _courseRepository.DeleteCourse(courseToDelete);
+        }
+
+        public async Task<CourseGetDTO> UpdateCourse(int courseId, CoursePostDTO courseUpdate)
+        {
+            if (courseUpdate.Price <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Price");
+            if (courseUpdate.BeginDate == DateTime.MinValue)
+                throw new DateTimeException("begin date");
+            if (courseUpdate.Limit <= 0)
+                throw new ValueMustBeGreaterThanZeroException("Limit");
+            await _courseTypeService.CheckCourseType(courseUpdate.CourseTypeId);
+            await _courseRepository.UpdateCourse(courseId, courseUpdate);
+            return await _courseRepository.GetCourse(courseId);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<int> GetCourseAssignedPeopleCount(int courseId); 
         public Task<Course> CheckCourse(int courseId);
         public Task<Course> DeleteCourse(Course courseToDelete);
+        public Task<Course> UpdateCourse(int courseId, CoursePostDTO courseUpdate);
     }
     public class CourseRepository : ICourseRepository
     {
@@ -114,6 +115,20 @@ namespace DrivingSchoolApp.Repositories
             var deletedCourse = _dbContext.Courses.Remove(courseToDelete);
             await _dbContext.SaveChangesAsync();
             return deletedCourse.Entity;
+        }
+
+        public async Task<Course> UpdateCourse(int courseId, CoursePostDTO courseUpdate)
+        {
+            var course = await _dbContext.Courses
+                         .Where(c => c.Id == courseId)
+                         .FirstOrDefaultAsync();
+            course.BeginDate = courseUpdate.BeginDate;
+            course.Name = courseUpdate.Name;
+            course.Price = courseUpdate.Price;
+            course.Limit = courseUpdate.Limit;
+            course.CourseTypeId = courseUpdate.CourseTypeId;
+            await _dbContext.SaveChangesAsync();
+            return course;
         }
     }
 }

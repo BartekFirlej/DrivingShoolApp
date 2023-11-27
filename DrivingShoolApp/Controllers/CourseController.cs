@@ -277,5 +277,32 @@ namespace DrivingSchoolApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpPut("{courseid}")]
+        public async Task<IActionResult> UpdateCourse(int courseid, CoursePostDTO courseUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            CourseGetDTO updatedCourse;
+            try
+            {
+                updatedCourse = await _courseService.UpdateCourse(courseid, courseUpdate);
+            }
+            catch (NotFoundCourseTypeException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            catch (DateTimeException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedCourse);
+        }
     }
 }
