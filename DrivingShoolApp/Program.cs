@@ -1,3 +1,4 @@
+using DrivingSchoolApp;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
 
@@ -42,6 +43,8 @@ builder.Services.AddScoped<IDateTimeHelper, DateTimeHelper>();
 builder.Services.AddDbContext<DrivingSchoolDbContext>();
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(DrivingSchoolMapper));
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,20 +10,22 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
-        public Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails);
+        public Task<ClassroomResponseDTO> PostClassroom(ClassroomRequestDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
         public Task<Classroom> DeleteClassroom(int classroomId);
-        public Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate);
+        public Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate);
     }
     public class ClassroomService : IClassroomService
     {
         private readonly IClassroomRepository _classroomRepository;
         private readonly IAddressService _addressService;
+        private readonly IMapper _mapper;
 
-        public ClassroomService(IClassroomRepository classroomRepository, IAddressService addressService)
+        public ClassroomService(IClassroomRepository classroomRepository, IAddressService addressService, IMapper mapper)
         {
             _classroomRepository = classroomRepository;
             _addressService = addressService;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size)
@@ -41,7 +44,7 @@ namespace DrivingSchoolApp.Services
             return classroom;
         }
 
-        public async Task<ClassroomGetDTO> PostClassroom(ClassroomPostDTO classroomDetails)
+        public async Task<ClassroomResponseDTO> PostClassroom(ClassroomRequestDTO classroomDetails)
         {
             if (classroomDetails.Number <= 0)
                 throw new ValueMustBeGreaterThanZeroException("number");
@@ -49,7 +52,8 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("size");
             var address = await _addressService.CheckAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
-            return await _classroomRepository.GetClassroom(addedClassroom.Id);
+            var addedClassroomDTO = _mapper.Map<ClassroomResponseDTO>(addedClassroom);
+            return addedClassroomDTO;
         }
 
         public async Task<Classroom> CheckClassroom(int classroomId)
@@ -66,7 +70,7 @@ namespace DrivingSchoolApp.Services
             return await _classroomRepository.DeleteClassroom(classroomToDelete);
         }
 
-        public async Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate)
+        public async Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate)
         {
             await CheckClassroom(classroomId);
             await _addressService.CheckAddress(classroomUpdate.AddressID);

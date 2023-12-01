@@ -158,7 +158,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddRangeAsync(classroom1, classroom2);
             await _dbContext.SaveChangesAsync();
-            var classroomToAdd = new ClassroomPostDTO { AddressID = 1, Number = 3, Size = 30};
+            var classroomToAdd = new ClassroomRequestDTO { AddressID = 1, Number = 3, Size = 30};
             _repository = new ClassroomRepository(_dbContext);
 
             var addedClassroom = await _repository.PostClassroom(classroomToAdd);

@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<ClassroomGetDTO>> GetClassrooms(int page, int size);
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
-        public Task<Classroom> PostClassroom(ClassroomPostDTO classroomDetails);
+        public Task<Classroom> PostClassroom(ClassroomRequestDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
         public Task<Classroom> DeleteClassroom(Classroom classroomToDelete);
-        public Task<Classroom> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate);
+        public Task<Classroom> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate);
     }
     public class ClassroomRepository : IClassroomRepository
     {
@@ -67,7 +67,7 @@ namespace DrivingSchoolApp.Repositories
                           }).FirstOrDefaultAsync();
         }
 
-        public async Task<Classroom> PostClassroom(ClassroomPostDTO classroomDetails)
+        public async Task<Classroom> PostClassroom(ClassroomRequestDTO classroomDetails)
         {
             var classroomToAdd = new Classroom
             {
@@ -95,7 +95,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedClassroom.Entity;
         }
 
-        public async Task<Classroom> UpdateClassroom(int classroomId, ClassroomPostDTO classroomUpdate)
+        public async Task<Classroom> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate)
         {
             var classroom = await _dbContext.Classrooms
                       .Where(c => c.Id == classroomId)

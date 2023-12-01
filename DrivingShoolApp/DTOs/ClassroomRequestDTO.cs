@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class ClassroomPostDTO
+    public class ClassroomRequestDTO
     {
         public int Number {  get; set; }
         public int Size { get; set; }

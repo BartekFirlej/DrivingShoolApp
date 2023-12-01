@@ -88,8 +88,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Classroom_ReturnCreatedAtAction()
         {
-            var classroomToAdd = new ClassroomPostDTO();
-            var addedClassroom = new ClassroomGetDTO();
+            var classroomToAdd = new ClassroomRequestDTO();
+            var addedClassroom = new ClassroomResponseDTO();
             _classroomServiceMock.Setup(service => service.PostClassroom(classroomToAdd)).ReturnsAsync(addedClassroom);
             _controller = new ClassroomController(_classroomServiceMock.Object);
 
@@ -101,7 +101,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Classroom_ThrowsNotFoundAddressException()
         {
-            var classroomToAdd = new ClassroomPostDTO();
+            var classroomToAdd = new ClassroomRequestDTO();
             var addedClassroom = new ClassroomGetDTO();
             var idOfAddress = 1;
             _classroomServiceMock.Setup(service => service.PostClassroom(classroomToAdd)).ThrowsAsync(new NotFoundAddressException(idOfAddress));
@@ -115,7 +115,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Classroom_ThrowsValueMustBeGreaterThanZeroException()
         {
-            var classroomToAdd = new ClassroomPostDTO();
+            var classroomToAdd = new ClassroomRequestDTO();
             var addedClassroom = new ClassroomGetDTO();
             var nameOfProperty = "number";
             _classroomServiceMock.Setup(service => service.PostClassroom(classroomToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(nameOfProperty));

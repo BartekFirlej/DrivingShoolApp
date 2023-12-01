@@ -54,9 +54,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostClassroom(ClassroomPostDTO classroomDetails)
+        public async Task<IActionResult> PostClassroom(ClassroomRequestDTO classroomDetails)
         {
-            ClassroomGetDTO addedClassroom;
+            ClassroomResponseDTO addedClassroom;
             try
             {
                 addedClassroom = await _classroomService.PostClassroom(classroomDetails);
@@ -68,6 +68,10 @@ namespace DrivingSchoolApp.Controllers
             catch(ValueMustBeGreaterThanZeroException e)
             {
                 return BadRequest(e.ToJson());
+            }
+            catch (ReferenceConstraintException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "reason", "This classroom refers to something." } });
             }
             return CreatedAtAction(nameof(PostClassroom), addedClassroom);
         }
@@ -100,7 +104,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{classroomid}")]
-        public async Task<IActionResult> UpdateClassroom(int classroomid, ClassroomPostDTO classroomUpdate)
+        public async Task<IActionResult> UpdateClassroom(int classroomid, ClassroomRequestDTO classroomUpdate)
         {
             if (!ModelState.IsValid)
             {

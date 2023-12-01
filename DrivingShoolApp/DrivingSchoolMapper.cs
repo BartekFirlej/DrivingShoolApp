@@ -1,0 +1,13 @@
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
+using DrivingSchoolApp.Models;
+
+namespace DrivingSchoolApp
+{
+    public class DrivingSchoolMapper : Profile
+    {
+        public DrivingSchoolMapper() { 
+            CreateMap<Classroom, ClassroomResponseDTO>();
+        }
+    }
+}
