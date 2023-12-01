@@ -87,8 +87,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseType_ReturnCreatedAtAction()
         {
-            var courseTypeToAdd = new CourseTypePostDTO();
-            var addedCourseType = new CourseTypeGetDTO();
+            var courseTypeToAdd = new CourseTypeRequestDTO();
+            var addedCourseType = new CourseTypeResponseDTO();
             _courseTypeServiceMock.Setup(service => service.PostCourseType(courseTypeToAdd)).ReturnsAsync(addedCourseType);
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);
 
@@ -100,7 +100,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseType_ThrowsNotFoundLicenceCategoryException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO();
+            var courseTypeToAdd = new CourseTypeRequestDTO();
             var idOfLicenceCategory = 1;
             _courseTypeServiceMock.Setup(service => service.PostCourseType(courseTypeToAdd)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);
@@ -113,7 +113,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseType_ThrowsValueMustBeGreaterThanZeroException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO();
+            var courseTypeToAdd = new CourseTypeRequestDTO();
             var nameOfProperty = "age";
             _courseTypeServiceMock.Setup(service => service.PostCourseType(courseTypeToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(nameOfProperty));
             _controller = new CourseTypeController(_courseTypeServiceMock.Object);

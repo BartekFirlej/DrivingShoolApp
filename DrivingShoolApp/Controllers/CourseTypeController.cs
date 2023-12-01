@@ -53,9 +53,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostCourseType(CourseTypePostDTO courseTypeDetails)
+        public async Task<IActionResult> PostCourseType(CourseTypeRequestDTO courseTypeDetails)
         {
-            CourseTypeGetDTO addedCourseType;
+            CourseTypeResponseDTO addedCourseType;
             try
             {
                 addedCourseType = await _courseTypeService.PostCourseType(courseTypeDetails);
@@ -99,7 +99,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{coursetypeid}")]
-        public async Task<IActionResult> UpdateCourseType(int coursetypeid, CourseTypePostDTO courseTypeUpdate)
+        public async Task<IActionResult> UpdateCourseType(int coursetypeid, CourseTypeRequestDTO courseTypeUpdate)
         {
             if (!ModelState.IsValid)
             {

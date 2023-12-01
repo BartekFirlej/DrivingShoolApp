@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -14,6 +15,7 @@ namespace DrivingSchoolAppTests.Services
     {
         private Mock<ICourseTypeRepository> _courseTypeRepositoryMock;
         private Mock<ILicenceCategoryService> _licenceCategoryServiceMock;
+        private Mock<IMapper> _mapperMock;
         private Fixture _fixture;
         private CourseTypeService _service;
 
@@ -22,6 +24,7 @@ namespace DrivingSchoolAppTests.Services
             _fixture = new Fixture();
             _courseTypeRepositoryMock = new Mock<ICourseTypeRepository>();
             _licenceCategoryServiceMock = new Mock<ILicenceCategoryService>();
+            _mapperMock = new Mock<IMapper>();
         }
 
         [TestMethod]
@@ -30,7 +33,7 @@ namespace DrivingSchoolAppTests.Services
             var courseType = new CourseTypeGetDTO();
             var courseTypesList = new PagedList<CourseTypeGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CourseTypeGetDTO> { courseType }, HasNextPage = false };
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes(1, 10)).ReturnsAsync(courseTypesList);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.GetCourseTypes(1, 10);
 
@@ -42,7 +45,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var courseTypesList = new PagedList<CourseTypeGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<CourseTypeGetDTO>(), HasNextPage = false };
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes(1, 10)).ReturnsAsync(courseTypesList);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.GetCourseTypes(1, 10));
         }
@@ -51,7 +54,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_CourseTypes_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseTypes(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetCourseTypes(-1, 10));
         }
@@ -62,7 +65,7 @@ namespace DrivingSchoolAppTests.Services
             var courseType = new CourseTypeGetDTO();
             var idOfCourseTypeToFind = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseType(idOfCourseTypeToFind)).ReturnsAsync(courseType);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.GetCourseType(idOfCourseTypeToFind);
 
@@ -74,7 +77,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfCourseTypeToFind = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.GetCourseType(idOfCourseTypeToFind)).ReturnsAsync((CourseTypeGetDTO)null);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.GetCourseType(idOfCourseTypeToFind));
         }
@@ -82,14 +85,14 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_CourseType_ReturnsAddedCourseType()
         {
-            var addedCourseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
+            var addedCourseTypeDTO = new CourseTypeResponseDTO { Id = 1, DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var addedCourseType = new CourseType { Id = 1, DrivingHours = 10, LectureHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
-            var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
+            var courseTypeToAdd = new CourseTypeRequestDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
             var licenceCategoryDTO = new LicenceCategory();
             _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ReturnsAsync(licenceCategoryDTO);
             _courseTypeRepositoryMock.Setup(repo => repo.PostCourseType(courseTypeToAdd)).ReturnsAsync(addedCourseType);
-            _courseTypeRepositoryMock.Setup(repo => repo.GetCourseType(addedCourseType.Id)).ReturnsAsync(addedCourseTypeDTO);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _mapperMock.Setup(m => m.Map<CourseTypeResponseDTO>(It.IsAny<CourseType>())).Returns(addedCourseTypeDTO);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.PostCourseType(courseTypeToAdd);
 
@@ -99,36 +102,36 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_CourseType_ThrowsNotFoundLicenceCategoryException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
+            var courseTypeToAdd = new CourseTypeRequestDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
             _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(courseTypeToAdd.LicenceCategoryId)).ThrowsAsync(new NotFoundLicenceCategoryException(courseTypeToAdd.LicenceCategoryId));
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.PostCourseType(courseTypeToAdd));
         }
 
         [TestMethod]
-        public async Task Post_Classroom_ThrowsLectureHoursMustBeGreaterThanZeroException()
+        public async Task Post_CourseType_ThrowsLectureHoursMustBeGreaterThanZeroException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = -10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            var courseTypeToAdd = new CourseTypeRequestDTO { DrivingHours = 10, LecturesHours = -10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostCourseType(courseTypeToAdd));
         }
 
         [TestMethod]
-        public async Task Post_Classroom_ThrowsDrivingHoursMustBeGreaterThanZeroException()
+        public async Task Post_CourseType_ThrowsDrivingHoursMustBeGreaterThanZeroException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = -10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            var courseTypeToAdd = new CourseTypeRequestDTO { DrivingHours = -10, LecturesHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostCourseType(courseTypeToAdd));
         }
 
         [TestMethod]
-        public async Task Post_Classroom_ThrowsMinimumAgeMustBeGreaterThanZeroException()
+        public async Task Post_CourseType_ThrowsMinimumAgeMustBeGreaterThanZeroException()
         {
-            var courseTypeToAdd = new CourseTypePostDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 0, Name = "Kurs", LicenceCategoryId = 1 };
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            var courseTypeToAdd = new CourseTypeRequestDTO { DrivingHours = 10, LecturesHours = 10, MinimumAge = 0, Name = "Kurs", LicenceCategoryId = 1 };
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostCourseType(courseTypeToAdd));
         }
@@ -140,7 +143,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfCourseTypeToDelete = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.CheckCourseType(idOfCourseTypeToDelete)).ReturnsAsync(deletedCourseType);
             _courseTypeRepositoryMock.Setup(repo => repo.DeleteCourseType(deletedCourseType)).ReturnsAsync(deletedCourseType);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.DeleteCourseType(idOfCourseTypeToDelete);
 
@@ -152,7 +155,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfCourseTypeToDelete = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.CheckCourseType(idOfCourseTypeToDelete)).ReturnsAsync((CourseType)null);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.DeleteCourseType(idOfCourseTypeToDelete));
         }
@@ -164,7 +167,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfCourseTypeToDelete = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.CheckCourseType(idOfCourseTypeToDelete)).ReturnsAsync(deletedCourseType);
             _courseTypeRepositoryMock.Setup(repo => repo.DeleteCourseType(deletedCourseType)).ThrowsAsync(new ReferenceConstraintException());
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteCourseType(idOfCourseTypeToDelete));
         }
@@ -175,7 +178,7 @@ namespace DrivingSchoolAppTests.Services
             var courseType = new CourseType { Id = 1, DrivingHours = 10, LectureHours = 10, MinimumAge = 18, Name = "Kurs", LicenceCategoryId = 1 };
             var idOfCourseType = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.CheckCourseType(idOfCourseType)).ReturnsAsync(courseType);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckCourseType(idOfCourseType);
 
@@ -187,7 +190,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfCourseType = 1;
             _courseTypeRepositoryMock.Setup(repo => repo.CheckCourseType(idOfCourseType)).ReturnsAsync((CourseType)null);
-            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object);
+            _service = new CourseTypeService(_courseTypeRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseTypeException>(async () => await _service.CheckCourseType(idOfCourseType));
         }

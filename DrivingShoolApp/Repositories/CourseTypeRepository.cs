@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<CourseTypeGetDTO>> GetCourseTypes(int page, int size);
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
-        public Task<CourseType> PostCourseType(CourseTypePostDTO courseTypeDetails);
+        public Task<CourseType> PostCourseType(CourseTypeRequestDTO courseTypeDetails);
         public Task<CourseType> CheckCourseType(int courseTypeId);
         public Task<CourseType> DeleteCourseType(CourseType courseTypeToDelete);
-        public Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate);
+        public Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate);
     }
     public class CourseTypeRepository : ICourseTypeRepository
     {
@@ -57,7 +57,7 @@ namespace DrivingSchoolApp.Repositories
                                  LicenceCategoryName = c.LicenceCategory.Name
                              }).FirstOrDefaultAsync();
         }
-        public async Task<CourseType> PostCourseType(CourseTypePostDTO courseTypeDetails)
+        public async Task<CourseType> PostCourseType(CourseTypeRequestDTO courseTypeDetails)
         {
             var CourseTypeToAdd = new CourseType
             {
@@ -88,7 +88,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedCourseType.Entity;
         }
 
-        public async Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypePostDTO courseTypeUpdate)
+        public async Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate)
         {
             var courseType = await _dbContext.CourseTypes
                              .Where(c => c.Id == courseTypeId)

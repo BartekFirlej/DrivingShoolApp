@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class CourseTypePostDTO
+    public class CourseTypeRequestDTO
     {
         public string Name {  get; set; }
         public int MinimumAge { get; set; }
