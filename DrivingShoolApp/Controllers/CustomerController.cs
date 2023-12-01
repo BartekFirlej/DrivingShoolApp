@@ -123,9 +123,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostCustomer(CustomerPostDTO customerDetails)
+        public async Task<IActionResult> PostCustomer(CustomerRequestDTO customerDetails)
         {
-            CustomerGetDTO addedCustomer;
+            CustomerResponseDTO addedCustomer;
             try
             {
                 addedCustomer = await _customerService.PostCustomer(customerDetails);
@@ -165,7 +165,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{customerid}")]
-        public async Task<IActionResult> UpdateCustomer(int customerid, CustomerPostDTO customerUpdate)
+        public async Task<IActionResult> UpdateCustomer(int customerid, CustomerRequestDTO customerUpdate)
         {
             if (!ModelState.IsValid)
             {

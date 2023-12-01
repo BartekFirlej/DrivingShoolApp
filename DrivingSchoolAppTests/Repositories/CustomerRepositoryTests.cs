@@ -138,7 +138,7 @@ namespace DrivingSchoolAppTests.Repositories
             var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
             await _dbContext.Customers.AddRangeAsync(customer1, customer2);
             await _dbContext.SaveChangesAsync();
-            var customerToAdd = new CustomerPostDTO { Name = "TestName3", SecondName = "TestSName3", BirthDate = new DateTime(1980, 1, 1) };
+            var customerToAdd = new CustomerRequestDTO { Name = "TestName3", SecondName = "TestSName3", BirthDate = new DateTime(1980, 1, 1) };
             _repository = new CustomerRepository(_dbContext);
 
             var addedCustomer = await _repository.PostCustomer(customerToAdd);

@@ -220,8 +220,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Customer_ReturnsCreatedAtAction()
         {
-            var customerToAdd = new CustomerPostDTO();
-            var addedCustomer = new CustomerGetDTO();
+            var customerToAdd = new CustomerRequestDTO();
+            var addedCustomer = new CustomerResponseDTO();
             _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ReturnsAsync(addedCustomer);
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object);
 
@@ -233,7 +233,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Customer_ThrowsDateTimeException()
         {
-            var customerToAdd = new CustomerPostDTO();
+            var customerToAdd = new CustomerRequestDTO();
             var wrongDate = "begin date";
             _customerServiceMock.Setup(service => service.PostCustomer(customerToAdd)).ThrowsAsync(new DateTimeException(wrongDate));
             _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object);

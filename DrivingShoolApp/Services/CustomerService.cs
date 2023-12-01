@@ -2,6 +2,7 @@
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Models;
+using AutoMapper;
 
 namespace DrivingSchoolApp.Services
 {
@@ -9,19 +10,21 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size);
         public Task<CustomerGetDTO> GetCustomer(int customerId);
-        public Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer);
+        public Task<CustomerResponseDTO> PostCustomer(CustomerRequestDTO newCustomer);
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
         public Task<Customer> CheckCustomer(int customerId);
         public Task<Customer> DeleteCustomer(int customerId);
-        public Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerPostDTO customerUpdate);
+        public Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate);
     }
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IMapper _mapper;
 
-        public CustomerService(ICustomerRepository userRepository)
+        public CustomerService(ICustomerRepository userRepository, IMapper mapper)
         {
             _customerRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<CustomerGetDTO>> GetCustomers(int page, int size)
@@ -40,12 +43,12 @@ namespace DrivingSchoolApp.Services
             return customer;
         }
 
-        public async Task<CustomerGetDTO> PostCustomer(CustomerPostDTO newCustomer)
+        public async Task<CustomerResponseDTO> PostCustomer(CustomerRequestDTO newCustomer)
         {
             if (newCustomer.BirthDate == DateTime.MinValue)
                 throw new DateTimeException("birth");
             var addedCustomer = await _customerRepository.PostCustomer(newCustomer);
-            return await _customerRepository.GetCustomer(addedCustomer.Id);
+            return _mapper.Map<CustomerResponseDTO>(addedCustomer);
         }
 
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate)
@@ -70,7 +73,7 @@ namespace DrivingSchoolApp.Services
             return await _customerRepository.DeleteCustomer(customerToDelete);
         }
 
-        public async Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerPostDTO customerUpdate)
+        public async Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate)
         {
             await CheckCustomer(customerId);
             if (customerUpdate.BirthDate == DateTime.MinValue)
