@@ -9,6 +9,7 @@ namespace DrivingSchoolApp
         public DrivingSchoolMapper() { 
             CreateMap<Classroom, ClassroomResponseDTO>();
             CreateMap<Address, AddressResponseDTO>();
+            CreateMap<Course, CourseResponseDTO>();
         }
     }
 }

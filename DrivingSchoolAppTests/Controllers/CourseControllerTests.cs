@@ -180,8 +180,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Course_ReturnCreatedAtAction()
         {
-            var courseToAdd = new CoursePostDTO();
-            var addedCourse = new CourseGetDTO();
+            var courseToAdd = new CourseRequestDTO();
+            var addedCourse = new CourseResponseDTO();
             _courseServiceMock.Setup(service => service.PostCourse(courseToAdd)).ReturnsAsync(addedCourse);
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
 
@@ -193,7 +193,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Course_ThrowsNotFoundCourseTypeException()
         {
-            var courseToAdd = new CoursePostDTO();
+            var courseToAdd = new CourseRequestDTO();
             var idOfCourseType = 1;
             _courseServiceMock.Setup(service => service.PostCourse(courseToAdd)).ThrowsAsync(new NotFoundCourseTypeException(idOfCourseType));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
@@ -206,7 +206,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Course_ThrowsLimitValueExceptionException()
         {
-            var courseToAdd = new CoursePostDTO();
+            var courseToAdd = new CourseRequestDTO();
             var incorrectProperty = "limit";
             _courseServiceMock.Setup(service => service.PostCourse(courseToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(incorrectProperty));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
@@ -219,7 +219,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Course_ThrowsDateTimeExceptionException()
         {
-            var courseToAdd = new CoursePostDTO();
+            var courseToAdd = new CourseRequestDTO();
             _courseServiceMock.Setup(service => service.PostCourse(courseToAdd)).ThrowsAsync(new DateTimeException("begin date"));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
 

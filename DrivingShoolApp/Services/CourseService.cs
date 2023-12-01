@@ -2,6 +2,7 @@
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
+using AutoMapper;
 
 namespace DrivingSchoolApp.Services
 {
@@ -9,22 +10,24 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<CourseGetDTO>> GetCourses(int page, int size);
         public Task<CourseGetDTO> GetCourse(int courseId);
-        public Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails);
+        public Task<CourseResponseDTO> PostCourse(CourseRequestDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
         public Task<Course> CheckCourse(int courseId);
         public Task<Course> DeleteCourse(int courseId);
-        public Task<CourseGetDTO> UpdateCourse(int courseId, CoursePostDTO courseUpdate);
+        public Task<CourseGetDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate);
 
     }
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
         private readonly ICourseTypeService _courseTypeService;
+        private readonly IMapper _mapper;
 
-        public CourseService(ICourseRepository courseRepository, ICourseTypeService courseTypeService)
+        public CourseService(ICourseRepository courseRepository, ICourseTypeService courseTypeService, IMapper mapper)
         {
             _courseRepository = courseRepository;
             _courseTypeService = courseTypeService;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<CourseGetDTO>> GetCourses(int page, int size)
@@ -49,7 +52,7 @@ namespace DrivingSchoolApp.Services
             return await _courseRepository.GetCourseAssignedPeopleCount(courseId);
         }
 
-        public async Task<CourseGetDTO> PostCourse(CoursePostDTO courseDetails)
+        public async Task<CourseResponseDTO> PostCourse(CourseRequestDTO courseDetails)
         {
             if(courseDetails.Price <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Price");
@@ -59,7 +62,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("Limit");
             await _courseTypeService.CheckCourseType(courseDetails.CourseTypeId);
             var addedCourse = await _courseRepository.PostCourse(courseDetails);
-            return await _courseRepository.GetCourse(addedCourse.Id);
+            return _mapper.Map<CourseResponseDTO>(addedCourse);
         }
 
         public async Task<Course> CheckCourse(int courseId)
@@ -76,7 +79,7 @@ namespace DrivingSchoolApp.Services
             return await _courseRepository.DeleteCourse(courseToDelete);
         }
 
-        public async Task<CourseGetDTO> UpdateCourse(int courseId, CoursePostDTO courseUpdate)
+        public async Task<CourseGetDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate)
         {
             await CheckCourse(courseId);
             if (courseUpdate.Price <= 0)

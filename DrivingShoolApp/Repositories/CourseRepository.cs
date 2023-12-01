@@ -7,11 +7,11 @@ namespace DrivingSchoolApp.Repositories
     public interface ICourseRepository {
         public Task<PagedList<CourseGetDTO>> GetCourses(int page, int size);
         public Task<CourseGetDTO> GetCourse(int courseId);
-        public Task<Course> PostCourse(CoursePostDTO courseDetails);
+        public Task<Course> PostCourse(CourseRequestDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId); 
         public Task<Course> CheckCourse(int courseId);
         public Task<Course> DeleteCourse(Course courseToDelete);
-        public Task<Course> UpdateCourse(int courseId, CoursePostDTO courseUpdate);
+        public Task<Course> UpdateCourse(int courseId, CourseRequestDTO courseUpdate);
     }
     public class CourseRepository : ICourseRepository
     {
@@ -87,7 +87,7 @@ namespace DrivingSchoolApp.Repositories
                 .FirstOrDefaultAsync();  
         }
 
-        public async Task<Course> PostCourse(CoursePostDTO courseDetails)
+        public async Task<Course> PostCourse(CourseRequestDTO courseDetails)
         {
             var courseToAdd = new Course
             {
@@ -117,7 +117,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedCourse.Entity;
         }
 
-        public async Task<Course> UpdateCourse(int courseId, CoursePostDTO courseUpdate)
+        public async Task<Course> UpdateCourse(int courseId, CourseRequestDTO courseUpdate)
         {
             var course = await _dbContext.Courses
                          .Where(c => c.Id == courseId)

@@ -236,7 +236,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.CourseTypes.AddAsync(courseType1);
             await _dbContext.Courses.AddRangeAsync(course1, course2);
             await _dbContext.SaveChangesAsync();
-            var courseToAdd = new CoursePostDTO { Name = "TestCourse3", BeginDate = new DateTime(2020, 3, 3), CourseTypeId = 1, Limit = 30, Price = 300 };
+            var courseToAdd = new CourseRequestDTO { Name = "TestCourse3", BeginDate = new DateTime(2020, 3, 3), CourseTypeId = 1, Limit = 30, Price = 300 };
             _repository = new CourseRepository(_dbContext);
 
             var addedCourse = await _repository.PostCourse(courseToAdd);

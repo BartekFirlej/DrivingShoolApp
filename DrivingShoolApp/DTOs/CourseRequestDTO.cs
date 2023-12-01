@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class CoursePostDTO
+    public class CourseRequestDTO
     {
         public string Name { get; set; }
         public DateTime BeginDate { get; set; }
