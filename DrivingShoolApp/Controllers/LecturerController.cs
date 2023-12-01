@@ -54,7 +54,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostLecturer(LecturerPostDTO lecturerDetails)
+        public async Task<IActionResult> PostLecturer(LecturerRequestDTO lecturerDetails)
         {
             var addedLecturer = await _lecturerService.PostLecturer(lecturerDetails);
             return CreatedAtAction(nameof(PostLecturer), addedLecturer);
@@ -88,7 +88,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{lecturerid}")]
-        public async Task<IActionResult> UpdateAddress(int lecturerid, LecturerPostDTO lecturerUpdate)
+        public async Task<IActionResult> UpdateAddress(int lecturerid, LecturerRequestDTO lecturerUpdate)
         {
             if (!ModelState.IsValid)
             {

@@ -136,7 +136,7 @@ namespace DrivingSchoolAppTests.Repositories
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
             await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
             await _dbContext.SaveChangesAsync();
-            var lecturerToAdd = new LecturerPostDTO { Name = "TestName3", SecondName = "TestSName3" };
+            var lecturerToAdd = new LecturerRequestDTO { Name = "TestName3", SecondName = "TestSName3" };
             _repository = new LecturerRepository(_dbContext);
 
             var addedLecturer = await _repository.PostLecturer(lecturerToAdd);

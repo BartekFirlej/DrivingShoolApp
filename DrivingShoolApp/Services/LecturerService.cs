@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,18 +10,20 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size);
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
-        public Task<LecturerGetDTO> PostLecturer(LecturerPostDTO lecturerDetails);
+        public Task<LecturerResponseDTO> PostLecturer(LecturerRequestDTO lecturerDetails);
         public Task<Lecturer> CheckLecturer(int lecturerId);
         public Task<Lecturer> DeleteLecturer(int lecturerId);
-        public Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate);
+        public Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate);
     }
     public class LecturerService : ILecturerService
     {
         private readonly ILecturerRepository _lecturerRepository;
+        private readonly IMapper _mapper;
 
-        public LecturerService(ILecturerRepository lecturerRepository)
+        public LecturerService(ILecturerRepository lecturerRepository, IMapper mapper)
         {
             _lecturerRepository = lecturerRepository;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size)
@@ -39,10 +42,10 @@ namespace DrivingSchoolApp.Services
             return lecturer;
         }
 
-        public async Task<LecturerGetDTO> PostLecturer(LecturerPostDTO lecturerDetails)
+        public async Task<LecturerResponseDTO> PostLecturer(LecturerRequestDTO lecturerDetails)
         {
             var addedLecturer = await _lecturerRepository.PostLecturer(lecturerDetails);
-            return await _lecturerRepository.GetLecturer(addedLecturer.Id);
+            return _mapper.Map<LecturerResponseDTO>(addedLecturer);
         }
 
         public async Task<Lecturer> CheckLecturer(int lecturerId)
@@ -59,7 +62,7 @@ namespace DrivingSchoolApp.Services
             return await _lecturerRepository.DeleteLecturer(lecturerToDelete);
         }
 
-        public async Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate)
+        public async Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate)
         {
             await CheckLecturer(lecturerId);
             await _lecturerRepository.UpdateLecturer(lecturerId, lecturerUpdate);

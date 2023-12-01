@@ -87,8 +87,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecturer_ReturnCreatedAtAction()
         {
-            var lecturerToAdd = new LecturerPostDTO();
-            var addedLecturer = new LecturerGetDTO();
+            var lecturerToAdd = new LecturerRequestDTO();
+            var addedLecturer = new LecturerResponseDTO();
             _lecturerServiceMock.Setup(service => service.PostLecturer(lecturerToAdd)).ReturnsAsync(addedLecturer);
             _controller = new LecturerController(_lecturerServiceMock.Object);
 

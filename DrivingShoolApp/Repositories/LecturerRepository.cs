@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<LecturerGetDTO>> GetLecturers(int page, int size);
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
-        public Task<Lecturer> PostLecturer(LecturerPostDTO lecturerDetails);
+        public Task<Lecturer> PostLecturer(LecturerRequestDTO lecturerDetails);
         public Task<Lecturer> CheckLecturer(int lecturerId);
         public Task<Lecturer> DeleteLecturer(Lecturer lecturerToDelete);
-        public Task<Lecturer> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate);
+        public Task<Lecturer> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate);
     }
     public class LecturerRepository : ILecturerRepository
     {
@@ -49,7 +49,7 @@ namespace DrivingSchoolApp.Repositories
                                }).FirstOrDefaultAsync();
         }
 
-        public async Task<Lecturer> PostLecturer(LecturerPostDTO lecturerDetails)
+        public async Task<Lecturer> PostLecturer(LecturerRequestDTO lecturerDetails)
         {
             var lecturerToAdd = new Lecturer
             {
@@ -76,7 +76,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedLecturer.Entity;
         }
 
-        public async Task<Lecturer> UpdateLecturer(int lecturerId, LecturerPostDTO lecturerUpdate)
+        public async Task<Lecturer> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate)
         {
             var lecturer = await _dbContext.Lecturers
                              .Where(l => l.Id == lecturerId)
