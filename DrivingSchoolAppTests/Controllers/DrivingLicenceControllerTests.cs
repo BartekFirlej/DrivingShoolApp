@@ -86,8 +86,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLicence_ReturnsCreatedAtAction()
         {
-            var drivingLicenceToAdd = new DrivingLicencePostDTO();
-            var addedDrivingLicence = new DrivingLicenceGetDTO();
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO();
+            var addedDrivingLicence = new DrivingLicenceResponseDTO();
             _drivingLicenceServiceMock.Setup(service => service.PostDrivingLicence(drivingLicenceToAdd)).ReturnsAsync(addedDrivingLicence);
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
 
@@ -99,7 +99,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLicence_ThrowsNotFoundCustomerException()
         {
-            var drivingLicenceToAdd = new DrivingLicencePostDTO();
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO();
             var idOfCustomer = 1;
             _drivingLicenceServiceMock.Setup(service => service.PostDrivingLicence(drivingLicenceToAdd)).ThrowsAsync(new NotFoundCustomerException(idOfCustomer));
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
@@ -112,7 +112,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLicence_ThrowsNotFoundLicenceCategoryException()
         {
-            var drivingLicenceToAdd = new DrivingLicencePostDTO();
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO();
             var idOfLicenceCategory = 1;
             _drivingLicenceServiceMock.Setup(service => service.PostDrivingLicence(drivingLicenceToAdd)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
@@ -125,7 +125,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLicence_ThrowsCustomerDoesntMeetRequirementException()
         {
-            var drivingLicenceToAdd = new DrivingLicencePostDTO();
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO();
             var idOfCustomer = 1;
             var idOfLicenceCategory = 1;
             _drivingLicenceServiceMock.Setup(service => service.PostDrivingLicence(drivingLicenceToAdd)).ThrowsAsync(new CustomerDoesntMeetRequirementsException(idOfCustomer,idOfLicenceCategory));
@@ -139,7 +139,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLicence_ThrowsDateTimeException()
         {
-            var drivingLicenceToAdd = new DrivingLicencePostDTO();
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO();
             var propertyName = "expiration date";
             _drivingLicenceServiceMock.Setup(service => service.PostDrivingLicence(drivingLicenceToAdd)).ThrowsAsync(new DateTimeException(propertyName));
             _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);

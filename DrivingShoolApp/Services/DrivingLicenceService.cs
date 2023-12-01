@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -11,10 +12,10 @@ namespace DrivingSchoolApp.Services
         public Task<ICollection<DrivingLicenceGetDTO>> GetCustomerDrivingLicences(int customerId);
         public Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date);
         public Task<DrivingLicenceGetDTO> GetDrivingLicence(int id);
-        public Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails);
+        public Task<DrivingLicenceResponseDTO> PostDrivingLicence(DrivingLicenceRequestDTO drivingLicenceDetails);
         public Task<DrivingLicence> DeleteDrivingLicence(int drivingLicenceId);
         public Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId);
-        public Task<DrivingLicenceGetDTO> UpdateDrivingLicence(int drivingLicenceId, DrivingLicencePostDTO drivingLicenceUpdate);
+        public Task<DrivingLicenceGetDTO> UpdateDrivingLicence(int drivingLicenceId, DrivingLicenceRequestDTO drivingLicenceUpdate);
 
     }
     public class DrivingLicenceService : IDrivingLicenceService
@@ -23,17 +24,17 @@ namespace DrivingSchoolApp.Services
         private readonly ICustomerService _customerService;
         private readonly ILicenceCategoryService _licenceCategoryService;
         private readonly IRequiredLicenceCategoryService _requiredLicenceCategoryService;
+        private readonly IMapper _mapper;
 
 
-        public DrivingLicenceService(IDrivingLicenceRepository drivingLicenceRepository,
-                                     ICustomerService customerService,
-                                     ILicenceCategoryService licenceCategoryService,
-                                     IRequiredLicenceCategoryService requiredLicenceCategoryService)
+        public DrivingLicenceService(IDrivingLicenceRepository drivingLicenceRepository, ICustomerService customerService, ILicenceCategoryService licenceCategoryService,
+                                     IRequiredLicenceCategoryService requiredLicenceCategoryService, IMapper mapper)
         {
             _drivingLicenceRepository = drivingLicenceRepository;
             _customerService = customerService;
             _licenceCategoryService = licenceCategoryService;
             _requiredLicenceCategoryService = requiredLicenceCategoryService;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<DrivingLicenceGetDTO>> GetDrivingLicences(int page, int size)
@@ -61,7 +62,7 @@ namespace DrivingSchoolApp.Services
             return drivingLicence;
         }
 
-        public async Task<DrivingLicenceGetDTO> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
+        public async Task<DrivingLicenceResponseDTO> PostDrivingLicence(DrivingLicenceRequestDTO drivingLicenceDetails)
         {
             if (drivingLicenceDetails.ReceivedDate == DateTime.MinValue)
                 throw new DateTimeException("Received");
@@ -76,7 +77,7 @@ namespace DrivingSchoolApp.Services
             if (!meetsRequirements)
                 throw new CustomerDoesntMeetRequirementsException(drivingLicenceDetails.CustomerId, drivingLicenceDetails.LicenceCategoryId);
             var addedDrivingLicence = await _drivingLicenceRepository.PostDrivingLicence(drivingLicenceDetails);
-            return await _drivingLicenceRepository.GetDrivingLicence(addedDrivingLicence.Id);
+            return _mapper.Map<DrivingLicenceResponseDTO>(addedDrivingLicence);
         }
 
         public async Task<DrivingLicence> DeleteDrivingLicence(int drivingLicenceId)
@@ -99,7 +100,7 @@ namespace DrivingSchoolApp.Services
             return drivingLicences;
         }
 
-        public async Task<DrivingLicenceGetDTO> UpdateDrivingLicence(int drivingLicenceId, DrivingLicencePostDTO drivingLicenceUpdate)
+        public async Task<DrivingLicenceGetDTO> UpdateDrivingLicence(int drivingLicenceId, DrivingLicenceRequestDTO drivingLicenceUpdate)
         {
             await CheckDrivingLicence(drivingLicenceId);
             if (drivingLicenceUpdate.ReceivedDate == DateTime.MinValue)

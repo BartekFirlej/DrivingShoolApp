@@ -308,7 +308,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
             await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
             await _dbContext.SaveChangesAsync();
-            var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = 2, LicenceCategoryId = 1, ReceivedDate = new DateTime(2023, 11, 8), ExpirationDate = new DateTime(2025, 11, 8) };
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO { CustomerId = 2, LicenceCategoryId = 1, ReceivedDate = new DateTime(2023, 11, 8), ExpirationDate = new DateTime(2025, 11, 8) };
             _repository = new DrivingLicenceRepository(_dbContext);
 
             var addedDrivingLicence = await _repository.PostDrivingLicence(drivingLicenceToAdd);
@@ -350,7 +350,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
             await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
             await _dbContext.SaveChangesAsync();
-            var drivingLicenceToAdd = new DrivingLicencePostDTO { CustomerId = 2, LicenceCategoryId = 1, ReceivedDate = new DateTime(2023, 11, 8)};
+            var drivingLicenceToAdd = new DrivingLicenceRequestDTO { CustomerId = 2, LicenceCategoryId = 1, ReceivedDate = new DateTime(2023, 11, 8)};
             _repository = new DrivingLicenceRepository(_dbContext);
 
             var addedDrivingLicence = await _repository.PostDrivingLicence(drivingLicenceToAdd);

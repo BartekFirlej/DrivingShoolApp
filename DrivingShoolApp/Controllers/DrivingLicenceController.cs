@@ -52,9 +52,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostDrivingLicence(DrivingLicencePostDTO drivingLicenceDetails)
+        public async Task<IActionResult> PostDrivingLicence(DrivingLicenceRequestDTO drivingLicenceDetails)
         {
-            DrivingLicenceGetDTO addedDrivingLicence;
+            DrivingLicenceResponseDTO addedDrivingLicence;
             try
             {
                 addedDrivingLicence = await _drivingLicenceService.PostDrivingLicence(drivingLicenceDetails);
@@ -101,7 +101,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{drivinglicenceid}")]
-        public async Task<IActionResult> UpdateDrivingLicence(int drivinglicenceid, DrivingLicencePostDTO drivingLicenceUpdate)
+        public async Task<IActionResult> UpdateDrivingLicence(int drivinglicenceid, DrivingLicenceRequestDTO drivingLicenceUpdate)
         {
             if (!ModelState.IsValid)
             {
