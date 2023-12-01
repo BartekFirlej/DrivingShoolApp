@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size);
         public Task<SubjectGetDTO> GetSubject(int subjectId);
-        public Task<Subject> PostSubject(SubjectPostDTO subjectDetails);
+        public Task<Subject> PostSubject(SubjectRequestDTO subjectDetails);
         public Task<Subject> CheckSubject(int subjectId);
         public Task<Subject> DeleteSubject(Subject subjectToDelete);
-        public Task<Subject> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate);
+        public Task<Subject> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate);
     }
     public class SubjectRepository : ISubjectRepository
     {
@@ -52,7 +52,7 @@ namespace DrivingSchoolApp.Repositories
                             }).FirstOrDefaultAsync();
         }
 
-        public async Task<Subject> PostSubject(SubjectPostDTO subjectDetails)
+        public async Task<Subject> PostSubject(SubjectRequestDTO subjectDetails)
         {
             var SubjectToAdd = new Subject
             {
@@ -80,7 +80,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedSubject.Entity;
         }
 
-        public async Task<Subject> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate)
+        public async Task<Subject> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate)
         {
             var subject = await _dbContext.Subjects
                             .Where(s => s.Id == subjectId)

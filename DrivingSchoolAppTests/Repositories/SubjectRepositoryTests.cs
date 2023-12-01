@@ -138,7 +138,7 @@ namespace DrivingSchoolAppTests.Repositories
             var subject2 = new Subject { Id = 2, Name = "TestName2", Code = "TestCode2", Duration = 2 };
             await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
             await _dbContext.SaveChangesAsync();
-            var subjectToAdd = new SubjectPostDTO { Code = "TestCode3", Name = "TestName3", Duration = 3 };
+            var subjectToAdd = new SubjectRequestDTO { Code = "TestCode3", Name = "TestName3", Duration = 3 };
             _repository = new SubjectRepository(_dbContext);
 
             var addedSubject = await _repository.PostSubject(subjectToAdd);

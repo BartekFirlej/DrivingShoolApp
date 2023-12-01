@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -13,6 +14,7 @@ namespace DrivingSchoolAppTests.Services
     public class SubjectServiceTests
     {
         private Mock<ISubjectRepository> _subjectRepositoryMock;
+        private Mock<IMapper> _mapperMock;
         private Fixture _fixture;
         private SubjectService _service;
 
@@ -20,6 +22,7 @@ namespace DrivingSchoolAppTests.Services
         {
             _fixture = new Fixture();
             _subjectRepositoryMock = new Mock<ISubjectRepository>();
+            _mapperMock = new Mock<IMapper>();
         }
 
         [TestMethod]
@@ -28,7 +31,7 @@ namespace DrivingSchoolAppTests.Services
             var subject = new SubjectGetDTO();
             var subjectsList = new PagedList<SubjectGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<SubjectGetDTO> { subject }, HasNextPage = false };
             _subjectRepositoryMock.Setup(repo => repo.GetSubjects(1, 10)).ReturnsAsync(subjectsList);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.GetSubjects(1, 10);
 
@@ -40,7 +43,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var subjectsList = new PagedList<SubjectGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<SubjectGetDTO>(), HasNextPage = false };
             _subjectRepositoryMock.Setup(repo => repo.GetSubjects(1, 10)).ReturnsAsync(subjectsList);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetSubjects(1, 10));
         }
@@ -49,7 +52,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_Subjects_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
             _subjectRepositoryMock.Setup(repo => repo.GetSubjects(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetSubjects(-1, 10));
         }
@@ -60,7 +63,7 @@ namespace DrivingSchoolAppTests.Services
             var subject = new SubjectGetDTO();
             var idOfSubjectToFind = 1;
             _subjectRepositoryMock.Setup(repo => repo.GetSubject(idOfSubjectToFind)).ReturnsAsync(subject);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.GetSubject(idOfSubjectToFind);
 
@@ -72,7 +75,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfSubjectToFind = 1;
             _subjectRepositoryMock.Setup(repo => repo.GetSubject(idOfSubjectToFind)).ReturnsAsync((SubjectGetDTO)null);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.GetSubject(idOfSubjectToFind));
         }
@@ -81,11 +84,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_Subject_ReturnsAddedSubject()
         {
             var addedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
-            var addedSubjectDTO = new SubjectGetDTO { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3};
-            var subjectToAdd = new SubjectPostDTO { Code = "B01", Name = "Test Subject", Duration = 3 };
-            _subjectRepositoryMock.Setup(repo => repo.PostSubject(subjectToAdd)).ReturnsAsync(addedSubject);
-            _subjectRepositoryMock.Setup(repo => repo.GetSubject(addedSubject.Id)).ReturnsAsync(addedSubjectDTO);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            var addedSubjectDTO = new SubjectResponseDTO { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3};
+            var subjectToAdd = new SubjectRequestDTO { Code = "B01", Name = "Test Subject", Duration = 3 };
+            _subjectRepositoryMock.Setup(repo => repo.PostSubject(subjectToAdd)).ReturnsAsync(addedSubject); 
+            _mapperMock.Setup(m => m.Map<SubjectResponseDTO>(It.IsAny<Subject>())).Returns(addedSubjectDTO);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.PostSubject(subjectToAdd);
 
@@ -95,8 +98,8 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_Subject_ThrowsDurationMustBeGreaterThanZeroExceptionException()
         {
-            var subjectToAdd = new SubjectPostDTO { Code = "B01", Name = "Test Subject", Duration = -3 };
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            var subjectToAdd = new SubjectRequestDTO { Code = "B01", Name = "Test Subject", Duration = -3 };
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.PostSubject(subjectToAdd));
         }
@@ -108,7 +111,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfSubjectToDelete = 1;
             _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync(deletedSubject);
             _subjectRepositoryMock.Setup(repo => repo.DeleteSubject(deletedSubject)).ReturnsAsync(deletedSubject);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.DeleteSubject(idOfSubjectToDelete);
 
@@ -120,7 +123,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfSubjectToDelete = 1;
             _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync((Subject)null);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.DeleteSubject(idOfSubjectToDelete));
         }
@@ -132,7 +135,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfSubjectToDelete = 1;
             _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubjectToDelete)).ReturnsAsync(deletedSubject);
             _subjectRepositoryMock.Setup(repo => repo.DeleteSubject(deletedSubject)).ThrowsAsync(new ReferenceConstraintException());
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteSubject(idOfSubjectToDelete));
         }
@@ -143,7 +146,7 @@ namespace DrivingSchoolAppTests.Services
             var deletedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
             var idOfSubject = 1;
             _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ReturnsAsync(deletedSubject);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckSubject(idOfSubject);
 
@@ -155,7 +158,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfSubject = 1;
             _subjectRepositoryMock.Setup(repo => repo.CheckSubject(idOfSubject)).ReturnsAsync((Subject)null);
-            _service = new SubjectService(_subjectRepositoryMock.Object);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckSubject(idOfSubject));
         }

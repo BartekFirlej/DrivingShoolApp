@@ -54,9 +54,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostSubject(SubjectPostDTO subjectDetails)
+        public async Task<IActionResult> PostSubject(SubjectRequestDTO subjectDetails)
         {
-            SubjectGetDTO subject;
+            SubjectResponseDTO subject;
             try
             {
                 subject = await _subjectService.PostSubject(subjectDetails);
@@ -96,7 +96,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{subjectid}")]
-        public async Task<IActionResult> UpdateSubject(int subjectid, SubjectPostDTO subjectUpdate)
+        public async Task<IActionResult> UpdateSubject(int subjectid, SubjectRequestDTO subjectUpdate)
         {
             if (!ModelState.IsValid)
             {

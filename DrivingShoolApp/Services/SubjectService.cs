@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,19 +10,21 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size);
         public Task<SubjectGetDTO> GetSubject(int subjectId);
-        public Task<SubjectGetDTO> PostSubject(SubjectPostDTO subjectDetails);
+        public Task<SubjectResponseDTO> PostSubject(SubjectRequestDTO subjectDetails);
         public Task<Subject> CheckSubject(int subjectId);
         public Task<Subject> DeleteSubject(int subjectId);
-        public Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate);
+        public Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate);
 
     }
     public class SubjectService : ISubjectService
     {
         private readonly ISubjectRepository _subjectRepository;
+        private readonly IMapper _mapper;
 
-        public SubjectService(ISubjectRepository subjectRepository)
+        public SubjectService(ISubjectRepository subjectRepository, IMapper mapper)
         {
             _subjectRepository = subjectRepository;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<SubjectGetDTO>> GetSubjects(int page, int size)
@@ -40,12 +43,12 @@ namespace DrivingSchoolApp.Services
             return subject;
         }
 
-        public async Task<SubjectGetDTO> PostSubject(SubjectPostDTO subjectDetails)
+        public async Task<SubjectResponseDTO> PostSubject(SubjectRequestDTO subjectDetails)
         {
             if (subjectDetails.Duration <= 0)
                 throw new ValueMustBeGreaterThanZeroException("duration");
             var addedSubject = await _subjectRepository.PostSubject(subjectDetails);
-            return await _subjectRepository.GetSubject(addedSubject.Id);
+            return _mapper.Map<SubjectResponseDTO>(addedSubject);
         }
 
         public async Task<Subject> DeleteSubject(int subjectId)
@@ -62,7 +65,7 @@ namespace DrivingSchoolApp.Services
             return subject;
         }
 
-        public async Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectPostDTO subjectUpdate)
+        public async Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate)
         {
             await CheckSubject(subjectId);
             if (subjectUpdate.Duration <= 0)

@@ -90,8 +90,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Subject_ReturnCreatedAtAction()
         {
-            var subjectToAdd = new SubjectPostDTO();
-            var addedSubject = new SubjectGetDTO();
+            var subjectToAdd = new SubjectRequestDTO();
+            var addedSubject = new SubjectResponseDTO();
             _subjectServiceMock.Setup(service => service.PostSubject(subjectToAdd)).ReturnsAsync(addedSubject);
             _controller = new SubjectController(_subjectServiceMock.Object);
 
@@ -103,7 +103,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Subject_ThrowsValueMustBeGreaterThanZero()
         {
-            var subjectToAdd = new SubjectPostDTO();
+            var subjectToAdd = new SubjectRequestDTO();
             var nameOfProperty = "duration";
             _subjectServiceMock.Setup(service => service.PostSubject(subjectToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(nameOfProperty));
             _controller = new SubjectController(_subjectServiceMock.Object);
