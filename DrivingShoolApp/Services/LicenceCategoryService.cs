@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,18 +10,20 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size);
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int licenceCategoryId);
-        public Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
+        public Task<LicenceCategoryResponseDTO> PostLicenceCategory(LicenceCategoryRequestDTO newCategory);
         public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId);
-        public Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate);
+        public Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate);
     }
     public class LicenceCategoryService : ILicenceCategoryService
     {
         private readonly ILicenceCategoryRepository _licenceCategoryRepository;
+        private readonly IMapper _mapper;
 
-        public LicenceCategoryService(ILicenceCategoryRepository licenceCategoryRepository)
+        public LicenceCategoryService(ILicenceCategoryRepository licenceCategoryRepository, IMapper mapper)
         {
             _licenceCategoryRepository = licenceCategoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size)
@@ -39,10 +42,10 @@ namespace DrivingSchoolApp.Services
             return licenceCategory;
         }
 
-        public async Task<LicenceCategoryGetDTO> PostLicenceCategory(LicenceCategoryPostDTO newCategory)
+        public async Task<LicenceCategoryResponseDTO> PostLicenceCategory(LicenceCategoryRequestDTO newCategory)
         {
             var createdCategory = await _licenceCategoryRepository.PostLicenceCategory(newCategory);
-            return await _licenceCategoryRepository.GetLicenceCategory(createdCategory.Id);
+            return _mapper.Map<LicenceCategoryResponseDTO>(createdCategory);
         }
 
         public async Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId)
@@ -59,7 +62,7 @@ namespace DrivingSchoolApp.Services
             return await _licenceCategoryRepository.DeleteLicenceCategory(licenceCategoryToDelete);
         }
 
-        public async Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate)
+        public async Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate)
         {
             await CheckLicenceCategory(licenceCategoryId);
             await _licenceCategoryRepository.UpdateLicenceCategory(licenceCategoryId, licenceCategoryUpdate);

@@ -126,9 +126,9 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_LicenceCategory_ReturnCreatedAtAction()
         {
-            var licenceCategoryToAdd = new LicenceCategoryPostDTO();
-            var addedLicenceCategory = new LicenceCategoryGetDTO();
-            _licenceCategoryServiceMock.Setup(service => service.PostLicenceCategory(licenceCategoryToAdd)).Returns(Task.FromResult(addedLicenceCategory));
+            var licenceCategoryToAdd = new LicenceCategoryRequestDTO();
+            var addedLicenceCategory = new LicenceCategoryResponseDTO();
+            _licenceCategoryServiceMock.Setup(service => service.PostLicenceCategory(licenceCategoryToAdd)).ReturnsAsync(addedLicenceCategory);
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
             var result = (CreatedAtActionResult)await _controller.PostLicenceCategory(licenceCategoryToAdd);

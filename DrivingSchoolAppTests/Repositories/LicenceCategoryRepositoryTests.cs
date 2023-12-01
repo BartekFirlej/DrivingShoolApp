@@ -132,7 +132,7 @@ namespace DrivingSchoolAppTests.Repositories
             var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
             await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
             await _dbContext.SaveChangesAsync();
-            var licenceCategoryToAdd = new LicenceCategoryPostDTO { Name = "Test3" };
+            var licenceCategoryToAdd = new LicenceCategoryRequestDTO { Name = "Test3" };
             _repository = new LicenceCategoryRepository(_dbContext);
 
             var addedLicenceCategory = await _repository.PostLicenceCategory(licenceCategoryToAdd);

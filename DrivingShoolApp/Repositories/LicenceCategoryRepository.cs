@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<LicenceCategoryGetDTO>> GetLicenceCategories(int page, int size);
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int id);
-        public Task<LicenceCategory> PostLicenceCategory(LicenceCategoryPostDTO newCategory);
+        public Task<LicenceCategory> PostLicenceCategory(LicenceCategoryRequestDTO newCategory);
         public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategory> DeleteLicenceCategory(LicenceCategory licenceCategoryToDelete);
-        public Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate);
+        public Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate);
     }
     public class LicenceCategoryRepository : ILicenceCategoryRepository
     {
@@ -42,7 +42,7 @@ namespace DrivingSchoolApp.Repositories
 
         }
 
-        public async Task<LicenceCategory> PostLicenceCategory(LicenceCategoryPostDTO licenceCategoryDetails)
+        public async Task<LicenceCategory> PostLicenceCategory(LicenceCategoryRequestDTO licenceCategoryDetails)
         {
             var licenceCategoryToAdd = new LicenceCategory { Name = licenceCategoryDetails.Name };
             await _dbContext.LicenceCategories.AddAsync(licenceCategoryToAdd);
@@ -65,7 +65,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedLicenceCategory.Entity;
         }
 
-        public async Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryPostDTO licenceCategoryUpdate)
+        public async Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate)
         {
             var licenceCategory = await _dbContext.LicenceCategories
                                   .Where(l => l.Id == licenceCategoryId)

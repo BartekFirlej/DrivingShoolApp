@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
@@ -13,6 +14,7 @@ namespace DrivingSchoolAppTests.Services
     public class LicenceCategoryServiceTests
     {
         private Mock<ILicenceCategoryRepository> _licenceCategoryRepositoryMock;
+        private Mock<IMapper> _mapperMock;
         private Fixture _fixture;
         private LicenceCategoryService _service;
 
@@ -20,6 +22,7 @@ namespace DrivingSchoolAppTests.Services
         {
             _fixture = new Fixture();
             _licenceCategoryRepositoryMock = new Mock<ILicenceCategoryRepository>();
+            _mapperMock = new Mock<IMapper>();
         }
 
         [TestMethod]
@@ -28,7 +31,7 @@ namespace DrivingSchoolAppTests.Services
             var licenceCategory = new LicenceCategoryGetDTO();
             var licenceCategoriesList = new PagedList<LicenceCategoryGetDTO> { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<LicenceCategoryGetDTO> { licenceCategory } };
             _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories(1,10)).ReturnsAsync(licenceCategoriesList);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.GetLicenceCategories(1,10);
 
@@ -41,7 +44,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var licenceCategoriesList = new PagedList<LicenceCategoryGetDTO> { PageIndex = 1, PageSize = 10, HasNextPage = false, PagedItems = new List<LicenceCategoryGetDTO>() };
             _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories(1, 10)).ReturnsAsync(licenceCategoriesList);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.GetLicenceCategories(1, 10));
         }
@@ -50,7 +53,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_LicenceCategories_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
             _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategories(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetLicenceCategories(-1, 10));
         }
@@ -61,7 +64,7 @@ namespace DrivingSchoolAppTests.Services
             var licenceCategory = new LicenceCategoryGetDTO();
             var idOfLicenceCategoryToFind = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategory(idOfLicenceCategoryToFind)).ReturnsAsync(licenceCategory);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.GetLicenceCategory(idOfLicenceCategoryToFind);
 
@@ -73,7 +76,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfLicenceCategoryToFind = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategory(idOfLicenceCategoryToFind)).ReturnsAsync((LicenceCategoryGetDTO)null);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.GetLicenceCategory(idOfLicenceCategoryToFind));
         }
@@ -82,11 +85,11 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_LicenceCategory_ReturnsAddedLicenceCategory()
         {
             var addedLicenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
-            var addedLicenceCategoryDTO = new LicenceCategoryGetDTO { Id = 1, Name = "Test" };
-            var licenceCategoryToAdd = new LicenceCategoryPostDTO { Name = "Test" };
+            var addedLicenceCategoryDTO = new LicenceCategoryResponseDTO { Id = 1, Name = "Test" };
+            var licenceCategoryToAdd = new LicenceCategoryRequestDTO { Name = "Test" };
             _licenceCategoryRepositoryMock.Setup(repo => repo.PostLicenceCategory(licenceCategoryToAdd)).ReturnsAsync(addedLicenceCategory);
-            _licenceCategoryRepositoryMock.Setup(repo => repo.GetLicenceCategory(addedLicenceCategory.Id)).ReturnsAsync(addedLicenceCategoryDTO);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _mapperMock.Setup(m => m.Map<LicenceCategoryResponseDTO>(It.IsAny<LicenceCategory>())).Returns(addedLicenceCategoryDTO);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.PostLicenceCategory(licenceCategoryToAdd);
 
@@ -100,7 +103,7 @@ namespace DrivingSchoolAppTests.Services
             var deletedLicenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategory(idOfLicenceCategoryToDelete)).ReturnsAsync(deletedLicenceCategory);
             _licenceCategoryRepositoryMock.Setup(repo => repo.DeleteLicenceCategory(deletedLicenceCategory)).ReturnsAsync(deletedLicenceCategory);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.DeleteLicenceCategory(idOfLicenceCategoryToDelete);
 
@@ -112,7 +115,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfLicenceCategoryToDelete = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategory(idOfLicenceCategoryToDelete)).ReturnsAsync((LicenceCategory)null);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.DeleteLicenceCategory(idOfLicenceCategoryToDelete));
         }
@@ -124,7 +127,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfLicenceCategoryToDelete = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategory(idOfLicenceCategoryToDelete)).ReturnsAsync(deletedLicenceCategory);
             _licenceCategoryRepositoryMock.Setup(repo => repo.DeleteLicenceCategory(deletedLicenceCategory)).ThrowsAsync(new ReferenceConstraintException());
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ReferenceConstraintException>(async () => await _service.DeleteLicenceCategory(idOfLicenceCategoryToDelete));
         }
@@ -135,7 +138,7 @@ namespace DrivingSchoolAppTests.Services
             var deletedLicenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var idOfLicenceCategory = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategory(idOfLicenceCategory)).ReturnsAsync(deletedLicenceCategory);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckLicenceCategory(idOfLicenceCategory);
 
@@ -147,7 +150,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfLicenceCategory = 1;
             _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategory(idOfLicenceCategory)).ReturnsAsync((LicenceCategory)null);
-            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.CheckLicenceCategory(idOfLicenceCategory));
         }

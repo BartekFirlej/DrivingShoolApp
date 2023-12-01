@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class LicenceCategoryPostDTO
+    public class LicenceCategoryRequestDTO
     {
         public string Name {  get; set; }
     }
