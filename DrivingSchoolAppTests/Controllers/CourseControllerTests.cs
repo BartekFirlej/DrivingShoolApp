@@ -314,7 +314,7 @@ namespace DrivingSchoolAppTests.Controllers
         }
 
         [TestMethod]
-        public async Task RegisterCustomerForCourse_ReturnsCreatedAtAction()
+        public async Task Register_CustomerForCourse_ReturnsCreatedAtAction()
         {
             var registrationToAdd = new RegistrationRequestDTO();
             var addedRegistration = new RegistrationResponseDTO();

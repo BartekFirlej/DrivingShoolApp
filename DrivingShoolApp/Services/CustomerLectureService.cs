@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Repositories;
 
@@ -12,7 +13,7 @@ namespace DrivingSchoolApp.Services
         public Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId);
         public Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId);
         public Task<CustomerLectureCheckDTO> DeleteCustomerLecture(int customerId, int lectureId);
-        public Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails);
+        public Task<CustomerLectureResponseDTO> PostCustomerLecture(CustomerLectureRequestDTO customerLectureDetails);
     }
     public class CustomerLectureService : ICustomerLectureService
     {
@@ -20,13 +21,15 @@ namespace DrivingSchoolApp.Services
         private readonly ICustomerService _customerService;
         private readonly ILectureService _lectureService;
         private readonly IRegistrationService _registrationService;
+        private readonly IMapper _mapper;
 
-        public CustomerLectureService(ICustomerLectureRepository customerLectureRepository, ICustomerService customerService, ILectureService lectureService, IRegistrationService registrationService)
+        public CustomerLectureService(ICustomerLectureRepository customerLectureRepository, ICustomerService customerService, ILectureService lectureService, IRegistrationService registrationService, IMapper mapper)
         {
             _customerLectureRepository = customerLectureRepository;
             _customerService = customerService;
             _lectureService = lectureService;
             _registrationService = registrationService;
+            _mapper = mapper;
         }
 
         public async Task<ICollection<CustomerLectureGetDTO>> GetCustomersLectures()
@@ -65,7 +68,7 @@ namespace DrivingSchoolApp.Services
             return customerLecture;
         }
 
-        public async Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
+        public async Task<CustomerLectureResponseDTO> PostCustomerLecture(CustomerLectureRequestDTO customerLectureDetails)
         {
             var customer = await _customerService.CheckCustomer(customerLectureDetails.CustomerId);
             var lecture = await _lectureService.CheckLecture(customerLectureDetails.LectureId);

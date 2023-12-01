@@ -512,7 +512,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
             await _dbContext.Customers.AddRangeAsync(customer1, customer2);
             await _dbContext.SaveChangesAsync();
-            var customerLectureToAdd = new CustomerLecturePostDTO { CustomerId = 2, LectureId = 1 };
+            var customerLectureToAdd = new CustomerLectureRequestDTO { CustomerId = 2, LectureId = 1 };
             _repository = new CustomerLectureRepository(_dbContext);
 
             var addedCustomerLecture = await _repository.PostCustomerLecture(customerLectureToAdd);
@@ -520,8 +520,6 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(addedCustomerLecture);
             Assert.AreEqual(customerLectureToAdd.CustomerId, addedCustomerLecture.CustomerId);
             Assert.AreEqual(customerLectureToAdd.LectureId, addedCustomerLecture.LectureId);
-            Assert.AreEqual(new DateTime(2023, 10, 10), addedCustomerLecture.LectureDate);
-            Assert.AreEqual("TestName2", addedCustomerLecture.CustomerName);
             Assert.AreEqual(2, await _dbContext.Lectures.Where(l => l.Id == 1).Include(l => l.Customers).SelectMany(l => l.Customers).CountAsync());
 
             await _dbContext.DisposeAsync();

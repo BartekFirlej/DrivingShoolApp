@@ -233,8 +233,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CustomerLecture_ReturnsCreatedAtAction()
         {
-            var customerLectureToAdd = new CustomerLecturePostDTO();
-            var addedCustomerLecture = new CustomerLectureGetDTO();
+            var customerLectureToAdd = new CustomerLectureRequestDTO();
+            var addedCustomerLecture = new CustomerLectureResponseDTO();
             _customerLectureServiceMock.Setup(service => service.PostCustomerLecture(customerLectureToAdd)).ReturnsAsync(addedCustomerLecture);
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
 
@@ -246,7 +246,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsNotFoundLectureException()
         {
-            var customerLectureToAdd = new CustomerLecturePostDTO();
+            var customerLectureToAdd = new CustomerLectureRequestDTO();
             var idOfLecture = 1;
             _customerLectureServiceMock.Setup(service => service.PostCustomerLecture(customerLectureToAdd)).ThrowsAsync(new NotFoundLectureException(idOfLecture));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -259,7 +259,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsNotFoundCustomerException()
         {
-            var customerLectureToAdd = new CustomerLecturePostDTO();
+            var customerLectureToAdd = new CustomerLectureRequestDTO();
             var idOfCustomer = 1;
             _customerLectureServiceMock.Setup(service => service.PostCustomerLecture(customerLectureToAdd)).ThrowsAsync(new NotFoundCustomerException(idOfCustomer));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -272,7 +272,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsCustomerAlreadyAssignedToLectureException()
         {
-            var customerLectureToAdd = new CustomerLecturePostDTO();
+            var customerLectureToAdd = new CustomerLectureRequestDTO();
             var idOfCustomer = 1;
             var idOfLecture = 1;
             _customerLectureServiceMock.Setup(service => service.PostCustomerLecture(customerLectureToAdd)).ThrowsAsync(new CustomerAlreadyAssignedToLectureException(idOfCustomer, idOfLecture));
@@ -286,7 +286,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsNotFoundRegistrationException()
         {
-            var customerLectureToAdd = new CustomerLecturePostDTO();
+            var customerLectureToAdd = new CustomerLectureRequestDTO();
             var idOfCustomer = 1;
             var idOfCourse = 1;
             _customerLectureServiceMock.Setup(service => service.PostCustomerLecture(customerLectureToAdd)).ThrowsAsync(new NotFoundRegistrationException(idOfCustomer, idOfCourse));

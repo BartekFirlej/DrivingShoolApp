@@ -113,9 +113,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost("customer")]
-        public async Task<IActionResult> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
+        public async Task<IActionResult> PostCustomerLecture(CustomerLectureRequestDTO customerLectureDetails)
         {
-            CustomerLectureGetDTO addedCustomerLecture;
+            CustomerLectureResponseDTO addedCustomerLecture;
             try
             {
                 addedCustomerLecture = await _customerLectureService.PostCustomerLecture(customerLectureDetails);

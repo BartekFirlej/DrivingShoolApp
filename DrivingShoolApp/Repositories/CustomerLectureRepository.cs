@@ -12,7 +12,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<CustomerLectureGetDTO> GetCustomerLecture(int customerId, int lectureId);
         public Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId);
         public Task<CustomerLectureCheckDTO> DeleteCustomerLecture(Customer customer, Lecture lectureToDelete);
-        public Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails);
+        public Task<CustomerLectureResponseDTO> PostCustomerLecture(CustomerLectureRequestDTO customerLectureDetails);
     }
     public class CustomerLectureRepository : ICustomerLectureRepository
     {
@@ -78,13 +78,13 @@ namespace DrivingSchoolApp.Repositories
                     }).FirstOrDefaultAsync();
         }
 
-        public async Task<CustomerLectureGetDTO> PostCustomerLecture(CustomerLecturePostDTO customerLectureDetails)
+        public async Task<CustomerLectureResponseDTO> PostCustomerLecture(CustomerLectureRequestDTO customerLectureDetails)
         {
             Customer customer = await _dbContext.Customers.Where(c => c.Id == customerLectureDetails.CustomerId).FirstOrDefaultAsync();
             Lecture lecture = await _dbContext.Lectures.Where(l => l.Id == customerLectureDetails.LectureId).FirstOrDefaultAsync();
             customer.Lectures.Add(lecture);
             await _dbContext.SaveChangesAsync();
-            return await GetCustomerLecture(customer.Id, lecture.Id);
+            return new CustomerLectureResponseDTO { CustomerId = customer.Id, LectureId = lecture.Id };
         }
 
         public async Task<CustomerLectureCheckDTO> CheckCustomerLecture(int customerId, int lectureId)
