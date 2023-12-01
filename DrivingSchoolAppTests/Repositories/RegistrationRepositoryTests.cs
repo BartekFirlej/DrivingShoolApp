@@ -425,7 +425,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.Courses.AddAsync(course1);
             await _dbContext.Registrations.AddAsync(registration1);
             await _dbContext.SaveChangesAsync();
-            var registrationToAdd = new RegistrationPostDTO { CourseId = 1, CustomerId = 2 };
+            var registrationToAdd = new RegistrationRequestDTO { CourseId = 1, CustomerId = 2 };
             var registrationDate = new DateTime(2023, 1, 5);
             _repository = new RegistrationRepository(_dbContext);
 

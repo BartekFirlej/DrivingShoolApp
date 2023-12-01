@@ -12,7 +12,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<Registration> CheckRegistration(int customerId, int courseId);
         public Task<Registration> DeleteRegistration(Registration registrationToDelete);
-        public Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate);
+        public Task<Registration> PostRegistration(RegistrationRequestDTO registrationDetails, DateTime registrationDate);
     }
     public class RegistrationRepository : IRegistrationRepository
     {
@@ -80,7 +80,7 @@ namespace DrivingSchoolApp.Repositories
                        }).FirstOrDefaultAsync();
         }
 
-        public async Task<Registration> PostRegistration(RegistrationPostDTO registrationDetails, DateTime registrationDate)
+        public async Task<Registration> PostRegistration(RegistrationRequestDTO registrationDetails, DateTime registrationDate)
         {
             var registrationToAdd = new Registration
             {

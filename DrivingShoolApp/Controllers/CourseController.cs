@@ -155,9 +155,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost("customers")]
-        public async Task<IActionResult> RegisterCustomerForCourse(RegistrationPostDTO registrationDetails)
+        public async Task<IActionResult> RegisterCustomerForCourse(RegistrationRequestDTO registrationDetails)
         {
-            RegistrationGetDTO customerRegistration;
+            RegistrationResponseDTO customerRegistration;
             try
             {
                 customerRegistration = await _registrationService.PostRegistration(registrationDetails);

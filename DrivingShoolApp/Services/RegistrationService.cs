@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Services;
@@ -13,7 +14,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<RegistrationGetDTO> GetRegistration(int customerId, int courseId);
         public Task<Registration> CheckRegistration(int customerId, int courseId);
         public Task<Registration> DeleteRegistration(int customerId, int courseId);
-        public Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails);
+        public Task<RegistrationResponseDTO> PostRegistration(RegistrationRequestDTO registrationDetails);
     }
     public class RegistrationService : IRegistrationService
     {
@@ -21,13 +22,15 @@ namespace DrivingSchoolApp.Repositories
         private readonly ICustomerService _customerService;
         private readonly ICourseService _courseService;
         private readonly IDateTimeHelper _dateTimeHelperService;
+        private readonly IMapper _mapper;
 
-        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService customerService, ICourseService courseService, IDateTimeHelper dateTimeHelperService)
+        public RegistrationService(IRegistrationRepository registrationRepository, ICustomerService customerService, ICourseService courseService, IDateTimeHelper dateTimeHelperService, IMapper mapper)
         {
             _registrationRepository = registrationRepository;
             _customerService = customerService;
             _courseService = courseService;
             _dateTimeHelperService = dateTimeHelperService;
+            _mapper = mapper;
         }
 
         public async Task<ICollection<RegistrationGetDTO>> GetRegistrations()
@@ -65,7 +68,7 @@ namespace DrivingSchoolApp.Repositories
                 throw new NotFoundRegistrationException(customerId, courseId);
             return registration;
         }
-        public async Task<RegistrationGetDTO> PostRegistration(RegistrationPostDTO registrationDetails)
+        public async Task<RegistrationResponseDTO> PostRegistration(RegistrationRequestDTO registrationDetails)
         {
             var customer = await _customerService.CheckCustomer(registrationDetails.CustomerId);
             var course = await _courseService.GetCourse(registrationDetails.CourseId);
@@ -79,7 +82,7 @@ namespace DrivingSchoolApp.Repositories
             if (meetAgeRequirement == false)
                 throw new CustomerDoesntMeetRequirementsException(customer.Id);
             var createdRegistration = await _registrationRepository.PostRegistration(registrationDetails, _dateTimeHelperService.GetDateTimeNow());
-            return await _registrationRepository.GetRegistration(createdRegistration.CustomerId, createdRegistration.CourseId);
+            return _mapper.Map<RegistrationResponseDTO>(createdRegistration);
         }
 
         public async Task<Registration> CheckRegistration(int customerId, int courseId)
