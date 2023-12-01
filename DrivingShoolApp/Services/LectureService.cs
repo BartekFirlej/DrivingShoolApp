@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,11 +10,11 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<LectureGetDTO>> GetLectures(int page, int size);
         public Task<LectureGetDTO> GetLecture(int lectureId);
-        public Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails);
+        public Task<LectureResponseDTO> PostLecture(LectureRequestDTO lectureDetails);
         public Task<bool> CheckLectureAtCourseAboutSubject(int courseId, int subjectId);
         public Task<Lecture> CheckLecture(int lectureId);
         public Task<Lecture> DeleteLecture(int lectureId);
-        public Task<LectureGetDTO> UpdateLecture(int lectureId, LecturePostDTO lectureUpdate);
+        public Task<LectureGetDTO> UpdateLecture(int lectureId, LectureRequestDTO lectureUpdate);
     }
     public class LectureService : ILectureService
     {
@@ -21,13 +22,15 @@ namespace DrivingSchoolApp.Services
         private readonly ILecturerService _lecturerService;
         private readonly ICourseSubjectService _courseSubjectService;
         private readonly IClassroomService _classroomService;
+        private readonly IMapper _mapper;
 
-        public LectureService(ILectureRepository lectureRepository, ILecturerService lecturerService, ICourseSubjectService courseSubjectService, IClassroomService classroomService)
+        public LectureService(ILectureRepository lectureRepository, ILecturerService lecturerService, ICourseSubjectService courseSubjectService, IClassroomService classroomService, IMapper mapper)
         {
             _lectureRepository = lectureRepository;
             _courseSubjectService = courseSubjectService;
             _classroomService = classroomService;
             _lecturerService = lecturerService;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<LectureGetDTO>> GetLectures(int page, int size)
@@ -54,7 +57,7 @@ namespace DrivingSchoolApp.Services
             return true;
         }
 
-        public async Task<LectureGetDTO> PostLecture(LecturePostDTO lectureDetails)
+        public async Task<LectureResponseDTO> PostLecture(LectureRequestDTO lectureDetails)
         {
             if (lectureDetails.LectureDate == DateTime.MinValue)
                 throw new DateTimeException("lecture date");
@@ -64,7 +67,7 @@ namespace DrivingSchoolApp.Services
             if (!CheckLectureAtCourseAboutSubject(lectureDetails.CourseId, lectureDetails.SubjectId).Result)
                 throw new SubjectAlreadyConductedLectureException(lectureDetails.CourseId, lectureDetails.SubjectId);
             var addedLecture = await _lectureRepository.PostLecture(lectureDetails);
-            return await _lectureRepository.GetLecture(addedLecture.Id);
+            return _mapper.Map<LectureResponseDTO>(addedLecture);
         }
 
         public async Task<Lecture> CheckLecture(int lectureId)
@@ -81,7 +84,7 @@ namespace DrivingSchoolApp.Services
             return await _lectureRepository.DeleteLecture(lectureToDelete);
         }
 
-        public async Task<LectureGetDTO> UpdateLecture(int lectureId, LecturePostDTO lectureUpdate)
+        public async Task<LectureGetDTO> UpdateLecture(int lectureId, LectureRequestDTO lectureUpdate)
         {
             await CheckLecture(lectureId);
             if (lectureUpdate.LectureDate == DateTime.MinValue)

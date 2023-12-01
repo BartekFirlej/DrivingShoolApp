@@ -13,6 +13,7 @@ namespace DrivingSchoolApp
             CreateMap<CourseType, CourseTypeResponseDTO>();
             CreateMap<Customer, CustomerResponseDTO>();
             CreateMap<DrivingLicence, DrivingLicenceResponseDTO>();
+            CreateMap<Lecture, LectureResponseDTO>();
         }
     }
 }

@@ -126,8 +126,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ReturnsCreatedAtAction()
         {
-            var lectureToAdd = new LecturePostDTO();
-            var addedLecture = new LectureGetDTO();
+            var lectureToAdd = new LectureRequestDTO();
+            var addedLecture = new LectureResponseDTO();
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ReturnsAsync(addedLecture);
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
 
@@ -139,7 +139,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundCourseException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfCourse = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new NotFoundCourseException(idOfCourse));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -152,7 +152,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundSubjectException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfSubject = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync (new NotFoundSubjectException(idOfSubject));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -165,7 +165,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundClassroomException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfClassroom = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new NotFoundClassroomException(idOfClassroom));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -178,7 +178,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundCourseSubjectException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfCourse = 1;
             var idOfSubject = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new NotFoundCourseSubjectException(idOfCourse, idOfSubject));
@@ -192,7 +192,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundLecturerException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfLecturer = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new NotFoundLecturerException(idOfLecturer));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -205,7 +205,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsDateTimeException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var nameOfProperty = "lecture date";
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new DateTimeException(nameOfProperty));
             _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
@@ -218,7 +218,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Lecture_ThrowsSubjectLareadyConductedLectureException()
         {
-            var lectureToAdd = new LecturePostDTO();
+            var lectureToAdd = new LectureRequestDTO();
             var idOfCourse = 1;
             var idOfSubject = 1;
             _lectureServiceMock.Setup(service => service.PostLecture(lectureToAdd)).ThrowsAsync(new SubjectAlreadyConductedLectureException(idOfCourse, idOfSubject));

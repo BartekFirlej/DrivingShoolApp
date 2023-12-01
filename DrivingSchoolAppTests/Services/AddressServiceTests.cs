@@ -22,6 +22,7 @@ namespace DrivingSchoolAppTests.Services
         {
             _fixture = new Fixture();
             _addressRepositoryMock = new Mock<IAddressRepository>();
+            _mapperMock = new Mock<IMapper>();
         }
 
         [TestMethod]
