@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
-        public Task<DrivingLesson> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
+        public Task<DrivingLesson> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(DrivingLesson drivingLessonToDelete);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
-        public Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate);
+        public Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate);
     }
     public class DrivingLessonRepository : IDrivingLessonRepository
     {
@@ -63,7 +63,7 @@ namespace DrivingSchoolApp.Repositories
                }).FirstOrDefaultAsync();
         }
 
-        public async Task<DrivingLesson> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails)
+        public async Task<DrivingLesson> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails)
         {
             var drivingLessonToAdd = new DrivingLesson
             {
@@ -93,7 +93,7 @@ namespace DrivingSchoolApp.Repositories
                .FirstOrDefaultAsync();
         }
 
-        public async Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate)
+        public async Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate)
         {
             var drivingLesson = await _dbContext.DrivingLessons
                                         .Where(d => d.Id == drivingLessonId)

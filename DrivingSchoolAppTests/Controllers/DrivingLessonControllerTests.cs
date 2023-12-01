@@ -7,9 +7,6 @@ using DrivingSchoolApp.Models;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using System.Runtime.Serialization;
-using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace DrivingSchoolAppTests.Controllers
@@ -89,8 +86,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ReturnsCreatedAtAction()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
-            var addedDrivingLesson = new DrivingLessonGetDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
+            var addedDrivingLesson = new DrivingLessonResponseDTO();
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ReturnsAsync(addedDrivingLesson);
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
 
@@ -102,7 +99,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ThrowsNotFoundCustomerException()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
             var idOfCustomer = 1;
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(new NotFoundCustomerException(idOfCustomer));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
@@ -115,7 +112,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ThrowsNotFoundLecturerException()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
             var idOfLecturer = 1;
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(new NotFoundLecturerException(idOfLecturer));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
@@ -128,7 +125,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ThrowsNotFoundAddressException()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
             var idOfAddress = 1;
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(new NotFoundAddressException(idOfAddress));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
@@ -141,7 +138,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ThrowsNotFoundCourseException()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
             var idOfCourse = 1;
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(new NotFoundCourseException(idOfCourse));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
@@ -154,7 +151,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_DrivingLesson_ThrowsDateTimeException()
         {
-            var drivingLessonToAdd = new DrivingLessonPostDTO();
+            var drivingLessonToAdd = new DrivingLessonRequestDTO();
             var propertyName = "lesson date";
             _drivingLessonServiceMock.Setup(service => service.PostDrivingLesson(drivingLessonToAdd)).ThrowsAsync(new DateTimeException(propertyName));
             _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);

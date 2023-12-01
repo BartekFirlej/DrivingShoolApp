@@ -1,12 +1,11 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
 using DrivingSchoolApp.Services;
-using Microsoft.Data.SqlClient;
 using Moq;
-using System.Runtime.Serialization;
 
 namespace DrivingSchoolAppTests.Services
 {
@@ -18,6 +17,7 @@ namespace DrivingSchoolAppTests.Services
         private Mock<ILecturerService> _lecturerServiceMock;
         private Mock<IAddressService> _addressServiceMock;
         private Mock<ICourseService> _courseServiceMock;
+        private Mock<IMapper> _mapperMock;
         private Fixture _fixture;
         private DrivingLessonService _service;
 
@@ -29,6 +29,7 @@ namespace DrivingSchoolAppTests.Services
             _lecturerServiceMock = new Mock<ILecturerService>();
             _addressServiceMock = new Mock<IAddressService>();
             _courseServiceMock = new Mock<ICourseService>();
+            _mapperMock = new Mock<IMapper>();
         }
 
         [TestMethod]
@@ -37,7 +38,7 @@ namespace DrivingSchoolAppTests.Services
             var drivingLesson = new DrivingLessonGetDTO();
             var drivingLessonsList = new PagedList<DrivingLessonGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLessonGetDTO> { drivingLesson }, HasNextPage = false };
             _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons(1, 10)).ReturnsAsync(drivingLessonsList);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.GetDrivingLessons(1, 10);
 
@@ -49,7 +50,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var drivingLessonsList = new PagedList<DrivingLessonGetDTO>() { PageIndex = 1, PageSize = 10, PagedItems = new List<DrivingLessonGetDTO>(), HasNextPage = false };
             _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons(1, 10)).ReturnsAsync(drivingLessonsList);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.GetDrivingLessons(1, 10));
         }
@@ -58,7 +59,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Get_DrivingLessons_PropagatesPageIndexMustBeGreaterThanZeroException()
         {
             _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLessons(-1, 10)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("page index"));
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.GetDrivingLessons(-1, 10));
         }
@@ -69,7 +70,7 @@ namespace DrivingSchoolAppTests.Services
             var drivingLesson = new DrivingLessonGetDTO();
             var idOfDrivingLessonToFind = 1;
             _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLesson(idOfDrivingLessonToFind)).ReturnsAsync(drivingLesson);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.GetDrivingLesson(idOfDrivingLessonToFind);
 
@@ -81,7 +82,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfDrivingLessonToFind = 1;
             _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLesson(idOfDrivingLessonToFind)).ReturnsAsync((DrivingLessonGetDTO)null);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.GetDrivingLesson(idOfDrivingLessonToFind));
         }
@@ -95,15 +96,15 @@ namespace DrivingSchoolAppTests.Services
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
             var addedDrivingLesson = new DrivingLesson { Id = 1, AddressId = address.Id, CustomerId = customer.Id,  LecturerId = lecturer.Id, LessonDate = new DateTime(2023,1,1)};
-            var addedDrivingLessonDTO = new DrivingLessonGetDTO { Id = 1, AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id, LessonDate = new DateTime(2023, 1, 1) , CustomerName = "TestCustomer", LecturerName= "TestLecturer"};
-            var drivingLessonToAdd = new DrivingLessonPostDTO { LessonDate = new DateTime(2023, 1, 1), AddressId=address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            var addedDrivingLessonDTO = new DrivingLessonResponseDTO { Id = 1, AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id, LessonDate = new DateTime(2023, 1, 1)};
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 1, 1), AddressId=address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lecturer.Id)).ReturnsAsync(lecturer);
             _addressServiceMock.Setup(service => service.CheckAddress(address.Id)).ReturnsAsync(address);
             _courseServiceMock.Setup(service => service.CheckCourse(course.Id)).ReturnsAsync(course);
             _drivingLessonRepositoryMock.Setup(repo => repo.PostDrivingLesson(drivingLessonToAdd)).ReturnsAsync(addedDrivingLesson);
-            _drivingLessonRepositoryMock.Setup(repo => repo.GetDrivingLesson(addedDrivingLesson.Id)).ReturnsAsync(addedDrivingLessonDTO);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _mapperMock.Setup(m => m.Map<DrivingLessonResponseDTO>(It.IsAny<DrivingLesson>())).Returns(addedDrivingLessonDTO);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.PostDrivingLesson(drivingLessonToAdd);
 
@@ -118,8 +119,8 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address { Id = 1, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
-            var drivingLessonToAdd = new DrivingLessonPostDTO { AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.PostDrivingLesson(drivingLessonToAdd));
         }
@@ -132,9 +133,9 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address { Id = 1, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
-            var drivingLessonToAdd = new DrivingLessonPostDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ThrowsAsync(new NotFoundCustomerException(customer.Id));
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.PostDrivingLesson(drivingLessonToAdd));
         }
@@ -147,10 +148,10 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address { Id = 1, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
-            var drivingLessonToAdd = new DrivingLessonPostDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lecturer.Id)).ThrowsAsync(new NotFoundLecturerException(lecturer.Id));
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.PostDrivingLesson(drivingLessonToAdd));
         }
@@ -163,11 +164,11 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address { Id = 1, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
-            var drivingLessonToAdd = new DrivingLessonPostDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lecturer.Id)).ReturnsAsync(lecturer);
             _addressServiceMock.Setup(service => service.CheckAddress(address.Id)).ThrowsAsync(new NotFoundAddressException(address.Id));
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.PostDrivingLesson(drivingLessonToAdd));
         }
@@ -180,12 +181,12 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address { Id = 1, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
             var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
             var course = new Course { Id = 1, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
-            var drivingLessonToAdd = new DrivingLessonPostDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 1, 1), AddressId = address.Id, CustomerId = customer.Id, LecturerId = lecturer.Id, CourseId = course.Id };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lecturer.Id)).ReturnsAsync(lecturer);
             _addressServiceMock.Setup(service => service.CheckAddress(address.Id)).ReturnsAsync(address);
             _courseServiceMock.Setup(service => service.CheckCourse(course.Id)).ThrowsAsync(new NotFoundCourseException(course.Id));
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.PostDrivingLesson(drivingLessonToAdd));
         }
@@ -197,7 +198,7 @@ namespace DrivingSchoolAppTests.Services
             var idOfDrivingLesson = 1;
             _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
             _drivingLessonRepositoryMock.Setup(repo => repo.DeleteDrivingLesson(drivingLesson)).ReturnsAsync(drivingLesson);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.DeleteDrivingLesson(idOfDrivingLesson);
 
@@ -209,7 +210,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfDrivingLesson = 10;
             _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(10)).ReturnsAsync((DrivingLesson)null);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.DeleteDrivingLesson(idOfDrivingLesson));
         }
@@ -220,7 +221,7 @@ namespace DrivingSchoolAppTests.Services
             var drivingLesson = new DrivingLesson();
             var idOfDrivingLesson = 10;
             _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(10)).ReturnsAsync(drivingLesson);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckDrivingLesson(idOfDrivingLesson);
 
@@ -232,7 +233,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var idOfDrivingLesson = 10;
             _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(10)).ReturnsAsync((DrivingLesson)null);
-            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.CheckDrivingLesson(idOfDrivingLesson));
         }

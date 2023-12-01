@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -9,10 +10,10 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size);
         public Task<DrivingLessonGetDTO> GetDrivingLesson(int drivingLessonId);
-        public Task<DrivingLessonGetDTO> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails);
+        public Task<DrivingLessonResponseDTO> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
-        public Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate);
+        public Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate);
     }
     public class DrivingLessonService : IDrivingLessonService
     {
@@ -21,15 +22,17 @@ namespace DrivingSchoolApp.Services
         private readonly ILecturerService _lecturerService;
         private readonly IAddressService _addressService;
         private readonly ICourseService _courseService;
+        private readonly IMapper _mapper;
 
         public DrivingLessonService(IDrivingLessonRepository drivingLessonRepository, ICustomerService customerService, 
-                                    ILecturerService lecturerService, IAddressService addressService, ICourseService courseService)
+                                    ILecturerService lecturerService, IAddressService addressService, ICourseService courseService, IMapper mapper)
         {
             _drivingLessonRepository = drivingLessonRepository;
             _customerService = customerService;
             _lecturerService = lecturerService;
             _addressService = addressService;
             _courseService = courseService;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<DrivingLessonGetDTO>> GetDrivingLessons(int page, int size)
@@ -48,7 +51,7 @@ namespace DrivingSchoolApp.Services
             return drivingLesson;
         }
 
-        public async Task<DrivingLessonGetDTO> PostDrivingLesson(DrivingLessonPostDTO drivingLessonDetails)
+        public async Task<DrivingLessonResponseDTO> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails)
         {
             if (drivingLessonDetails.LessonDate == DateTime.MinValue)
                 throw new DateTimeException("lesson date");
@@ -57,7 +60,7 @@ namespace DrivingSchoolApp.Services
             await _addressService.CheckAddress(drivingLessonDetails.AddressId);
             await _courseService.CheckCourse(drivingLessonDetails.CourseId);
             var addedDrivingLesson = await _drivingLessonRepository.PostDrivingLesson(drivingLessonDetails);
-            return await _drivingLessonRepository.GetDrivingLesson(addedDrivingLesson.Id);
+            return _mapper.Map<DrivingLessonResponseDTO>(addedDrivingLesson);
         }
 
         public async Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId)
@@ -74,7 +77,7 @@ namespace DrivingSchoolApp.Services
             return drivingLesson;
         }
 
-        public async Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonPostDTO drivingLessonUpdate)
+        public async Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate)
         {
             await CheckDrivingLesson(drivingLessonId);
             if (drivingLessonUpdate.LessonDate == DateTime.MinValue)

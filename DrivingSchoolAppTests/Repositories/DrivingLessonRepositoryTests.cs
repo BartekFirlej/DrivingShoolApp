@@ -206,7 +206,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.DrivingLessons.AddRangeAsync(drivingLesson1, drivingLesson2);
             await _dbContext.SaveChangesAsync();
-            var drivingLessonToAdd = new DrivingLessonPostDTO { AddressId = 2, CustomerId = 1, LecturerId = 2, LessonDate = new DateTime(2023, 10, 10), CourseId = 2 };
+            var drivingLessonToAdd = new DrivingLessonRequestDTO { AddressId = 2, CustomerId = 1, LecturerId = 2, LessonDate = new DateTime(2023, 10, 10), CourseId = 2 };
             _repository = new DrivingLessonRepository(_dbContext);
 
             var addedDrivingLesson = await _repository.PostDrivingLesson(drivingLessonToAdd);
