@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class AddressPostDTO
+    public class AddressRequestDTO
     {
         public string City { get; set; }
         public string Street { get; set; }

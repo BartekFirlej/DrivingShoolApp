@@ -54,9 +54,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAddress(AddressPostDTO addressDetails)
+        public async Task<IActionResult> PostAddress(AddressRequestDTO addressDetails)
         {
-            AddressGetDTO addedAddress;
+            AddressResponseDTO addedAddress;
             try
             {
                 addedAddress = await _addressService.PostAddress(addressDetails);
@@ -100,7 +100,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{addressid}")]
-        public async Task<IActionResult> UpdateAddress(int addressid, AddressPostDTO addressUpdate)
+        public async Task<IActionResult> UpdateAddress(int addressid, AddressRequestDTO addressUpdate)
         {
             if (!ModelState.IsValid)
             {

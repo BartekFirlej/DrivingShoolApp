@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -10,18 +11,20 @@ namespace DrivingSchoolApp.Services
     {
         public Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size);
         public Task<AddressGetDTO> GetAddress(int addressId);
-        public Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails);
+        public Task<AddressResponseDTO> PostAddress(AddressRequestDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
         public Task<Address> DeleteAddress(int addressId);
-        public Task<AddressGetDTO> UpdateAddress(int addressId, AddressPostDTO addressUpdate);
+        public Task<AddressGetDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate);
     }
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IMapper _mapper;
 
-        public AddressService(IAddressRepository addressRepository)
+        public AddressService(IAddressRepository addressRepository, IMapper mapper)
         {
             _addressRepository = addressRepository;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size)
@@ -40,7 +43,7 @@ namespace DrivingSchoolApp.Services
             return address;
         }
 
-        public async Task<AddressGetDTO> PostAddress(AddressPostDTO addressDetails)
+        public async Task<AddressResponseDTO> PostAddress(AddressRequestDTO addressDetails)
         {
             string postalCodePattern = @"^\d{2}-\d{3}$";
             if (!Regex.IsMatch(addressDetails.PostalCode, postalCodePattern))
@@ -48,7 +51,7 @@ namespace DrivingSchoolApp.Services
             if (addressDetails.Number <= 0)
                 throw new ValueMustBeGreaterThanZeroException("number");
             var addedAddress = await _addressRepository.PostAddress(addressDetails);
-            return await _addressRepository.GetAddress(addedAddress.Id);
+            return _mapper.Map<AddressResponseDTO>(addedAddress);
         }
 
         public async Task<Address> CheckAddress(int addressId)
@@ -65,7 +68,7 @@ namespace DrivingSchoolApp.Services
             return await _addressRepository.DeleteAddress(addressToDelete);
         }
 
-        public async Task<AddressGetDTO> UpdateAddress(int addressId, AddressPostDTO addressUpdate)
+        public async Task<AddressGetDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
         {
             await CheckAddress(addressId);
             await _addressRepository.UpdateAddress(addressId, addressUpdate);

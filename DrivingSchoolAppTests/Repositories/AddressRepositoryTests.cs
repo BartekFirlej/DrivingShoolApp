@@ -139,7 +139,7 @@ namespace DrivingSchoolAppTests.Repositories
             var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
             await _dbContext.Addresses.AddRangeAsync(address1, address2);
             await _dbContext.SaveChangesAsync();
-            var addressToAdd = new AddressPostDTO { City = "TestCity3", Number = 30, PostalCode = "66-666", Street = "TestStreet3" };
+            var addressToAdd = new AddressRequestDTO { City = "TestCity3", Number = 30, PostalCode = "66-666", Street = "TestStreet3" };
             _repository = new AddressRepository(_dbContext);
 
             var addedAddress = await _repository.PostAddress(addressToAdd);

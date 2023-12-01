@@ -8,10 +8,10 @@ namespace DrivingSchoolApp.Repositories
     {
         public Task<PagedList<AddressGetDTO>> GetAddresses(int page, int size);
         public Task<AddressGetDTO> GetAddress(int addressId);
-        public Task<Address> PostAddress(AddressPostDTO addressDetails);
+        public Task<Address> PostAddress(AddressRequestDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
         public Task<Address> DeleteAddress(Address addressToDelete);
-        public Task<Address> UpdateAddress(int addressId, AddressPostDTO addressUpdate);
+        public Task<Address> UpdateAddress(int addressId, AddressRequestDTO addressUpdate);
     }
     public class AddressRepository : IAddressRepository
     {
@@ -54,7 +54,7 @@ namespace DrivingSchoolApp.Repositories
                 }).FirstOrDefaultAsync();
         }
 
-        public async Task<Address> PostAddress(AddressPostDTO addressDetails)
+        public async Task<Address> PostAddress(AddressRequestDTO addressDetails)
         {
             var addressToAdd = new Address
             {
@@ -83,7 +83,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedAddress.Entity;
         }
 
-        public async Task<Address> UpdateAddress(int addressId, AddressPostDTO addressUpdate)
+        public async Task<Address> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
         {
             var address = await _dbContext.Addresses
                                   .Where(a => a.Id == addressId)

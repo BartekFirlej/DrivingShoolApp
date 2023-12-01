@@ -87,8 +87,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Address_ReturnCreatedAtAction()
         {
-            var addressToAdd = new AddressPostDTO();
-            var addedAddress = new AddressGetDTO();
+            var addressToAdd = new AddressRequestDTO();
+            var addedAddress = new AddressResponseDTO();
             _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ReturnsAsync(addedAddress);
             _controller = new AddressController(_addressServiceMock.Object);
 
@@ -100,7 +100,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Address_ThrowsWrongPostalCodeException()
         {
-            var addressToAdd = new AddressPostDTO();
+            var addressToAdd = new AddressRequestDTO();
             var addedAddress = new AddressGetDTO();
             var postalCode = "22222";
             _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ThrowsAsync(new WrongPostalCodeFormatException(postalCode));
@@ -114,7 +114,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_Address_ThrowsValueMustBeGreaterThanZeroException()
         {
-            var addressToAdd = new AddressPostDTO();
+            var addressToAdd = new AddressRequestDTO();
             var addedAddress = new AddressGetDTO();
             var propertyName = "number";
             _addressServiceMock.Setup(service => service.PostAddress(addressToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(propertyName));

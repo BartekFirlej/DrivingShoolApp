@@ -52,8 +52,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("size");
             var address = await _addressService.CheckAddress(classroomDetails.AddressID);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
-            var addedClassroomDTO = _mapper.Map<ClassroomResponseDTO>(addedClassroom);
-            return addedClassroomDTO;
+            return _mapper.Map<ClassroomResponseDTO>(addedClassroom);
         }
 
         public async Task<Classroom> CheckClassroom(int classroomId)
