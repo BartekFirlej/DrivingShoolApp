@@ -6,18 +6,21 @@ namespace DrivingSchoolApp
 {
     public class DrivingSchoolMapper : Profile
     {
-        public DrivingSchoolMapper() { 
-            CreateMap<Classroom, ClassroomResponseDTO>();
+        public DrivingSchoolMapper() {
             CreateMap<Address, AddressResponseDTO>();
+            CreateMap<Classroom, ClassroomResponseDTO>();
             CreateMap<Course, CourseResponseDTO>();
+            CreateMap<CourseSubject, CourseSubjectResponseDTO>();
             CreateMap<CourseType, CourseTypeResponseDTO>();
             CreateMap<Customer, CustomerResponseDTO>();
+            CreateMap<DrivingLesson, DrivingLessonResponseDTO>();
             CreateMap<DrivingLicence, DrivingLicenceResponseDTO>();
             CreateMap<Lecture, LectureResponseDTO>();
             CreateMap<Lecturer, LecturerResponseDTO>();
-            CreateMap<Subject, SubjectResponseDTO>();
+            CreateMap<LicenceCategory, LicenceCategoryResponseDTO>();
             CreateMap<Registration, RegistrationResponseDTO>();
-            CreateMap<CourseSubject, CourseSubjectResponseDTO>();
+            CreateMap<RequiredLicenceCategory, RequiredLicenceCategoryResponseDTO>();
+            CreateMap<Subject, SubjectResponseDTO>();
         }
     }
 }

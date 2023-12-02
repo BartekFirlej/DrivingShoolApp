@@ -139,8 +139,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_RequiredLicenceCategory_ReturnsCreatedAtAction()
         {
-            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
-            var addedRequiredLicenceCategory = new RequiredLicenceCategoryGetDTO();
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryRequestDTO();
+            var addedRequiredLicenceCategory = new RequiredLicenceCategoryResponseDTO();
             _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ReturnsAsync(addedRequiredLicenceCategory);
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -152,7 +152,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_RequiredLicenceCategory_ThrowsNotFoundLicenceCategoryException()
         {
-            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryRequestDTO();
             _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new NotFoundLicenceCategoryException());
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -164,7 +164,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_RequiredLicenceCategory_ThrowsValueMustBeGreaterThanZeroException()
         {
-            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryRequestDTO();
             _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("years"));
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 
@@ -176,7 +176,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_RequiredLicenceCategory_ThrowsRequirementAlreadyExistsException()
         {
-            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryPostDTO();
+            var requiredLicenceCategoryToAdd = new RequiredLicenceCategoryRequestDTO();
             _requiredLicenceCategoryServiceMock.Setup(service => service.PostRequirement(requiredLicenceCategoryToAdd)).ThrowsAsync(new RequirementAlreadyExistsException(1, 2));
             _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
 

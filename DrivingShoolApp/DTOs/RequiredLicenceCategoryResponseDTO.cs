@@ -1,6 +1,6 @@
 ﻿namespace DrivingSchoolApp.DTOs
 {
-    public class RequiredLicenceCategoryPostDTO
+    public class RequiredLicenceCategoryResponseDTO
     {
         public int LicenceCategoryId { get; set; }
         public int RequiredLicenceCategoryId { get; set; }

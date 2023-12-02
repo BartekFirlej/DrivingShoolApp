@@ -82,9 +82,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost("requirements")]
-        public async Task<IActionResult> PostRequiredLicenceCategory(RequiredLicenceCategoryPostDTO requiredLicenceCategoryDetails)
+        public async Task<IActionResult> PostRequiredLicenceCategory(RequiredLicenceCategoryRequestDTO requiredLicenceCategoryDetails)
         {
-            RequiredLicenceCategoryGetDTO addedRequiredLicenceCategory;
+            RequiredLicenceCategoryResponseDTO addedRequiredLicenceCategory;
             try
             {
                 addedRequiredLicenceCategory = await _requirededLicenceCategoryService.PostRequirement(requiredLicenceCategoryDetails);
@@ -178,7 +178,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{licencecategoryid}/requirements/{requiredlicencecategoryid}")]
-        public async Task<IActionResult> UpdateRequirement(int licencecategoryid, int requiredlicencecategoryid, RequiredLicenceCategoryPostDTO requirementUpdate)
+        public async Task<IActionResult> UpdateRequirement(int licencecategoryid, int requiredlicencecategoryid, RequiredLicenceCategoryRequestDTO requirementUpdate)
         {
             if (!ModelState.IsValid)
             {

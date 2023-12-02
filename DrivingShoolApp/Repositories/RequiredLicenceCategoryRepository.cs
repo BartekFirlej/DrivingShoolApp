@@ -11,8 +11,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> DeleteRequirement(RequiredLicenceCategory requirementToDelete);
-        public Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails); 
-        public Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryPostDTO requirementUpdate);
+        public Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryRequestDTO requirementDetails); 
+        public Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryRequestDTO requirementUpdate);
     }
     public class RequiredLicenceCategoryRepository : IRequiredLicenceCategoryRepository
     {
@@ -72,7 +72,7 @@ namespace DrivingSchoolApp.Repositories
                    }).ToListAsync();
         }
 
-        public async Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryPostDTO requirementDetails)
+        public async Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryRequestDTO requirementDetails)
         {
             var requirementToAdd = new RequiredLicenceCategory
             {
@@ -103,7 +103,7 @@ namespace DrivingSchoolApp.Repositories
             return deletedRequirement.Entity;
         }
 
-        public async Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryPostDTO requirementUpdate)
+        public async Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryRequestDTO requirementUpdate)
         {
             var requirement = await(from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
                                     join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id

@@ -259,7 +259,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2, licenceCategory3);
             await _dbContext.RequiredLicenceCategories.AddRangeAsync(requirement1, requirement2);
             await _dbContext.SaveChangesAsync();
-            var requirementToAdd = new RequiredLicenceCategoryPostDTO { LicenceCategoryId = 2, RequiredLicenceCategoryId = 1, RequiredYears = 5 };
+            var requirementToAdd = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = 2, RequiredLicenceCategoryId = 1, RequiredYears = 5 };
             _repository = new RequiredLicenceCategoryRepository(_dbContext);
 
             var addedRequirement = await _repository.PostRequirement(requirementToAdd);
