@@ -173,5 +173,55 @@ namespace DrivingSchoolAppTests.Services
 
             await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.CheckAddress(idOfAddress));
         }
+
+        [TestMethod]
+        public async Task Check_AddressTracking_ReturnsAddress()
+        {
+            var address = new Address { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync(address);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckAddressTracking(idOfAddress);
+
+            Assert.AreEqual(address, result);
+        }
+
+        [TestMethod]
+        public async Task Check_AddressTracking_ThrowsNotFoundAddressException()
+        {
+            var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync((Address)null);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.CheckAddress(idOfAddress));
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ReturnsAddress()
+        {
+            var address = new Address { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var updateAddress = new AddressRequestDTO { City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99-999" };
+            var updatedAddress = new AddressResponseDTO { Id = 1, City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99-999" };
+            var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync(address);
+            _mapperMock.Setup(m => m.Map<AddressResponseDTO>(It.IsAny<Address>())).Returns(updatedAddress);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateAddress(1, updateAddress);
+
+            Assert.AreEqual(result, updatedAddress);
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsNotFoundAddressException()
+        {
+            var updateAddress = new AddressRequestDTO { City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99-999" };
+             var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddress(idOfAddress)).ReturnsAsync((Address)null);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.UpdateAddress(1, updateAddress));
+        }
     }
 }

@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<AddressGetDTO> GetAddress(int addressId);
         public Task<Address> PostAddress(AddressRequestDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
+        public Task<Address> CheckAddressTracking(int addressId);
         public Task<Address> DeleteAddress(Address addressToDelete);
-        public Task<Address> UpdateAddress(int addressId, AddressRequestDTO addressUpdate);
+        public Task<Address> UpdateAddress(Address addressToUpdate, AddressRequestDTO addressUpdate);
     }
     public class AddressRepository : IAddressRepository
     {
@@ -76,6 +77,13 @@ namespace DrivingSchoolApp.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Address> CheckAddressTracking(int addressId)
+        {
+            return await _dbContext.Addresses
+                .Where(a => a.Id == addressId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Address> DeleteAddress(Address addressToDelete)
         {
             var deletedAddress = _dbContext.Addresses.Remove(addressToDelete);
@@ -83,17 +91,14 @@ namespace DrivingSchoolApp.Repositories
             return deletedAddress.Entity;
         }
 
-        public async Task<Address> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
+        public async Task<Address> UpdateAddress(Address addressToUpdate, AddressRequestDTO addressUpdate)
         {
-            var address = await _dbContext.Addresses
-                                  .Where(a => a.Id == addressId)
-                                  .FirstOrDefaultAsync();
-            address.City = addressUpdate.City;
-            address.Street = addressUpdate.Street;
-            address.Number = addressUpdate.Number;
-            address.PostalCode = addressUpdate.PostalCode;
+            addressToUpdate.City = addressUpdate.City;
+            addressToUpdate.Street = addressUpdate.Street;
+            addressToUpdate.Number = addressUpdate.Number;
+            addressToUpdate.PostalCode = addressUpdate.PostalCode;
             await _dbContext.SaveChangesAsync();
-            return address;
+            return addressToUpdate;
         }
     } 
 }

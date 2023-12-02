@@ -185,5 +185,32 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Address_ReturnNoContent()
+        {
+            var updateAddress = new AddressRequestDTO();
+            var updatedAddress = new AddressResponseDTO();
+            var idOfAddressToUpdate = 1;
+            _addressServiceMock.Setup(service => service.UpdateAddress(idOfAddressToUpdate, updateAddress)).ReturnsAsync(updatedAddress);
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateAddress(idOfAddressToUpdate, updateAddress);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsNotFoundAddressException()
+        {
+            var updateAddress = new AddressRequestDTO();
+            var idOfAddressToUpdate = 1;
+            _addressServiceMock.Setup(service => service.UpdateAddress(idOfAddressToUpdate, updateAddress)).ThrowsAsync(new NotFoundAddressException(idOfAddressToUpdate));
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateAddress(idOfAddressToUpdate, updateAddress);
+
+            result.StatusCode.Should().Be(404);
+        }
     }
 }

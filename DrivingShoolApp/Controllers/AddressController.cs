@@ -106,7 +106,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            AddressGetDTO updatedAddress;
+            AddressResponseDTO updatedAddress;
             try
             {
                 updatedAddress = await _addressService.UpdateAddress(addressid, addressUpdate);

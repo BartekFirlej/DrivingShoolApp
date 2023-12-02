@@ -233,5 +233,78 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_AddressTracking_ReturnsAddress()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfAddressToCheck = 2;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.CheckAddressTracking(idOfAddressToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCity2", result.City);
+            Assert.AreEqual(20, result.Number);
+            Assert.AreEqual("44-444", result.PostalCode);
+            Assert.AreEqual("TestStreet2", result.Street);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_AddressTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfAddressToCheck = 3;
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.CheckAddressTracking(idOfAddressToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ReturnsAddress()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var address1 = new Address { Id = 1, City = "TestCity1", Number = 10, PostalCode = "22-222", Street = "TestStreet1" };
+            var address2 = new Address { Id = 2, City = "TestCity2", Number = 20, PostalCode = "44-444", Street = "TestStreet2" };
+            var updateAddress1 = new AddressRequestDTO { City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99-999" };
+            await _dbContext.Addresses.AddRangeAsync(address1, address2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new AddressRepository(_dbContext);
+
+            var result = await _repository.UpdateAddress(address1, updateAddress1);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedCity1", result.City);
+            Assert.AreEqual(100, result.Number);
+            Assert.AreEqual("99-999", result.PostalCode);
+            Assert.AreEqual("UpdatedStreet1", result.Street);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

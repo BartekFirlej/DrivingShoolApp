@@ -13,8 +13,9 @@ namespace DrivingSchoolApp.Services
         public Task<AddressGetDTO> GetAddress(int addressId);
         public Task<AddressResponseDTO> PostAddress(AddressRequestDTO addressDetails);
         public Task<Address> CheckAddress(int addressId);
+        public Task<Address> CheckAddressTracking(int addressId);
         public Task<Address> DeleteAddress(int addressId);
-        public Task<AddressGetDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate);
+        public Task<AddressResponseDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate);
     }
     public class AddressService : IAddressService
     {
@@ -62,17 +63,25 @@ namespace DrivingSchoolApp.Services
             return address;
         }
 
+        public async Task<Address> CheckAddressTracking(int addressId)
+        {
+            var address = await _addressRepository.CheckAddressTracking(addressId);
+            if (address == null)
+                throw new NotFoundAddressException(addressId);
+            return address;
+        }
+
         public async Task<Address> DeleteAddress(int addressId)
         {
             var addressToDelete = await CheckAddress(addressId);
             return await _addressRepository.DeleteAddress(addressToDelete);
         }
 
-        public async Task<AddressGetDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
+        public async Task<AddressResponseDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
         {
-            await CheckAddress(addressId);
-            await _addressRepository.UpdateAddress(addressId, addressUpdate);
-            return await _addressRepository.GetAddress(addressId);
+            var addressToUpdate = await CheckAddressTracking(addressId);
+            await _addressRepository.UpdateAddress(addressToUpdate, addressUpdate);
+            return _mapper.Map<AddressResponseDTO>(addressToUpdate);
         }
     }
 }
