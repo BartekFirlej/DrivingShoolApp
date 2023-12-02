@@ -124,9 +124,9 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPost("subjects")]
-        public async Task<IActionResult> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
+        public async Task<IActionResult> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails)
         {
-            CourseSubjectGetDTO addedCourseSubject;
+            CourseSubjectResponseDTO addedCourseSubject;
             try
             {
                 addedCourseSubject = await _courseSubjectService.PostCourseSubject(courseSubjectDetails);

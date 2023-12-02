@@ -1,4 +1,5 @@
-﻿using DrivingSchoolApp.DTOs;
+﻿using AutoMapper;
+using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
 using DrivingSchoolApp.Models;
 using DrivingSchoolApp.Repositories;
@@ -11,7 +12,7 @@ namespace DrivingSchoolApp.Services
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
-        public Task<CourseSubjectGetDTO> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
+        public Task<CourseSubjectResponseDTO> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails);
         public Task<CourseSubject> DeleteCourseSubject(int courseId, int subjectId);
     }
     public class CourseSubjectService : ICourseSubjectService
@@ -19,12 +20,14 @@ namespace DrivingSchoolApp.Services
         private readonly ICourseSubjectRepository _courseSubjectRepository;
         private readonly ICourseService _courseService;
         private readonly ISubjectService _subjectService;
+        private readonly IMapper _mapper;
 
-        public CourseSubjectService(ICourseSubjectRepository coursSubjectRepository, ICourseService courseService, ISubjectService subjectService)
+        public CourseSubjectService(ICourseSubjectRepository coursSubjectRepository, ICourseService courseService, ISubjectService subjectService, IMapper mapper)
         {
             _courseSubjectRepository = coursSubjectRepository;
             _courseService = courseService;
             _subjectService = subjectService;
+            _mapper = mapper;
         }
 
         public async Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects()
@@ -54,7 +57,7 @@ namespace DrivingSchoolApp.Services
             return courseSubjects;
         }
 
-        public async Task<CourseSubjectGetDTO> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
+        public async Task<CourseSubjectResponseDTO> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails)
         {
             if (courseSubjectDetails.SequenceNumber <= 0)
                 throw new ValueMustBeGreaterThanZeroException("sequnce number");
@@ -65,8 +68,8 @@ namespace DrivingSchoolApp.Services
                 throw new SubjectAlreadyAssignedToCourseException(courseSubjectDetails.CourseId, courseSubjectDetails.SubjectId);
             if (await _courseSubjectRepository.TakenSeqNumber(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber))
                 throw new TakenSequenceNumberException(courseSubjectDetails.CourseId, courseSubjectDetails.SequenceNumber);
-            var addedSubjectService = await _courseSubjectRepository.PostCourseSubject(courseSubjectDetails);
-            return await _courseSubjectRepository.GetCourseSubject(addedSubjectService.CourseId, courseSubjectDetails.SubjectId);
+            var addedCourseSubject = await _courseSubjectRepository.PostCourseSubject(courseSubjectDetails);
+            return _mapper.Map<CourseSubjectResponseDTO>(addedCourseSubject);
         }
         public async Task<CourseSubject> DeleteCourseSubject(int courseId, int subjectId)
         {

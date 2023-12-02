@@ -231,8 +231,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_ReturnCreatedAtAction()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
-            var addedCourseSubject = new CourseSubjectGetDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
+            var addedCourseSubject = new CourseSubjectResponseDTO();
             _courseSubjectServiceMock.Setup(service => service.PostCourseSubject(courseSubjectToAdd)).ReturnsAsync(addedCourseSubject);
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
 
@@ -244,7 +244,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_NotFoundCourseException()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
             var addedCourseSubject = new CourseSubjectGetDTO();
             var idOfCourse = 1;
             _courseSubjectServiceMock.Setup(service => service.PostCourseSubject(courseSubjectToAdd)).ThrowsAsync(new NotFoundCourseException(idOfCourse));
@@ -258,8 +258,8 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_NotFoundSubjectException()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
-            var addedCourseSubject = new CourseSubjectGetDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
+            var addedCourseSubject = new CourseSubjectResponseDTO();
             var idOfSubject = 1;
             _courseSubjectServiceMock.Setup(service => service.PostCourseSubject(courseSubjectToAdd)).ThrowsAsync(new NotFoundSubjectException(idOfSubject));
             _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
@@ -272,7 +272,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_SubjectAlreadyAssigenedToCourseException()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
             var addedCourseSubject = new CourseSubjectGetDTO();
             var idOfSubject = 1;
             var idOfCourse = 1;
@@ -287,7 +287,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_TakenSequenceNumber()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
             var addedCourseSubject = new CourseSubjectGetDTO();
             var seqNumber = 1;
             var idOfCourse = 1;
@@ -302,7 +302,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Post_CourseSubject_SeqNumberNotGreaterThanZeroException()
         {
-            var courseSubjectToAdd = new CourseSubjectPostDTO();
+            var courseSubjectToAdd = new CourseSubjectRequestDTO();
             var addedCourseSubject = new CourseSubjectGetDTO();
             var propertyName = "sequence number";
             _courseSubjectServiceMock.Setup(service => service.PostCourseSubject(courseSubjectToAdd)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(propertyName));

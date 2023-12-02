@@ -17,6 +17,7 @@ namespace DrivingSchoolApp
             CreateMap<Lecturer, LecturerResponseDTO>();
             CreateMap<Subject, SubjectResponseDTO>();
             CreateMap<Registration, RegistrationResponseDTO>();
+            CreateMap<CourseSubject, CourseSubjectResponseDTO>();
         }
     }
 }

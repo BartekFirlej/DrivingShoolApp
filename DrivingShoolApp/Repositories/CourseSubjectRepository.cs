@@ -11,7 +11,7 @@ namespace DrivingSchoolApp.Repositories
         public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
-        public Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails);
+        public Task<CourseSubject> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails);
         public Task<CourseSubject> DeleteCourseSubject(CourseSubject courseSubjectToDelete);
     }
     public class CourseSubjectRepository : ICourseSubjectRepository
@@ -115,7 +115,7 @@ namespace DrivingSchoolApp.Repositories
                     .FirstOrDefaultAsync();
         }
 
-        public async Task<CourseSubject> PostCourseSubject(CourseSubjectPostDTO courseSubjectDetails)
+        public async Task<CourseSubject> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails)
         {
             var courseSubjectToAdd = new CourseSubject
             {
