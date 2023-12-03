@@ -162,5 +162,67 @@ namespace DrivingSchoolAppTests.Services
 
             await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckSubject(idOfSubject));
         }
+
+        [TestMethod]
+        public async Task Check_SubjectTracking_ReturnsSubject()
+        {
+            var deletedSubject = new Subject { Id = 1, Code = "B01", Name = "Test Subject", Duration = 3 };
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubjectTracking(idOfSubject)).ReturnsAsync(deletedSubject);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckSubjectTracking(idOfSubject);
+
+            Assert.AreEqual(deletedSubject, result);
+        }
+
+        [TestMethod]
+        public async Task Check_SubjectTracking_ThrowsNotFoundSubjectException()
+        {
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubjectTracking(idOfSubject)).ReturnsAsync((Subject)null);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.CheckSubjectTracking(idOfSubject));
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ReturnsSubject()
+        {
+            var subject = new Subject { Id = 1, Code = "A31", Duration = 2, Name = "Test" };
+            var updateSubject = new SubjectRequestDTO { Code = "B31", Duration = 20, Name = "UpdatedTest" };
+            var updatedSubject = new SubjectResponseDTO { Id = 1, Code = "B31", Duration = 20, Name = "UpdatedTest" };
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubjectTracking(idOfSubject)).ReturnsAsync(subject);
+            _mapperMock.Setup(m => m.Map<SubjectResponseDTO>(It.IsAny<Subject>())).Returns(updatedSubject);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateSubject(1, updateSubject);
+
+            Assert.AreEqual(result, updatedSubject);
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ThrowsNotFoundSubjectException()
+        {
+            var updateSubject = new SubjectRequestDTO { Code = "B31", Duration = 20, Name = "UpdatedTest" };
+            var idOfSubject = 1;
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubjectTracking(idOfSubject)).ReturnsAsync((Subject)null);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.UpdateSubject(idOfSubject, updateSubject));
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var idOfSubject = 1; 
+            var subject = new Subject { Id = 1, Code = "A31", Duration = 2, Name = "Test" };
+            var updateSubject = new SubjectRequestDTO { Code = "B31", Duration = -20, Name = "UpdatedTest" };
+            _subjectRepositoryMock.Setup(repo => repo.CheckSubjectTracking(idOfSubject)).ReturnsAsync(subject);
+            _service = new SubjectService(_subjectRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateSubject(idOfSubject, updateSubject));
+        }
     }
 }

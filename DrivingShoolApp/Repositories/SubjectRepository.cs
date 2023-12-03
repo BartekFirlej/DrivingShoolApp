@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<SubjectGetDTO> GetSubject(int subjectId);
         public Task<Subject> PostSubject(SubjectRequestDTO subjectDetails);
         public Task<Subject> CheckSubject(int subjectId);
+        public Task<Subject> CheckSubjectTracking(int subjectId);
         public Task<Subject> DeleteSubject(Subject subjectToDelete);
-        public Task<Subject> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate);
+        public Task<Subject> UpdateSubject(Subject subjectToUpdate, SubjectRequestDTO subjectUpdate);
     }
     public class SubjectRepository : ISubjectRepository
     {
@@ -73,6 +74,13 @@ namespace DrivingSchoolApp.Repositories
                             .FirstOrDefaultAsync();
         }
 
+        public async Task<Subject> CheckSubjectTracking(int subjectId)
+        {
+            return await _dbContext.Subjects
+                            .Where(s => s.Id == subjectId)
+                            .FirstOrDefaultAsync();
+        }
+
         public async Task<Subject> DeleteSubject(Subject subjectToDelete)
         {
             var deletedSubject = _dbContext.Subjects.Remove(subjectToDelete);
@@ -80,16 +88,13 @@ namespace DrivingSchoolApp.Repositories
             return deletedSubject.Entity;
         }
 
-        public async Task<Subject> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate)
+        public async Task<Subject> UpdateSubject(Subject subjectToUpdate, SubjectRequestDTO subjectUpdate)
         {
-            var subject = await _dbContext.Subjects
-                            .Where(s => s.Id == subjectId)
-                            .FirstOrDefaultAsync();
-            subject.Duration = subjectUpdate.Duration;
-            subject.Name = subjectUpdate.Name;
-            subject.Code = subjectUpdate.Code;
+            subjectToUpdate.Duration = subjectUpdate.Duration;
+            subjectToUpdate.Name = subjectUpdate.Name;
+            subjectToUpdate.Code = subjectUpdate.Code;
             await _dbContext.SaveChangesAsync();
-            return subject;
+            return subjectToUpdate;
         }
     }
 }

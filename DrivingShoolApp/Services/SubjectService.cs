@@ -12,8 +12,9 @@ namespace DrivingSchoolApp.Services
         public Task<SubjectGetDTO> GetSubject(int subjectId);
         public Task<SubjectResponseDTO> PostSubject(SubjectRequestDTO subjectDetails);
         public Task<Subject> CheckSubject(int subjectId);
+        public Task<Subject> CheckSubjectTracking(int subjectId);   
         public Task<Subject> DeleteSubject(int subjectId);
-        public Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate);
+        public Task<SubjectResponseDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate);
 
     }
     public class SubjectService : ISubjectService
@@ -65,13 +66,21 @@ namespace DrivingSchoolApp.Services
             return subject;
         }
 
-        public async Task<SubjectGetDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate)
+        public async Task<Subject> CheckSubjectTracking(int subjectId)
         {
-            await CheckSubject(subjectId);
+            var subject = await _subjectRepository.CheckSubjectTracking(subjectId);
+            if (subject == null)
+                throw new NotFoundSubjectException(subjectId);
+            return subject;
+        }
+
+        public async Task<SubjectResponseDTO> UpdateSubject(int subjectId, SubjectRequestDTO subjectUpdate)
+        {
+            var subjectToUpdate = await CheckSubjectTracking(subjectId);
             if (subjectUpdate.Duration <= 0)
                 throw new ValueMustBeGreaterThanZeroException("duration");
-            await _subjectRepository.UpdateSubject(subjectId, subjectUpdate);
-            return await _subjectRepository.GetSubject(subjectId);
+            var updatedSubject = await _subjectRepository.UpdateSubject(subjectToUpdate, subjectUpdate);
+            return _mapper.Map<SubjectResponseDTO>(updatedSubject);
         }
     }
 }

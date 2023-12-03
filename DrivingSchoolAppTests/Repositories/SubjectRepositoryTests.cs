@@ -228,5 +228,82 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_SubjectTracking_ReturnsSubject()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfSubjectToCheck = 2;
+            var subject1 = new Subject { Id = 1, Name = "TestName1", Code = "TestCode1", Duration = 1 };
+            var subject2 = new Subject { Id = 2, Name = "TestName2", Code = "TestCode2", Duration = 2 };
+            await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new SubjectRepository(_dbContext);
+
+            var result = await _repository.CheckSubjectTracking(idOfSubjectToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestName2", result.Name);
+            Assert.AreEqual("TestCode2", result.Code);
+            Assert.AreEqual(2, result.Duration);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_SubjectTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfSubjectToCheck = 3;
+            var subject1 = new Subject { Id = 1, Name = "TestName1", Code = "TestCode1", Duration = 1 };
+            var subject2 = new Subject { Id = 2, Name = "TestName2", Code = "TestCode2", Duration = 2 };
+            await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new SubjectRepository(_dbContext);
+
+            var result = await _repository.CheckSubjectTracking(idOfSubjectToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ReturnsSubject()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var subject1 = new Subject { Id = 1, Name = "TestName1", Code = "TestCode1", Duration = 1 };
+            var subject2 = new Subject { Id = 2, Name = "TestName2", Code = "TestCode2", Duration = 2 };
+            var subject1Update = new SubjectRequestDTO { Name = "UpdatedName", Code = "UpdatedCode", Duration = 100 };
+            await _dbContext.Subjects.AddRangeAsync(subject1, subject2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new SubjectRepository(_dbContext);
+
+            var result = await _repository.UpdateSubject(subject1, subject1Update);
+
+            var updatedSubject = await _repository.CheckSubject(subject1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedName", result.Name);
+            Assert.AreEqual("UpdatedCode", result.Code);
+            Assert.AreEqual(100, result.Duration);
+            Assert.IsNotNull(updatedSubject);
+            Assert.AreEqual(1, updatedSubject.Id);
+            Assert.AreEqual("UpdatedName", updatedSubject.Name);
+            Assert.AreEqual("UpdatedCode", updatedSubject.Code);
+            Assert.AreEqual(100, updatedSubject.Duration);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

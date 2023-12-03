@@ -173,5 +173,45 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Subject_ReturnNoContent()
+        {
+            var updateSubject = new SubjectRequestDTO();
+            var updatedSubject = new SubjectResponseDTO();
+            var idOfSubjectToUpdate = 1;
+            _subjectServiceMock.Setup(service => service.UpdateSubject(idOfSubjectToUpdate, updateSubject)).ReturnsAsync(updatedSubject);
+            _controller = new SubjectController(_subjectServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateSubject(idOfSubjectToUpdate, updateSubject);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ThrowsNotFoundSubjectException()
+        {
+            var updateSubject = new SubjectRequestDTO();
+            var idOfSubjectToUpdate = 1;
+            _subjectServiceMock.Setup(service => service.UpdateSubject(idOfSubjectToUpdate, updateSubject)).ThrowsAsync(new NotFoundSubjectException(idOfSubjectToUpdate));
+            _controller = new SubjectController(_subjectServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateSubject(idOfSubjectToUpdate, updateSubject);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Subject_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var updateSubject = new SubjectRequestDTO();
+            var idOfSubjectToUpdate = 1;
+            _subjectServiceMock.Setup(service => service.UpdateSubject(idOfSubjectToUpdate, updateSubject)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("duration"));
+            _controller = new SubjectController(_subjectServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateSubject(idOfSubjectToUpdate, updateSubject);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

@@ -102,7 +102,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            SubjectGetDTO updatedSubject;
+            SubjectResponseDTO updatedSubject;
             try
             {
                 updatedSubject = await _subjectService.UpdateSubject(subjectid, subjectUpdate);

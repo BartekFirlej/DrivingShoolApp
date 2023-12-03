@@ -297,12 +297,19 @@ namespace DrivingSchoolAppTests.Repositories
 
             var result = await _repository.UpdateAddress(address1, updateAddress1);
 
+            var updatedAddress = await _repository.CheckAddress(address1.Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
             Assert.AreEqual("UpdatedCity1", result.City);
             Assert.AreEqual(100, result.Number);
             Assert.AreEqual("99-999", result.PostalCode);
             Assert.AreEqual("UpdatedStreet1", result.Street);
+            Assert.IsNotNull(updatedAddress);
+            Assert.AreEqual(1, updatedAddress.Id);
+            Assert.AreEqual("UpdatedCity1", updatedAddress.City);
+            Assert.AreEqual(100, updatedAddress.Number);
+            Assert.AreEqual("99-999", updatedAddress.PostalCode);
+            Assert.AreEqual("UpdatedStreet1", updatedAddress.Street);
 
             await _dbContext.DisposeAsync();
         }
