@@ -222,5 +222,79 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_LecturerTracking_ReturnsLecturer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLecturerToCheck = 2;
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LecturerRepository(_dbContext);
+
+            var result = await _repository.CheckLecturerTracking(idOfLecturerToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestName2", result.Name);
+            Assert.AreEqual("TestSName2", result.SecondName);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_LecturerTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLecturerToCheck = 3;
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LecturerRepository(_dbContext);
+
+            var result = await _repository.CheckLecturerTracking(idOfLecturerToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Lecturer_ReturnsLecturer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
+            var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
+            var lecturer1Update = new LecturerRequestDTO { Name = "UpdatedName", SecondName = "UpdatedSecondName" };
+            await _dbContext.Lecturers.AddRangeAsync(lecturer1, lecturer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LecturerRepository(_dbContext);
+
+            var result = await _repository.UpdateLecturer(lecturer1, lecturer1Update);
+
+            var updatedLecturer = await _repository.GetLecturer(lecturer1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedName", result.Name);
+            Assert.AreEqual("UpdatedSecondName", result.SecondName);
+            Assert.IsNotNull(updatedLecturer);
+            Assert.AreEqual(1, updatedLecturer.Id);
+            Assert.AreEqual("UpdatedName", updatedLecturer.Name);
+            Assert.AreEqual("UpdatedSecondName", updatedLecturer.SecondName);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

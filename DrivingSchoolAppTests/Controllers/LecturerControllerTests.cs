@@ -157,5 +157,32 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Lecturer_ReturnNoContent()
+        {
+            var updateLecturer = new LecturerRequestDTO();
+            var updatedLecturer = new LecturerResponseDTO();
+            var idOfLecturerToUpdate = 1;
+            _lecturerServiceMock.Setup(service => service.UpdateLecturer(idOfLecturerToUpdate, updateLecturer)).ReturnsAsync(updatedLecturer);
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateLecturer(idOfLecturerToUpdate, updateLecturer);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecturer_ThrowsNotFoundLecturerException()
+        {
+            var updateLecturer = new LecturerRequestDTO(); 
+            var idOfLecturerToUpdate = 1;
+            _lecturerServiceMock.Setup(service => service.UpdateLecturer(idOfLecturerToUpdate, updateLecturer)).ThrowsAsync(new NotFoundLecturerException(idOfLecturerToUpdate));
+            _controller = new LecturerController(_lecturerServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecturer(idOfLecturerToUpdate, updateLecturer);
+
+            result.StatusCode.Should().Be(404);
+        }
     }
 }

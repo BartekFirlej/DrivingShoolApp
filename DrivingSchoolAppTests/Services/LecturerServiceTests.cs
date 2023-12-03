@@ -134,24 +134,74 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Check_Lecturer_ReturnsLecturer()
         {
-            var lecture = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
+            var lecturer = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
             var idOfLecturerToCheck = 1;
-            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToCheck)).ReturnsAsync(lecture);
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToCheck)).ReturnsAsync(lecturer);
             _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckLecturer(idOfLecturerToCheck);
 
-            Assert.AreEqual(lecture, result);
+            Assert.AreEqual(lecturer, result);
         }
 
         [TestMethod]
-        public async Task Check_Lecture_ThrowsNotFoundLectureException()
+        public async Task Check_Lecturer_ThrowsNotFoundLecturerException()
         {
             var idOfLecturerToCheck = 1;
             _lecturerRepositoryMock.Setup(repo => repo.CheckLecturer(idOfLecturerToCheck)).ReturnsAsync((Lecturer)null);
             _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.CheckLecturer(idOfLecturerToCheck));
+        }
+
+        [TestMethod]
+        public async Task Check_LecturerTracking_ReturnsLecturer()
+        {
+            var lecturer = new Lecturer { Id = 1, Name = "TestName", SecondName = "TestSecondName" };
+            var idOfLecturerToCheck = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturerTracking(idOfLecturerToCheck)).ReturnsAsync(lecturer);
+            _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckLecturerTracking(idOfLecturerToCheck);
+
+            Assert.AreEqual(lecturer, result);
+        }
+
+        [TestMethod]
+        public async Task Check_LecturerTracking_ThrowsNotFoundLectureException()
+        {
+            var idOfLecturerToCheck = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturerTracking(idOfLecturerToCheck)).ReturnsAsync((Lecturer)null);
+            _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.CheckLecturerTracking(idOfLecturerToCheck));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecturer_ReturnsLecturer()
+        {
+            var lecturer = new Lecturer { Id = 1, Name = "TestN", SecondName = "TestSN" };
+            var updateLecturer = new LecturerRequestDTO { Name = "UpdatedTestN", SecondName = "UpdatedTestSN" };
+            var updatedLecturer = new LecturerResponseDTO { Id = 1, Name = "UpdatedTestN", SecondName = "UpdatedTestSN" };
+            var idOfLecturer = 1;
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturerTracking(idOfLecturer)).ReturnsAsync(lecturer);
+            _mapperMock.Setup(m => m.Map<LecturerResponseDTO>(It.IsAny<Lecturer>())).Returns(updatedLecturer);
+            _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateLecturer(idOfLecturer, updateLecturer);
+
+            Assert.AreEqual(result, updatedLecturer);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecturer_ThrowsNotFoundLecturerException()
+        {
+            var idOfLecturer = 1;
+            var updateLecturer = new LecturerRequestDTO { Name = "UpdatedTestN", SecondName = "UpdatedTestSN" };
+            _lecturerRepositoryMock.Setup(repo => repo.CheckLecturerTracking(idOfLecturer)).ReturnsAsync((Lecturer)null);
+            _service = new LecturerService(_lecturerRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.UpdateLecturer(idOfLecturer, updateLecturer));
         }
     }
 }

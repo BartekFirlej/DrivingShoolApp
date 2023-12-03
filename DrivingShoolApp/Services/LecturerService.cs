@@ -12,8 +12,9 @@ namespace DrivingSchoolApp.Services
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
         public Task<LecturerResponseDTO> PostLecturer(LecturerRequestDTO lecturerDetails);
         public Task<Lecturer> CheckLecturer(int lecturerId);
+        public Task<Lecturer> CheckLecturerTracking(int lecturerId);
         public Task<Lecturer> DeleteLecturer(int lecturerId);
-        public Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate);
+        public Task<LecturerResponseDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate);
     }
     public class LecturerService : ILecturerService
     {
@@ -56,17 +57,25 @@ namespace DrivingSchoolApp.Services
             return lecturer;
         }
 
+        public async Task<Lecturer> CheckLecturerTracking(int lecturerId)
+        {
+            var lecturer = await _lecturerRepository.CheckLecturerTracking(lecturerId);
+            if (lecturer == null)
+                throw new NotFoundLecturerException(lecturerId);
+            return lecturer;
+        }
+
         public async Task<Lecturer> DeleteLecturer(int lecturerId)
         {
             var lecturerToDelete = await CheckLecturer(lecturerId);
             return await _lecturerRepository.DeleteLecturer(lecturerToDelete);
         }
 
-        public async Task<LecturerGetDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate)
+        public async Task<LecturerResponseDTO> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate)
         {
-            await CheckLecturer(lecturerId);
-            await _lecturerRepository.UpdateLecturer(lecturerId, lecturerUpdate);
-            return await _lecturerRepository.GetLecturer(lecturerId);
+            var lecturerToUpdate = await CheckLecturerTracking(lecturerId);
+            var updatedLecturer = await _lecturerRepository.UpdateLecturer(lecturerToUpdate, lecturerUpdate);
+            return _mapper.Map<LecturerResponseDTO>(updatedLecturer);
         }
     }
 }

@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<LecturerGetDTO> GetLecturer(int lecturerId);
         public Task<Lecturer> PostLecturer(LecturerRequestDTO lecturerDetails);
         public Task<Lecturer> CheckLecturer(int lecturerId);
+        public Task<Lecturer> CheckLecturerTracking(int lecturerId);
         public Task<Lecturer> DeleteLecturer(Lecturer lecturerToDelete);
-        public Task<Lecturer> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate);
+        public Task<Lecturer> UpdateLecturer(Lecturer lecturerToUpdate, LecturerRequestDTO lecturerUpdate);
     }
     public class LecturerRepository : ILecturerRepository
     {
@@ -69,6 +70,13 @@ namespace DrivingSchoolApp.Repositories
                              .FirstOrDefaultAsync();
         }
 
+        public async Task<Lecturer> CheckLecturerTracking(int lecturerId)
+        {
+            return await _dbContext.Lecturers
+                             .Where(l => l.Id == lecturerId)
+                             .FirstOrDefaultAsync();
+        }
+
         public async Task<Lecturer> DeleteLecturer(Lecturer lecturerToDelete)
         {
             var deletedLecturer = _dbContext.Lecturers.Remove(lecturerToDelete);
@@ -76,15 +84,12 @@ namespace DrivingSchoolApp.Repositories
             return deletedLecturer.Entity;
         }
 
-        public async Task<Lecturer> UpdateLecturer(int lecturerId, LecturerRequestDTO lecturerUpdate)
+        public async Task<Lecturer> UpdateLecturer(Lecturer lecturerToUpdate, LecturerRequestDTO lecturerUpdate)
         {
-            var lecturer = await _dbContext.Lecturers
-                             .Where(l => l.Id == lecturerId)
-                             .FirstOrDefaultAsync();
-            lecturer.Name = lecturerUpdate.Name;
-            lecturer.SecondName = lecturerUpdate.SecondName;
+            lecturerToUpdate.Name = lecturerUpdate.Name;
+            lecturerToUpdate.SecondName = lecturerUpdate.SecondName;
             await _dbContext.SaveChangesAsync();
-            return lecturer;
+            return lecturerToUpdate;
         }
     }
 }

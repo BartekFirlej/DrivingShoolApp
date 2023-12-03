@@ -88,13 +88,13 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{lecturerid}")]
-        public async Task<IActionResult> UpdateAddress(int lecturerid, LecturerRequestDTO lecturerUpdate)
+        public async Task<IActionResult> UpdateLecturer(int lecturerid, LecturerRequestDTO lecturerUpdate)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            LecturerGetDTO updatedLecturer;
+            LecturerResponseDTO updatedLecturer;
             try
             {
                 updatedLecturer = await _lecturerService.UpdateLecturer(lecturerid, lecturerUpdate);
