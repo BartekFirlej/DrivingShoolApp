@@ -183,5 +183,59 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_CourseType_ReturnOk()
+        {
+            var idOfCourseType = 1;
+            var courseTypeUpdate = new CourseTypeRequestDTO();
+            var updatedCourseType = new CourseTypeResponseDTO();
+            _courseTypeServiceMock.Setup(service => service.UpdateCourseType(idOfCourseType, courseTypeUpdate)).ReturnsAsync(updatedCourseType);
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateCourseType(idOfCourseType, courseTypeUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_CourseType_ThrowsNotFoundCourseTypeException()
+        {
+            var idOfCourseType = 1;
+            var courseTypeUpdate = new CourseTypeRequestDTO();
+            _courseTypeServiceMock.Setup(service => service.UpdateCourseType(idOfCourseType, courseTypeUpdate)).ThrowsAsync(new NotFoundCourseTypeException(idOfCourseType));
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateCourseType(idOfCourseType, courseTypeUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_CourseType_ThrowsNotFoundLicenceCategoryException()
+        {
+            var idOfCourseType = 1;
+            var courseTypeUpdate = new CourseTypeRequestDTO();
+            _courseTypeServiceMock.Setup(service => service.UpdateCourseType(idOfCourseType, courseTypeUpdate)).ThrowsAsync(new NotFoundLicenceCategoryException(1));
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateCourseType(idOfCourseType, courseTypeUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_CourseType_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var idOfCourseType = 1;
+            var courseTypeUpdate = new CourseTypeRequestDTO();
+            var nameOfProperty = "age";
+            _courseTypeServiceMock.Setup(service => service.UpdateCourseType(idOfCourseType, courseTypeUpdate)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(nameOfProperty));
+            _controller = new CourseTypeController(_courseTypeServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateCourseType(idOfCourseType, courseTypeUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

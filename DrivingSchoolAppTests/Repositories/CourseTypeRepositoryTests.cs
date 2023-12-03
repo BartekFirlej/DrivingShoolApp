@@ -153,7 +153,7 @@ namespace DrivingSchoolAppTests.Repositories
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
             await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
             await _dbContext.SaveChangesAsync();
-            var courseTypeToAdd = new CourseTypeRequestDTO { Name = "TestCourseType3", DrivingHours = 30, LecturesHours = 30, MinimumAge = 30, LicenceCategoryId = 1 };
+            var courseTypeToAdd = new CourseTypeRequestDTO { Name = "TestCourseType3", DrivingHours = 30, LectureHours = 30, MinimumAge = 30, LicenceCategoryId = 1 };
             _repository = new CourseTypeRepository(_dbContext);
 
             var addedCourseType = await _repository.PostCourseType(courseTypeToAdd);
@@ -164,12 +164,12 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(addedCourseType.Id, retrievedCourseType.Id);
             Assert.AreEqual(courseTypeToAdd.Name, addedCourseType.Name);
             Assert.AreEqual(courseTypeToAdd.DrivingHours, addedCourseType.DrivingHours);
-            Assert.AreEqual(courseTypeToAdd.LecturesHours, addedCourseType.LectureHours);
+            Assert.AreEqual(courseTypeToAdd.LectureHours, addedCourseType.LectureHours);
             Assert.AreEqual(courseTypeToAdd.MinimumAge, addedCourseType.MinimumAge);
             Assert.AreEqual(courseTypeToAdd.LicenceCategoryId, addedCourseType.LicenceCategoryId);
             Assert.AreEqual(courseTypeToAdd.Name, retrievedCourseType.Name);
             Assert.AreEqual(courseTypeToAdd.DrivingHours, retrievedCourseType.DrivingHours);
-            Assert.AreEqual(courseTypeToAdd.LecturesHours, retrievedCourseType.LecturesHours);
+            Assert.AreEqual(courseTypeToAdd.LectureHours, retrievedCourseType.LecturesHours);
             Assert.AreEqual(courseTypeToAdd.MinimumAge, retrievedCourseType.MinimumAge);
             Assert.AreEqual(courseTypeToAdd.LicenceCategoryId, retrievedCourseType.LicenceCategoryId);
             Assert.AreEqual(licenceCategory1.Name, retrievedCourseType.LicenceCategoryName);
@@ -250,6 +250,89 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckCourseType(idOfCourseTypeToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_CourseTypeTracking_ReturnsCourseType()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseTypeToCheck = 2;
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.CheckCourseTypeTracking(idOfCourseTypeToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourseType2", result.Name);
+            Assert.AreEqual(20, result.DrivingHours);
+            Assert.AreEqual(20, result.LectureHours);
+            Assert.AreEqual(21, result.MinimumAge);
+            Assert.AreEqual(1, result.LicenceCategoryId);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_CourseTypeTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseTypeToCheck = 3;
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.CheckCourseTypeTracking(idOfCourseTypeToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_CourseType_ReturnsCourseType()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var courseType1 = new CourseType { Id = 1, Name = "TestCourseType1", DrivingHours = 10, LectureHours = 10, MinimumAge = 18, LicenceCategoryId = 1 };
+            var courseType2 = new CourseType { Id = 2, Name = "TestCourseType2", DrivingHours = 20, LectureHours = 20, MinimumAge = 21, LicenceCategoryId = 1 };
+            var courseType1Update = new CourseTypeRequestDTO { Name = "UpdatedName", DrivingHours = 30, LectureHours = 30, MinimumAge = 25, LicenceCategoryId = 1 };
+            await _dbContext.CourseTypes.AddRangeAsync(courseType1, courseType2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseTypeRepository(_dbContext);
+
+            var result = await _repository.UpdateCourseType(courseType1, courseType1Update);
+
+            var updatedCourseType = await _repository.CheckCourseType(courseType1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedName", result.Name);
+            Assert.AreEqual(30, result.DrivingHours);
+            Assert.AreEqual(30, result.LectureHours);
+            Assert.AreEqual(25, result.MinimumAge);
+            Assert.AreEqual(1, result.LicenceCategoryId);
+            Assert.IsNotNull(updatedCourseType);
+            Assert.AreEqual(1, updatedCourseType.Id);
+            Assert.AreEqual("UpdatedName", updatedCourseType.Name);
+            Assert.AreEqual(30, updatedCourseType.DrivingHours);
+            Assert.AreEqual(30, updatedCourseType.LectureHours);
+            Assert.AreEqual(25, updatedCourseType.MinimumAge);
+            Assert.AreEqual(1, updatedCourseType.LicenceCategoryId);
 
             await _dbContext.DisposeAsync();
         }

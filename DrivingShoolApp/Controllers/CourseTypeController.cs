@@ -105,7 +105,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            CourseTypeGetDTO updatedCourseType;
+            CourseTypeResponseDTO updatedCourseType;
             try
             {
                 updatedCourseType = await _courseTypeService.UpdateCourseType(coursetypeid, courseTypeUpdate);

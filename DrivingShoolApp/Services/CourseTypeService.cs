@@ -11,8 +11,9 @@ namespace DrivingSchoolApp.Services
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
         public Task<CourseTypeResponseDTO> PostCourseType(CourseTypeRequestDTO newCourseType);
         public Task<CourseType> CheckCourseType(int courseTypeId);
+        public Task<CourseType> CheckCourseTypeTracking(int courseTypeId);
         public Task<CourseType> DeleteCourseType(int courseTypeId);
-        public Task<CourseTypeGetDTO> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate);
+        public Task<CourseTypeResponseDTO> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate);
     }
     public class CourseTypeService : ICourseTypeService
     {
@@ -45,7 +46,7 @@ namespace DrivingSchoolApp.Services
 
         public async Task<CourseTypeResponseDTO> PostCourseType(CourseTypeRequestDTO newCourseType)
         {
-            if (newCourseType.LecturesHours <= 0)
+            if (newCourseType.LectureHours <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Lecture hours");
             if(newCourseType.DrivingHours <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Driving hours");
@@ -64,24 +65,32 @@ namespace DrivingSchoolApp.Services
             return courseType;
         }
 
+        public async Task<CourseType> CheckCourseTypeTracking(int courseTypeId)
+        {
+            var courseType = await _courseTypeRepository.CheckCourseTypeTracking(courseTypeId);
+            if (courseType == null)
+                throw new NotFoundCourseTypeException(courseTypeId);
+            return courseType;
+        }
+
         public async Task<CourseType> DeleteCourseType(int courseTypeId)
         {
             var courseTypeToDelete = await CheckCourseType(courseTypeId);
             return await _courseTypeRepository.DeleteCourseType(courseTypeToDelete);
         }
 
-        public async Task<CourseTypeGetDTO> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate)
+        public async Task<CourseTypeResponseDTO> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate)
         {
-            await CheckCourseType(courseTypeId);
-            if (courseTypeUpdate.LecturesHours <= 0)
+            var courseTypeToUpdate = await CheckCourseTypeTracking(courseTypeId);
+            if (courseTypeUpdate.LectureHours <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Lecture hours");
             if (courseTypeUpdate.DrivingHours <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Driving hours");
             if (courseTypeUpdate.MinimumAge <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Minimum age");
             await _licenceCategoryService.CheckLicenceCategory(courseTypeUpdate.LicenceCategoryId);
-            await _courseTypeRepository.UpdateCourseType(courseTypeId, courseTypeUpdate);
-            return await _courseTypeRepository.GetCourseType(courseTypeId);
+            var updatedCourseType = await _courseTypeRepository.UpdateCourseType(courseTypeToUpdate, courseTypeUpdate);
+            return _mapper.Map<CourseTypeResponseDTO>(updatedCourseType);
         }
     }
 }

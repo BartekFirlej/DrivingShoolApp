@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<CourseTypeGetDTO> GetCourseType(int courseTypeId);
         public Task<CourseType> PostCourseType(CourseTypeRequestDTO courseTypeDetails);
         public Task<CourseType> CheckCourseType(int courseTypeId);
+        public Task<CourseType> CheckCourseTypeTracking(int courseTypeId);
         public Task<CourseType> DeleteCourseType(CourseType courseTypeToDelete);
-        public Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate);
+        public Task<CourseType> UpdateCourseType(CourseType courseTypeToUpdate, CourseTypeRequestDTO courseTypeUpdate);
     }
     public class CourseTypeRepository : ICourseTypeRepository
     {
@@ -63,7 +64,7 @@ namespace DrivingSchoolApp.Repositories
             {
                 Name = courseTypeDetails.Name,
                 MinimumAge = courseTypeDetails.MinimumAge,
-                LectureHours = courseTypeDetails.LecturesHours,
+                LectureHours = courseTypeDetails.LectureHours,
                 DrivingHours = courseTypeDetails.DrivingHours,
                 LicenceCategoryId = courseTypeDetails.LicenceCategoryId
             };
@@ -77,7 +78,13 @@ namespace DrivingSchoolApp.Repositories
             return await _dbContext.CourseTypes
                              .AsNoTracking()
                              .Where(c => c.Id == courseTypeId)
-                             .AsNoTracking()
+                             .FirstOrDefaultAsync();
+        }
+
+        public async Task<CourseType> CheckCourseTypeTracking(int courseTypeId)
+        {
+            return await _dbContext.CourseTypes
+                             .Where(c => c.Id == courseTypeId)
                              .FirstOrDefaultAsync();
         }
 
@@ -88,18 +95,15 @@ namespace DrivingSchoolApp.Repositories
             return deletedCourseType.Entity;
         }
 
-        public async Task<CourseType> UpdateCourseType(int courseTypeId, CourseTypeRequestDTO courseTypeUpdate)
+        public async Task<CourseType> UpdateCourseType(CourseType courseTypeToUpdate, CourseTypeRequestDTO courseTypeUpdate)
         {
-            var courseType = await _dbContext.CourseTypes
-                             .Where(c => c.Id == courseTypeId)
-                             .FirstOrDefaultAsync();
-            courseType.DrivingHours = courseTypeUpdate.DrivingHours;
-            courseType.LectureHours = courseTypeUpdate.LecturesHours;
-            courseType.LicenceCategoryId = courseTypeUpdate.LicenceCategoryId;
-            courseType.MinimumAge = courseTypeUpdate.MinimumAge;
-            courseType.Name = courseTypeUpdate.Name;
+            courseTypeToUpdate.DrivingHours = courseTypeUpdate.DrivingHours;
+            courseTypeToUpdate.LectureHours = courseTypeUpdate.LectureHours;
+            courseTypeToUpdate.LicenceCategoryId = courseTypeUpdate.LicenceCategoryId;
+            courseTypeToUpdate.MinimumAge = courseTypeUpdate.MinimumAge;
+            courseTypeToUpdate.Name = courseTypeUpdate.Name;
             await _dbContext.SaveChangesAsync();
-            return courseType;
+            return courseTypeToUpdate;
         }
     }
 }
