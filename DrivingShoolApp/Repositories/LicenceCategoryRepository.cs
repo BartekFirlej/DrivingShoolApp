@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int id);
         public Task<LicenceCategory> PostLicenceCategory(LicenceCategoryRequestDTO newCategory);
         public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
+        public Task<LicenceCategory> CheckLicenceCategoryTracking(int licenceCategoryId);
         public Task<LicenceCategory> DeleteLicenceCategory(LicenceCategory licenceCategoryToDelete);
-        public Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate);
+        public Task<LicenceCategory> UpdateLicenceCategory(LicenceCategory licenceCategoryToUpdate, LicenceCategoryRequestDTO licenceCategoryUpdate);
     }
     public class LicenceCategoryRepository : ILicenceCategoryRepository
     {
@@ -58,6 +59,13 @@ namespace DrivingSchoolApp.Repositories
                   .FirstOrDefaultAsync();
         }
 
+        public async Task<LicenceCategory> CheckLicenceCategoryTracking(int licenceCategoryId)
+        {
+            return await _dbContext.LicenceCategories
+                  .Where(l => l.Id == licenceCategoryId)
+                  .FirstOrDefaultAsync();
+        }
+
         public async Task<LicenceCategory> DeleteLicenceCategory(LicenceCategory licenceCategoryToDelete)
         {
             var deletedLicenceCategory = _dbContext.LicenceCategories.Remove(licenceCategoryToDelete);
@@ -65,14 +73,11 @@ namespace DrivingSchoolApp.Repositories
             return deletedLicenceCategory.Entity;
         }
 
-        public async Task<LicenceCategory> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate)
+        public async Task<LicenceCategory> UpdateLicenceCategory(LicenceCategory licenceCategoryToUpdate, LicenceCategoryRequestDTO licenceCategoryUpdate)
         {
-            var licenceCategory = await _dbContext.LicenceCategories
-                                  .Where(l => l.Id == licenceCategoryId)
-                                  .FirstOrDefaultAsync();
-            licenceCategory.Name = licenceCategoryUpdate.Name;
+            licenceCategoryToUpdate.Name = licenceCategoryUpdate.Name;
             await _dbContext.SaveChangesAsync();
-            return licenceCategory;
+            return licenceCategoryToUpdate;
         }
     }
 }

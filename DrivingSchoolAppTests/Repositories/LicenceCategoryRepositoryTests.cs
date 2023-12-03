@@ -214,5 +214,76 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_LicenceCategoryTracking_ReturnsLicenceCategory()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLicenceCategoryToCheck = 2;
+            var licenceCategory1 = new LicenceCategory { Id = 1, Name = "Test1" };
+            var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
+            await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LicenceCategoryRepository(_dbContext);
+
+            var result = await _repository.CheckLicenceCategoryTracking(idOfLicenceCategoryToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("Test2", result.Name);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_LicenceCategoryTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLicenceCategoryToCheck = 3;
+            var licenceCategory1 = new LicenceCategory { Id = 1, Name = "Test1" };
+            var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
+            await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LicenceCategoryRepository(_dbContext);
+
+            var result = await _repository.CheckLicenceCategoryTracking(idOfLicenceCategoryToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_LicenceCategory_ReturnsLicenceCategory()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var licenceCategory1 = new LicenceCategory { Id = 1, Name = "Test1" };
+            var licenceCategory2 = new LicenceCategory { Id = 2, Name = "Test2" };
+            await _dbContext.LicenceCategories.AddRangeAsync(licenceCategory1, licenceCategory2);
+            await _dbContext.SaveChangesAsync();
+            var licenceCategory1update = new LicenceCategoryRequestDTO { Name = "Test3" };
+            _repository = new LicenceCategoryRepository(_dbContext);
+
+            var result = await _repository.UpdateLicenceCategory(licenceCategory1, licenceCategory1update);
+
+            var updatedLicenceCategory = await _repository.CheckLicenceCategory(licenceCategory1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Test3", result.Name);
+            Assert.IsNotNull(updatedLicenceCategory);
+            Assert.AreEqual(1, updatedLicenceCategory.Id);
+            Assert.AreEqual("Test3", updatedLicenceCategory.Name);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

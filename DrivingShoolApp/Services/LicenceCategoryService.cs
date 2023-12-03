@@ -12,8 +12,9 @@ namespace DrivingSchoolApp.Services
         public Task<LicenceCategoryGetDTO> GetLicenceCategory(int licenceCategoryId);
         public Task<LicenceCategoryResponseDTO> PostLicenceCategory(LicenceCategoryRequestDTO newCategory);
         public Task<LicenceCategory> CheckLicenceCategory(int licenceCategoryId);
+        public Task<LicenceCategory> CheckLicenceCategoryTracking(int licenceCategoryId);
         public Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId);
-        public Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate);
+        public Task<LicenceCategoryResponseDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate);
     }
     public class LicenceCategoryService : ILicenceCategoryService
     {
@@ -56,17 +57,25 @@ namespace DrivingSchoolApp.Services
             return licenceCategory;
         }
 
+        public async Task<LicenceCategory> CheckLicenceCategoryTracking(int licenceCategoryId)
+        {
+            var licenceCategory = await _licenceCategoryRepository.CheckLicenceCategoryTracking(licenceCategoryId);
+            if (licenceCategory == null)
+                throw new NotFoundLicenceCategoryException(licenceCategoryId);
+            return licenceCategory;
+        }
+
         public async Task<LicenceCategory> DeleteLicenceCategory(int licenceCategoryId)
         {
             var licenceCategoryToDelete = await CheckLicenceCategory(licenceCategoryId);
             return await _licenceCategoryRepository.DeleteLicenceCategory(licenceCategoryToDelete);
         }
 
-        public async Task<LicenceCategoryGetDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate)
+        public async Task<LicenceCategoryResponseDTO> UpdateLicenceCategory(int licenceCategoryId, LicenceCategoryRequestDTO licenceCategoryUpdate)
         {
-            await CheckLicenceCategory(licenceCategoryId);
-            await _licenceCategoryRepository.UpdateLicenceCategory(licenceCategoryId, licenceCategoryUpdate);
-            return await _licenceCategoryRepository.GetLicenceCategory(licenceCategoryId);
+            var licenceCategoryToUpdate = await CheckLicenceCategoryTracking(licenceCategoryId);
+            var updatedLicenceCategory = await _licenceCategoryRepository.UpdateLicenceCategory(licenceCategoryToUpdate, licenceCategoryUpdate);
+            return _mapper.Map<LicenceCategoryResponseDTO>(updatedLicenceCategory);
         }
     }
 }

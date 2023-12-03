@@ -154,5 +154,57 @@ namespace DrivingSchoolAppTests.Services
 
             await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.CheckLicenceCategory(idOfLicenceCategory));
         }
+
+        [TestMethod]
+        public async Task Check_LicenceCategoryTracking_ReturnsLicenceCategory()
+        {
+            var deletedLicenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
+            var idOfLicenceCategory = 1;
+            _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategoryTracking(idOfLicenceCategory)).ReturnsAsync(deletedLicenceCategory);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckLicenceCategoryTracking(idOfLicenceCategory);
+
+            Assert.AreEqual(deletedLicenceCategory, result);
+        }
+
+        [TestMethod]
+        public async Task Check_LicenceCategoryTracking_ThrowsNotFoundLicenceCategoryException()
+        {
+            var idOfLicenceCategory = 1;
+            _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategoryTracking(idOfLicenceCategory)).ReturnsAsync((LicenceCategory)null);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.CheckLicenceCategoryTracking(idOfLicenceCategory));
+        }
+
+        [TestMethod]
+        public async Task Update_LicenceCategory_ReturnsLicenceCategory()
+        {
+            var idOfLicenceCategory = 1;
+            var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
+            var updatedLicenceCategory = new LicenceCategoryResponseDTO { Id = 1, Name = "Test" };
+            var licenceCategoryUpdate = new LicenceCategoryRequestDTO { Name = "Update" };
+            _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategoryTracking(idOfLicenceCategory)).ReturnsAsync(licenceCategory);
+            _licenceCategoryRepositoryMock.Setup(repo => repo.UpdateLicenceCategory(licenceCategory, licenceCategoryUpdate)).ReturnsAsync(licenceCategory);
+            _mapperMock.Setup(m => m.Map<LicenceCategoryResponseDTO>(It.IsAny<LicenceCategory>())).Returns(updatedLicenceCategory);
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate);
+
+            Assert.AreEqual(updatedLicenceCategory, result);
+        }
+
+        [TestMethod]
+        public async Task Update_LicenceCategory_ThrowsNotFoundLicenceCategory()
+        {
+            var idOfLicenceCategory = 1;
+            var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
+            var licenceCategoryUpdate = new LicenceCategoryRequestDTO { Name = "Update" };
+            _licenceCategoryRepositoryMock.Setup(repo => repo.CheckLicenceCategoryTracking(idOfLicenceCategory)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
+            _service = new LicenceCategoryService(_licenceCategoryRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate));
+        }
     }
 }

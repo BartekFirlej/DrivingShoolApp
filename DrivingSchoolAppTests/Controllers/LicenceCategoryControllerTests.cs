@@ -311,5 +311,32 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_LicenceCategory_ReturnsOk()
+        {
+            var idOfLicenceCategory = 1;
+            var licenceCategoryUpdate = new LicenceCategoryRequestDTO();
+            var updatedLicenceCategory = new LicenceCategoryResponseDTO();
+            _licenceCategoryServiceMock.Setup(service => service.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate)).ReturnsAsync(updatedLicenceCategory);
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_LicenceCategory_ThrowsNotFoundLicenceCategory()
+        {
+            var idOfLicenceCategory = 1;
+            var licenceCategoryUpdate = new LicenceCategoryRequestDTO();
+            _licenceCategoryServiceMock.Setup(service => service.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate)).ThrowsAsync(new NotFoundLicenceCategoryException(idOfLicenceCategory));
+            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLicenceCategory(idOfLicenceCategory, licenceCategoryUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
     }
 }
