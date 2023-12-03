@@ -115,6 +115,14 @@ namespace DrivingSchoolApp.Controllers
             {
                 return NotFound(e.ToJson());
             }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            catch (WrongPostalCodeFormatException e)
+            {
+                return BadRequest(e.ToJson());
+            }
             return Ok(updatedAddress);
         }
     }

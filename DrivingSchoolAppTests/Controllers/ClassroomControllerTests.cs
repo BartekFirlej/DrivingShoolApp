@@ -186,5 +186,63 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Classroom_ReturnOk()
+        {
+            int classroomId = 1;
+            var classroomUpdate = new ClassroomRequestDTO();
+            var updatedClassroom = new ClassroomResponseDTO();
+            _classroomServiceMock.Setup(service => service.UpdateClassroom(classroomId, classroomUpdate)).ReturnsAsync(updatedClassroom);
+            _controller = new ClassroomController(_classroomServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateClassroom(classroomId, classroomUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsNotFoundAddressException()
+        {
+            var idOfAddress = 1;
+            int classroomId = 1;
+            var classroomUpdate = new ClassroomRequestDTO();
+            var updatedClassroom = new ClassroomResponseDTO();
+            _classroomServiceMock.Setup(service => service.UpdateClassroom(classroomId, classroomUpdate)).ThrowsAsync(new NotFoundAddressException(idOfAddress));
+            _controller = new ClassroomController(_classroomServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateClassroom(classroomId, classroomUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsNotFoundClassroomException()
+        {
+            var idOfAddress = 1;
+            int classroomId = 1;
+            var classroomUpdate = new ClassroomRequestDTO();
+            var updatedClassroom = new ClassroomResponseDTO();
+            _classroomServiceMock.Setup(service => service.UpdateClassroom(classroomId, classroomUpdate)).ThrowsAsync(new NotFoundClassroomException(classroomId));
+            _controller = new ClassroomController(_classroomServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateClassroom(classroomId, classroomUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            int classroomId = 1;
+            var classroomUpdate = new ClassroomRequestDTO();
+            var nameOfProperty = "number";
+            _classroomServiceMock.Setup(service => service.UpdateClassroom(classroomId, classroomUpdate)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(nameOfProperty));
+            _controller = new ClassroomController(_classroomServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateClassroom(classroomId, classroomUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

@@ -80,6 +80,11 @@ namespace DrivingSchoolApp.Services
         public async Task<AddressResponseDTO> UpdateAddress(int addressId, AddressRequestDTO addressUpdate)
         {
             var addressToUpdate = await CheckAddressTracking(addressId);
+            string postalCodePattern = @"^\d{2}-\d{3}$";
+            if (!Regex.IsMatch(addressUpdate.PostalCode, postalCodePattern))
+                throw new WrongPostalCodeFormatException(addressUpdate.PostalCode);
+            if (addressUpdate.Number <= 0)
+                throw new ValueMustBeGreaterThanZeroException("number");
             await _addressRepository.UpdateAddress(addressToUpdate, addressUpdate);
             return _mapper.Map<AddressResponseDTO>(addressToUpdate);
         }

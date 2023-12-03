@@ -212,5 +212,31 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(404);
         }
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsWrongPostalCodeException()
+        {
+            var updateAddress = new AddressRequestDTO();
+            var idOfAddressToUpdate = 1;
+            _addressServiceMock.Setup(service => service.UpdateAddress(idOfAddressToUpdate, updateAddress)).ThrowsAsync(new WrongPostalCodeFormatException("22222"));
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateAddress(idOfAddressToUpdate, updateAddress);
+
+            result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsValueMustBeGreaterThanZeroException()
+        {
+            var updateAddress = new AddressRequestDTO();
+            var idOfAddressToUpdate = 1;
+            _addressServiceMock.Setup(service => service.UpdateAddress(idOfAddressToUpdate, updateAddress)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("number"));
+            _controller = new AddressController(_addressServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateAddress(idOfAddressToUpdate, updateAddress);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

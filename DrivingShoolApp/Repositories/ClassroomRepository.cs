@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<Classroom> PostClassroom(ClassroomRequestDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
+        public Task<Classroom> CheckClassroomTracking(int classroomId);
         public Task<Classroom> DeleteClassroom(Classroom classroomToDelete);
-        public Task<Classroom> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate);
+        public Task<Classroom> UpdateClassroom(Classroom classroomToUpdate, ClassroomRequestDTO classroomUpdate);
     }
     public class ClassroomRepository : IClassroomRepository
     {
@@ -73,7 +74,7 @@ namespace DrivingSchoolApp.Repositories
             {
                 Number = classroomDetails.Number,
                 Size = classroomDetails.Size,
-                AddressId = classroomDetails.AddressID
+                AddressId = classroomDetails.AddressId
             };
             await _dbContext.Classrooms.AddAsync(classroomToAdd);
             await _dbContext.SaveChangesAsync();
@@ -88,6 +89,13 @@ namespace DrivingSchoolApp.Repositories
                           .FirstOrDefaultAsync();
         }
 
+        public async Task<Classroom> CheckClassroomTracking(int classroomId)
+        {
+            return await _dbContext.Classrooms
+                          .Where(c => c.Id == classroomId)
+                          .FirstOrDefaultAsync();
+        }
+
         public async Task<Classroom> DeleteClassroom(Classroom classroomToDelete)
         {
             var deletedClassroom = _dbContext.Classrooms.Remove(classroomToDelete);
@@ -95,16 +103,13 @@ namespace DrivingSchoolApp.Repositories
             return deletedClassroom.Entity;
         }
 
-        public async Task<Classroom> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate)
+        public async Task<Classroom> UpdateClassroom(Classroom classroomToUpdate, ClassroomRequestDTO classroomUpdate)
         {
-            var classroom = await _dbContext.Classrooms
-                      .Where(c => c.Id == classroomId)
-                      .FirstOrDefaultAsync();
-            classroom.Size = classroomUpdate.Size;
-            classroom.Number = classroomUpdate.Number;
-            classroom.AddressId = classroomUpdate.AddressID;
+            classroomToUpdate.Size = classroomUpdate.Size;
+            classroomToUpdate.Number = classroomUpdate.Number;
+            classroomToUpdate.AddressId = classroomUpdate.AddressId;
             await _dbContext.SaveChangesAsync();
-            return classroom;
+            return classroomToUpdate;
         }
     }
 }

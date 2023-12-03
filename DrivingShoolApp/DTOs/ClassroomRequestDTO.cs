@@ -4,6 +4,6 @@
     {
         public int Number {  get; set; }
         public int Size { get; set; }
-        public int AddressID {  get; set; }
+        public int AddressId {  get; set; }
     }
 }

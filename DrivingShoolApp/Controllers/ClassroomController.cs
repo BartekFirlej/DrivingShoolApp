@@ -110,7 +110,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            ClassroomGetDTO updatedClassroom;
+            ClassroomResponseDTO updatedClassroom;
             try
             {
                 updatedClassroom = await _classroomService.UpdateClassroom(classroomid, classroomUpdate);
@@ -122,6 +122,10 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundAddressException e)
             {
                 return NotFound(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
             }
             return Ok(updatedClassroom);
         }

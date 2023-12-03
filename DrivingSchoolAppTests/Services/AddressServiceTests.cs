@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+﻿ using AutoFixture;
 using AutoMapper;
 using DrivingSchoolApp.DTOs;
 using DrivingSchoolApp.Exceptions;
@@ -130,7 +130,7 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
-        public async Task Delete_Address_ThrowsNotFoundSubjectException()
+        public async Task Delete_Address_ThrowsNotFoundAddressException()
         {
             var idOfAddressToDelete = 1;
             _addressRepositoryMock.Setup(repo => repo.CheckAddress(idOfAddressToDelete)).ReturnsAsync((Address)null);
@@ -222,6 +222,31 @@ namespace DrivingSchoolAppTests.Services
             _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.UpdateAddress(1, updateAddress));
+        }
+
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsWrongPostalCodeFormatException()
+        {
+            var address = new Address { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var updateAddress = new AddressRequestDTO { City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99999" };
+            var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync(address);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<WrongPostalCodeFormatException>(async () => await _service.UpdateAddress(1, updateAddress));
+        }
+
+        [TestMethod]
+        public async Task Update_Address_ThrowsValueMustBeGreaterThanZeroExceptionException()
+        {
+            var address = new Address { Id = 1, Street = "Mazowiecka", City = "Warszawa", PostalCode = "11-111", Number = 1 };
+            var updateAddress = new AddressRequestDTO { City = "UpdatedCity1", Street = "UpdatedStreet1", Number = -100, PostalCode = "99-999" };
+            var idOfAddress = 1;
+            _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync(address);
+            _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateAddress(1, updateAddress));
         }
     }
 }

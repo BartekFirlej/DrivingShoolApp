@@ -90,7 +90,7 @@ namespace DrivingSchoolAppTests.Services
             var address = new Address();
             var addedClassroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
             var addedClassroomDTO = new ClassroomResponseDTO { Id=1, Size = 10, Number = 10, AddressId = 1 };
-            var classroomToAdd = new ClassroomRequestDTO { AddressID=1, Size = 10, Number = 10};
+            var classroomToAdd = new ClassroomRequestDTO { AddressId=1, Size = 10, Number = 10};
             _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _classroomRepositoryMock.Setup(repo => repo.PostClassroom(classroomToAdd)).ReturnsAsync(addedClassroom);
             _mapperMock.Setup(m => m.Map<ClassroomResponseDTO>(It.IsAny<Classroom>())).Returns(addedClassroomDTO);
@@ -105,7 +105,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Post_Classroom_ThrowsNotFoundAddressException()
         {
             var idOfAddressToFind = 1;
-            var classroomToAdd = new ClassroomRequestDTO { AddressID = 1, Size = 10, Number = 10 };
+            var classroomToAdd = new ClassroomRequestDTO { AddressId = 1, Size = 10, Number = 10 };
             _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ThrowsAsync(new NotFoundAddressException(idOfAddressToFind));
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
 
@@ -117,7 +117,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var address = new Address();
             var idOfAddressToFind = 1;
-            var classroomToAdd = new ClassroomRequestDTO { AddressID = 1, Size = 10, Number = -2 };
+            var classroomToAdd = new ClassroomRequestDTO { AddressId = 1, Size = 10, Number = -2 };
             _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
 
@@ -129,7 +129,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var address = new Address();
             var idOfAddressToFind = 1;
-            var classroomToAdd = new ClassroomRequestDTO { AddressID = 1, Size = -2, Number = 10 };
+            var classroomToAdd = new ClassroomRequestDTO { AddressId = 1, Size = -2, Number = 10 };
             _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ReturnsAsync(address);
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
 
@@ -193,6 +193,96 @@ namespace DrivingSchoolAppTests.Services
             _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.CheckClassroom(idOfClassroom));
+        }
+
+        [TestMethod]
+        public async Task Check_ClassroomTracking_ReturnsClassroom()
+        {
+            var classroom = new Classroom();
+            var idOfClassroom = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync(classroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckClassroomTracking(idOfClassroom);
+
+            Assert.AreEqual(classroom, result);
+        }
+
+        [TestMethod]
+        public async Task Check_ClassroomTracking_ThrowsNotFoundClassroomException()
+        {
+            var idOfClassroom = 1;
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync((Classroom)null);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.CheckClassroomTracking(idOfClassroom));
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ReturnsClassroom()
+        {
+            var idOfClassroom = 1;
+            var address = new Address();
+            var classroom = new Classroom { Id = 1, AddressId = 1, Number = 10, Size = 10 };
+            var updatedClassroom = new ClassroomResponseDTO { Id = 1, AddressId = 2, Size = 20, Number = 20 };
+            var classroomUpdate = new ClassroomRequestDTO { AddressId = 2, Size = 20, Number = 20 };
+            _addressServiceMock.Setup(service => service.CheckAddress(classroom.AddressId)).ReturnsAsync(address);
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync(classroom);
+            _classroomRepositoryMock.Setup(repo => repo.UpdateClassroom(classroom, classroomUpdate)).ReturnsAsync(classroom);
+            _mapperMock.Setup(m => m.Map<ClassroomResponseDTO>(It.IsAny<Classroom>())).Returns(updatedClassroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateClassroom(idOfClassroom, classroomUpdate);
+
+            Assert.AreEqual(updatedClassroom, result);
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsNotFoundClassroomException()
+        {
+            var idOfAddressToFind = 1;
+            var classroomToAdd = new ClassroomRequestDTO { AddressId = 1, Size = 10, Number = 10 };
+            _addressServiceMock.Setup(service => service.CheckAddress(idOfAddressToFind)).ThrowsAsync(new NotFoundAddressException(idOfAddressToFind));
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.PostClassroom(classroomToAdd));
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsNumberMustBeGreaterThanZeroExceptionException()
+        {
+            var classroom = new Classroom();
+            var idOfClassroom = 1;
+            var classroomUpdate = new ClassroomRequestDTO { AddressId = 1, Size = 10, Number = -2 };
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync(classroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateClassroom(idOfClassroom, classroomUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsSizeMustBeGreaterThanZeroExceptionException()
+        {
+            var classroom = new Classroom();
+            var idOfClassroom = 1;
+            var classroomUpdate = new ClassroomRequestDTO { AddressId = 1, Size = -10, Number = 2 };
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync(classroom);
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateClassroom(idOfClassroom, classroomUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Classroom_ThrowsNotFoundAddressExceptionException()
+        {
+            var classroom = new Classroom();
+            var idOfClassroom = 1;
+            var classroomUpdate = new ClassroomRequestDTO { AddressId = 1, Size = 10, Number = 2 };
+            _classroomRepositoryMock.Setup(repo => repo.CheckClassroomTracking(idOfClassroom)).ReturnsAsync(classroom);
+            _addressServiceMock.Setup(service => service.CheckAddress(classroomUpdate.AddressId)).ThrowsAsync(new NotFoundAddressException(classroomUpdate.AddressId));
+            _service = new ClassroomService(_classroomRepositoryMock.Object, _addressServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.UpdateClassroom(idOfClassroom, classroomUpdate));
         }
     }
 }

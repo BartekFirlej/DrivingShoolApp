@@ -12,8 +12,9 @@ namespace DrivingSchoolApp.Services
         public Task<ClassroomGetDTO> GetClassroom(int classroomId);
         public Task<ClassroomResponseDTO> PostClassroom(ClassroomRequestDTO classroomDetails);
         public Task<Classroom> CheckClassroom(int classroomId);
+        public Task<Classroom> CheckClassroomTracking(int classroomId);
         public Task<Classroom> DeleteClassroom(int classroomId);
-        public Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate);
+        public Task<ClassroomResponseDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate);
     }
     public class ClassroomService : IClassroomService
     {
@@ -50,7 +51,7 @@ namespace DrivingSchoolApp.Services
                 throw new ValueMustBeGreaterThanZeroException("number");
             if (classroomDetails.Size <=0)
                 throw new ValueMustBeGreaterThanZeroException("size");
-            var address = await _addressService.CheckAddress(classroomDetails.AddressID);
+            var address = await _addressService.CheckAddress(classroomDetails.AddressId);
             var addedClassroom = await _classroomRepository.PostClassroom(classroomDetails);
             return _mapper.Map<ClassroomResponseDTO>(addedClassroom);
         }
@@ -63,18 +64,30 @@ namespace DrivingSchoolApp.Services
             return classroom;
         }
 
+        public async Task<Classroom> CheckClassroomTracking(int classroomId)
+        {
+            var classroom = await _classroomRepository.CheckClassroomTracking(classroomId);
+            if (classroom == null)
+                throw new NotFoundClassroomException(classroomId);
+            return classroom;
+        }
+
         public async Task<Classroom> DeleteClassroom(int classroomId)
         {
             var classroomToDelete = await CheckClassroom(classroomId);
             return await _classroomRepository.DeleteClassroom(classroomToDelete);
         }
 
-        public async Task<ClassroomGetDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate)
+        public async Task<ClassroomResponseDTO> UpdateClassroom(int classroomId, ClassroomRequestDTO classroomUpdate)
         {
-            await CheckClassroom(classroomId);
-            await _addressService.CheckAddress(classroomUpdate.AddressID);
-            await _classroomRepository.UpdateClassroom(classroomId, classroomUpdate);
-            return await _classroomRepository.GetClassroom(classroomId);
+            var classroomToUpdate = await CheckClassroomTracking(classroomId);
+            if (classroomUpdate.Number <= 0)
+                throw new ValueMustBeGreaterThanZeroException("number");
+            if (classroomUpdate.Size <= 0)
+                throw new ValueMustBeGreaterThanZeroException("size");
+            await _addressService.CheckAddress(classroomUpdate.AddressId);
+            var updatedClassroom = await _classroomRepository.UpdateClassroom(classroomToUpdate, classroomUpdate);
+            return _mapper.Map<ClassroomResponseDTO>(updatedClassroom);
         }
     }
 }
