@@ -205,5 +205,67 @@ namespace DrivingSchoolAppTests.Services
 
             await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.CheckCustomer(idOfCustomer));
         }
+
+        [TestMethod]
+        public async Task Check_CustomerTracking_ReturnsCustomer()
+        {
+            var customer = new Customer { Id = 1, Name = "Mathew", };
+            var idOfCustomer = 1;
+            _customerRepositoryMock.Setup(repo => repo.CheckCustomerTracking(idOfCustomer)).ReturnsAsync(customer);
+            _service = new CustomerService(_customerRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckCustomerTracking(idOfCustomer);
+
+            Assert.AreEqual(customer, result);
+        }
+
+        [TestMethod]
+        public async Task Check_CustomerTracking_ThrowsNotFoundCustomerException()
+        {
+            var idOfCustomer = 1;
+            _customerRepositoryMock.Setup(repo => repo.CheckCustomerTracking(idOfCustomer)).ReturnsAsync((Customer)null);
+            _service = new CustomerService(_customerRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.CheckCustomerTracking(idOfCustomer));
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ReturnsCustomer()
+        {
+            var customer = new Customer { Id = 1, Name = "Test", SecondName = "Test", BirthDate = new DateTime(2023,10,10) };
+            var updateCustomer = new CustomerRequestDTO { Name = "UpdateTest", SecondName = "UpdateTest", BirthDate = new DateTime(2020, 10, 10) };
+            var updatedCustomer = new CustomerResponseDTO { Id = 1, Name = "UpdateTest", SecondName = "UpdateTest", BirthDate = new DateTime(2020, 10, 10) };
+            var idOfCustomer = 1;
+            _customerRepositoryMock.Setup(repo => repo.CheckCustomerTracking(idOfCustomer)).ReturnsAsync(customer);
+            _mapperMock.Setup(m => m.Map<CustomerResponseDTO>(It.IsAny<Customer>())).Returns(updatedCustomer);
+            _service = new CustomerService(_customerRepositoryMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateCustomer(idOfCustomer, updateCustomer);
+
+            Assert.AreEqual(result, updatedCustomer);
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ThrowsNotFoundCustomerException()
+        {
+            var updateCustomer = new CustomerRequestDTO { Name = "UpdateTest", SecondName = "UpdateTest", BirthDate = new DateTime(2020, 10, 10) };
+            var idOfCustomer = 1;
+            _customerRepositoryMock.Setup(repo => repo.CheckCustomerTracking(idOfCustomer)).ThrowsAsync(new NotFoundCustomerException(idOfCustomer));
+            _service = new CustomerService(_customerRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.UpdateCustomer(idOfCustomer, updateCustomer));
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ThrowsDateTimeException()
+        {
+            var updateCustomer = new CustomerRequestDTO { Name = "UpdateTest", SecondName = "UpdateTest" };
+            var customer = new Customer { Id = 1, Name = "Test", SecondName = "Test" };
+            var idOfCustomer = 1;
+            _customerRepositoryMock.Setup(repo => repo.CheckCustomerTracking(idOfCustomer)).ReturnsAsync(customer);
+            _service = new CustomerService(_customerRepositoryMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.UpdateCustomer(idOfCustomer, updateCustomer));
+        }
     }
 }

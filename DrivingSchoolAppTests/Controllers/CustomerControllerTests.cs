@@ -303,5 +303,45 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Customer_ReturnsCustomer()
+        {
+            var customerUpdate = new CustomerRequestDTO();
+            var updatedCustomer = new CustomerResponseDTO();
+            var idOfCustomerToUpdate = 1;
+            _customerServiceMock.Setup(service => service.UpdateCustomer(idOfCustomerToUpdate, customerUpdate)).ReturnsAsync(updatedCustomer);
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateCustomer(idOfCustomerToUpdate, customerUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ThrowsNotFoundCustomer()
+        {
+            var customerUpdate = new CustomerRequestDTO();
+            var idOfCustomerToUpdate = 1;
+            _customerServiceMock.Setup(service => service.UpdateCustomer(idOfCustomerToUpdate, customerUpdate)).ThrowsAsync(new NotFoundCustomerException(idOfCustomerToUpdate));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateCustomer(idOfCustomerToUpdate, customerUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ThrowsDateTimeException()
+        {
+            var customerUpdate = new CustomerRequestDTO();
+            var idOfCustomerToUpdate = 1;
+            _customerServiceMock.Setup(service => service.UpdateCustomer(idOfCustomerToUpdate, customerUpdate)).ThrowsAsync(new DateTimeException("birth date"));
+            _controller = new CustomerController(_customerServiceMock.Object, _registrationServiceMock.Object, _customerLectureServiceMock.Object, _drivingLicenceServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateCustomer(idOfCustomerToUpdate, customerUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 } 

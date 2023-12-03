@@ -171,7 +171,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            CustomerGetDTO updatedCustomer;
+            CustomerResponseDTO updatedCustomer;
             try
             {
                 updatedCustomer = await _customerService.UpdateCustomer(customerid, customerUpdate);

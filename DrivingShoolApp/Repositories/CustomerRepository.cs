@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<CustomerGetDTO> GetCustomer(int customerId);
         public Task<Customer> PostCustomer(CustomerRequestDTO customerDetails);
         public Task<Customer> CheckCustomer(int customerId);
+        public Task<Customer> CheckCustomerTracking(int customerId);
         public Task<Customer> DeleteCustomer(Customer customerToDelete);
-        public Task<Customer> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate);
+        public Task<Customer> UpdateCustomer(Customer customerToUpdate, CustomerRequestDTO customerUpdate);
     }
     public class CustomerRepository : ICustomerRepository
     {
@@ -73,6 +74,14 @@ namespace DrivingSchoolApp.Repositories
                             .FirstOrDefaultAsync();
         }
 
+        public async Task<Customer> CheckCustomerTracking(int customerId)
+        {
+            return await _dbContext.Customers
+                            .AsNoTracking()
+                            .Where(u => u.Id == customerId)
+                            .FirstOrDefaultAsync();
+        }
+
         public async Task<Customer> DeleteCustomer(Customer customerToDelete)
         {
             var deletedCustomer = _dbContext.Customers.Remove(customerToDelete);
@@ -80,17 +89,13 @@ namespace DrivingSchoolApp.Repositories
             return deletedCustomer.Entity;
         }
 
-        public async Task<Customer> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate)
+        public async Task<Customer> UpdateCustomer(Customer customerToUpdate, CustomerRequestDTO customerUpdate)
         {
-            var customer = await _dbContext.Customers
-                            .Where(u => u.Id == customerId)
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync();
-            customer.BirthDate = customerUpdate.BirthDate;
-            customer.Name = customerUpdate.Name;
-            customer.SecondName = customerUpdate.SecondName;
+            customerToUpdate.BirthDate = customerUpdate.BirthDate;
+            customerToUpdate.Name = customerUpdate.Name;
+            customerToUpdate.SecondName = customerUpdate.SecondName;
             await _dbContext.SaveChangesAsync();
-            return customer;
+            return customerToUpdate;
         }
     }
 }

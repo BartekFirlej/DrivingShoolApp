@@ -228,5 +228,82 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_CustomerTracking_ReturnsCustomer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCustomerToCheck = 2;
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.CheckCustomerTracking(idOfCustomerToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestName2", result.Name);
+            Assert.AreEqual("TestSName2", result.SecondName);
+            Assert.AreEqual(new DateTime(1990, 1, 1), result.BirthDate);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_CustomerTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCustomerToCheck = 3;
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.CheckCustomerTracking(idOfCustomerToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Customer_ReturnsCustomer()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var customer1 = new Customer { Id = 1, Name = "TestName1", SecondName = "TestSName1", BirthDate = new DateTime(2000, 1, 1) };
+            var customer2 = new Customer { Id = 2, Name = "TestName2", SecondName = "TestSName2", BirthDate = new DateTime(1990, 1, 1) };
+            var customer1Update = new CustomerRequestDTO { Name = "UpdatedName1", SecondName = "UpdatedeSName1", BirthDate = new DateTime(2022, 1, 1) };
+            await _dbContext.Customers.AddRangeAsync(customer1, customer2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CustomerRepository(_dbContext);
+
+            var result = await _repository.UpdateCustomer(customer1, customer1Update);
+
+            var updatedCustomer = await _repository.GetCustomer(customer1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedName1", result.Name);
+            Assert.AreEqual("UpdatedeSName1", result.SecondName);
+            Assert.AreEqual(new DateTime(2022, 1, 1), result.BirthDate);
+            Assert.IsNotNull(updatedCustomer);
+            Assert.AreEqual(1, updatedCustomer.Id);
+            Assert.AreEqual("UpdatedName1", updatedCustomer.Name);
+            Assert.AreEqual("UpdatedeSName1", updatedCustomer.SecondName);
+            Assert.AreEqual(new DateTime(2022, 1, 1), updatedCustomer.BirthDate);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

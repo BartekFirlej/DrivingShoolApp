@@ -208,7 +208,7 @@ namespace DrivingSchoolAppTests.Services
             _mapperMock.Setup(m => m.Map<AddressResponseDTO>(It.IsAny<Address>())).Returns(updatedAddress);
             _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
 
-            var result = await _service.UpdateAddress(1, updateAddress);
+            var result = await _service.UpdateAddress(idOfAddress, updateAddress);
 
             Assert.AreEqual(result, updatedAddress);
         }

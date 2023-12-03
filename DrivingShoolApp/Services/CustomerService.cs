@@ -13,8 +13,9 @@ namespace DrivingSchoolApp.Services
         public Task<CustomerResponseDTO> PostCustomer(CustomerRequestDTO newCustomer);
         public bool CheckCustomerAgeRequirement(DateTime customerBirthDay, int requiredAge, DateTime assignDate);
         public Task<Customer> CheckCustomer(int customerId);
+        public Task<Customer> CheckCustomerTracking(int customerId);
         public Task<Customer> DeleteCustomer(int customerId);
-        public Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate);
+        public Task<CustomerResponseDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate);
     }
     public class CustomerService : ICustomerService
     {
@@ -67,19 +68,27 @@ namespace DrivingSchoolApp.Services
             return customer;
         }
 
+        public async Task<Customer> CheckCustomerTracking(int customerId)
+        {
+            var customer = await _customerRepository.CheckCustomerTracking(customerId);
+            if (customer == null)
+                throw new NotFoundCustomerException(customerId);
+            return customer;
+        }
+
         public async Task<Customer> DeleteCustomer(int customerId)
         {
             var customerToDelete = await CheckCustomer(customerId);
             return await _customerRepository.DeleteCustomer(customerToDelete);
         }
 
-        public async Task<CustomerGetDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate)
+        public async Task<CustomerResponseDTO> UpdateCustomer(int customerId, CustomerRequestDTO customerUpdate)
         {
-            await CheckCustomer(customerId);
+            var customerToUpdate = await CheckCustomerTracking(customerId);
             if (customerUpdate.BirthDate == DateTime.MinValue)
                 throw new DateTimeException("birth");
-            await _customerRepository.UpdateCustomer(customerId, customerUpdate);
-            return await _customerRepository.GetCustomer(customerId);
+            var updatedCustomer = await _customerRepository.UpdateCustomer(customerToUpdate, customerUpdate);
+            return _mapper.Map<CustomerResponseDTO>(updatedCustomer);
         }
     }
 }
