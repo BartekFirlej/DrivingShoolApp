@@ -13,8 +13,9 @@ namespace DrivingSchoolApp.Services
         public Task<CourseResponseDTO> PostCourse(CourseRequestDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId);
         public Task<Course> CheckCourse(int courseId);
+        public Task<Course> CheckCourseTracking(int courseId);
         public Task<Course> DeleteCourse(int courseId);
-        public Task<CourseGetDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate);
+        public Task<CourseResponseDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate);
 
     }
     public class CourseService : ICourseService
@@ -73,15 +74,23 @@ namespace DrivingSchoolApp.Services
             return course;
         }
 
+        public async Task<Course> CheckCourseTracking(int courseId)
+        {
+            var course = await _courseRepository.CheckCourseTracking(courseId);
+            if (course == null)
+                throw new NotFoundCourseException(courseId);
+            return course;
+        }
+
         public async Task<Course> DeleteCourse(int courseId)
         {
             var courseToDelete = await CheckCourse(courseId);
             return await _courseRepository.DeleteCourse(courseToDelete);
         }
 
-        public async Task<CourseGetDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate)
+        public async Task<CourseResponseDTO> UpdateCourse(int courseId, CourseRequestDTO courseUpdate)
         {
-            await CheckCourse(courseId);
+            var courseToUpdate = await CheckCourseTracking(courseId);
             if (courseUpdate.Price <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Price");
             if (courseUpdate.BeginDate == DateTime.MinValue)
@@ -89,8 +98,8 @@ namespace DrivingSchoolApp.Services
             if (courseUpdate.Limit <= 0)
                 throw new ValueMustBeGreaterThanZeroException("Limit");
             await _courseTypeService.CheckCourseType(courseUpdate.CourseTypeId);
-            await _courseRepository.UpdateCourse(courseId, courseUpdate);
-            return await _courseRepository.GetCourse(courseId);
+            var updatedCourse = await _courseRepository.UpdateCourse(courseToUpdate, courseUpdate);
+            return _mapper.Map<CourseResponseDTO>(updatedCourse);
         }
     }
 }

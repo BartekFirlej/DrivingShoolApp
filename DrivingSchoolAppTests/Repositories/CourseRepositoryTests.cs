@@ -340,5 +340,88 @@ namespace DrivingSchoolAppTests.Repositories
 
             await _dbContext.DisposeAsync();
         }
+
+        [TestMethod]
+        public async Task Check_CourseTracking_ReturnsCourse()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseToCheck = 2;
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.CheckCourseTracking(idOfCourseToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual("TestCourse2", result.Name);
+            Assert.AreEqual(new DateTime(2020, 2, 2), result.BeginDate);
+            Assert.AreEqual(1, result.CourseTypeId);
+            Assert.AreEqual(20, result.Limit);
+            Assert.AreEqual(200, result.Price);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_CourseTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfCourseToCheck = 3;
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.CheckCourseTracking(idOfCourseToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Course_ReturnsCourse()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var course1 = new Course { Id = 1, Name = "TestCourse1", BeginDate = new DateTime(2020, 1, 1), CourseTypeId = 1, Limit = 10, Price = 100 };
+            var course2 = new Course { Id = 2, Name = "TestCourse2", BeginDate = new DateTime(2020, 2, 2), CourseTypeId = 1, Limit = 20, Price = 200 };
+            var course1Update = new CourseRequestDTO { Name = "UpdatedName", BeginDate = new DateTime(2023, 10, 10), CourseTypeId = 10, Limit = 100, Price = 500 };
+            await _dbContext.Courses.AddRangeAsync(course1, course2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new CourseRepository(_dbContext);
+
+            var result = await _repository.UpdateCourse(course1, course1Update);
+
+            var updatedAddress = await _repository.CheckCourse(course1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("UpdatedName", result.Name);
+            Assert.AreEqual(new DateTime(2023, 10, 10), result.BeginDate);
+            Assert.AreEqual(10, result.CourseTypeId);
+            Assert.AreEqual(100, result.Limit);
+            Assert.AreEqual(500, result.Price);
+            Assert.IsNotNull(updatedAddress);
+            Assert.AreEqual(1, updatedAddress.Id);
+            Assert.AreEqual("UpdatedName", updatedAddress.Name);
+            Assert.AreEqual(new DateTime(2023, 10, 10), updatedAddress.BeginDate);
+            Assert.AreEqual(10, updatedAddress.CourseTypeId);
+            Assert.AreEqual(100, updatedAddress.Limit);
+            Assert.AreEqual(500, updatedAddress.Price);
+
+            await _dbContext.DisposeAsync();
+        }
     }
 }

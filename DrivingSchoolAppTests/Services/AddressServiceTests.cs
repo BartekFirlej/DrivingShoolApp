@@ -205,6 +205,7 @@ namespace DrivingSchoolAppTests.Services
             var updatedAddress = new AddressResponseDTO { Id = 1, City = "UpdatedCity1", Street = "UpdatedStreet1", Number = 100, PostalCode = "99-999" };
             var idOfAddress = 1;
             _addressRepositoryMock.Setup(repo => repo.CheckAddressTracking(idOfAddress)).ReturnsAsync(address);
+            _addressRepositoryMock.Setup(repo => repo.UpdateAddress(address, updateAddress)).ReturnsAsync(address);
             _mapperMock.Setup(m => m.Map<AddressResponseDTO>(It.IsAny<Address>())).Returns(updatedAddress);
             _service = new AddressService(_addressRepositoryMock.Object, _mapperMock.Object);
 

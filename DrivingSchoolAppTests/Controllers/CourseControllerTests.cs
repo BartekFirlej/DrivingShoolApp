@@ -624,5 +624,73 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Course_ReturnOk()
+        {
+            var courseId = 1;
+            var courseUpdate = new CourseRequestDTO();
+            var updatedCourse = new CourseResponseDTO();
+            _courseServiceMock.Setup(service => service.UpdateCourse(courseId, courseUpdate)).ReturnsAsync(updatedCourse);
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateCourse(courseId, courseUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Course_ThrowsNotFoundCourseException()
+        {
+            var courseId = 1;
+            var courseUpdate = new CourseRequestDTO();
+            _courseServiceMock.Setup(service => service.UpdateCourse(courseId, courseUpdate)).ThrowsAsync(new NotFoundCourseException(courseId));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateCourse(courseId, courseUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Course_ThrowsNotFoundCourseTypeException()
+        {
+            var idOfCourseType = 1;
+            var courseId = 1;
+            var courseUpdate = new CourseRequestDTO();
+            _courseServiceMock.Setup(service => service.UpdateCourse(courseId, courseUpdate)).ThrowsAsync(new NotFoundCourseTypeException(idOfCourseType));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateCourse(courseId, courseUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Course_ThrowsLimitValueExceptionException()
+        {
+            var courseId = 1;
+            var courseUpdate = new CourseRequestDTO();
+            var incorrectProperty = "limit";
+            _courseServiceMock.Setup(service => service.UpdateCourse(courseId, courseUpdate)).ThrowsAsync(new ValueMustBeGreaterThanZeroException(incorrectProperty));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateCourse(courseId, courseUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task Update_Course_ThrowsDateTimeExceptionException()
+        {
+            var courseId = 1;
+            var courseUpdate = new CourseRequestDTO();
+            _courseServiceMock.Setup(service => service.UpdateCourse(courseId, courseUpdate)).ThrowsAsync(new DateTimeException("begin date"));
+            _controller = new CourseController(_courseServiceMock.Object, _courseSubjectServiceMock.Object, _registrationServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateCourse(courseId, courseUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

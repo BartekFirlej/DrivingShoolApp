@@ -285,7 +285,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            CourseGetDTO updatedCourse;
+            CourseResponseDTO updatedCourse;
             try
             {
                 updatedCourse = await _courseService.UpdateCourse(courseid, courseUpdate);

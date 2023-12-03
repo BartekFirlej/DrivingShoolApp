@@ -10,8 +10,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<Course> PostCourse(CourseRequestDTO courseDetails);
         public Task<int> GetCourseAssignedPeopleCount(int courseId); 
         public Task<Course> CheckCourse(int courseId);
+        public Task<Course> CheckCourseTracking(int courseId);
         public Task<Course> DeleteCourse(Course courseToDelete);
-        public Task<Course> UpdateCourse(int courseId, CourseRequestDTO courseUpdate);
+        public Task<Course> UpdateCourse(Course courseToUpdate, CourseRequestDTO courseUpdate);
     }
     public class CourseRepository : ICourseRepository
     {
@@ -110,6 +111,13 @@ namespace DrivingSchoolApp.Repositories
                          .FirstOrDefaultAsync();
         }
 
+        public async Task<Course> CheckCourseTracking(int courseId)
+        {
+            return await _dbContext.Courses
+                         .Where(c => c.Id == courseId)
+                         .FirstOrDefaultAsync();
+        }
+
         public async Task<Course> DeleteCourse(Course courseToDelete)
         {
             var deletedCourse = _dbContext.Courses.Remove(courseToDelete);
@@ -117,18 +125,15 @@ namespace DrivingSchoolApp.Repositories
             return deletedCourse.Entity;
         }
 
-        public async Task<Course> UpdateCourse(int courseId, CourseRequestDTO courseUpdate)
+        public async Task<Course> UpdateCourse(Course courseToUpdate, CourseRequestDTO courseUpdate)
         {
-            var course = await _dbContext.Courses
-                         .Where(c => c.Id == courseId)
-                         .FirstOrDefaultAsync();
-            course.BeginDate = courseUpdate.BeginDate;
-            course.Name = courseUpdate.Name;
-            course.Price = courseUpdate.Price;
-            course.Limit = courseUpdate.Limit;
-            course.CourseTypeId = courseUpdate.CourseTypeId;
+            courseToUpdate.BeginDate = courseUpdate.BeginDate;
+            courseToUpdate.Name = courseUpdate.Name;
+            courseToUpdate.Price = courseUpdate.Price;
+            courseToUpdate.Limit = courseUpdate.Limit;
+            courseToUpdate.CourseTypeId = courseUpdate.CourseTypeId;
             await _dbContext.SaveChangesAsync();
-            return course;
+            return courseToUpdate;
         }
     }
 }
