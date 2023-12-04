@@ -209,5 +209,98 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ReturnsOk()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            var updatedDrivingLesson = new DrivingLessonResponseDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ReturnsAsync(updatedDrivingLesson);
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundDrivingLessonException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new NotFoundDrivingLessonException(idOfDrivingLesson));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundCustomerException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new NotFoundCustomerException(1));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundLecturerException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new NotFoundLecturerException(1));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundAddressException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new NotFoundAddressException(1));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundCourseException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new NotFoundCourseException(1));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsDateTimeException()
+        {
+
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO();
+            _drivingLessonServiceMock.Setup(service => service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate)).ThrowsAsync(new DateTimeException("lesson date"));
+            _controller = new DrivingLessonController(_drivingLessonServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

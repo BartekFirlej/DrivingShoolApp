@@ -11,7 +11,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<DrivingLesson> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(DrivingLesson drivingLessonToDelete);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
-        public Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate);
+        public Task<DrivingLesson> CheckDrivingLessonTracking(int drivingLessonId);
+        public Task<DrivingLesson> UpdateDrivingLesson(DrivingLesson drivingLessonToUpdate, DrivingLessonRequestDTO drivingLessonUpdate);
     }
     public class DrivingLessonRepository : IDrivingLessonRepository
     {
@@ -93,18 +94,22 @@ namespace DrivingSchoolApp.Repositories
                .FirstOrDefaultAsync();
         }
 
-        public async Task<DrivingLesson> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate)
+        public async Task<DrivingLesson> CheckDrivingLessonTracking(int drivingLessonId)
         {
-            var drivingLesson = await _dbContext.DrivingLessons
-                                        .Where(d => d.Id == drivingLessonId)
-                                        .FirstOrDefaultAsync();
-            drivingLesson.LecturerId = drivingLessonUpdate.LecturerId;
-            drivingLesson.CourseId = drivingLessonUpdate.CourseId;
-            drivingLesson.AddressId = drivingLessonUpdate.AddressId;
-            drivingLesson.CustomerId = drivingLessonUpdate.CustomerId;
-            drivingLesson.LessonDate = drivingLessonUpdate.LessonDate;
+            return await _dbContext.DrivingLessons
+               .Where(d => d.Id == drivingLessonId)
+               .FirstOrDefaultAsync();
+        }
+
+        public async Task<DrivingLesson> UpdateDrivingLesson(DrivingLesson drivingLessonToUpdate, DrivingLessonRequestDTO drivingLessonUpdate)
+        {
+            drivingLessonToUpdate.LecturerId = drivingLessonUpdate.LecturerId;
+            drivingLessonToUpdate.CourseId = drivingLessonUpdate.CourseId;
+            drivingLessonToUpdate.AddressId = drivingLessonUpdate.AddressId;
+            drivingLessonToUpdate.CustomerId = drivingLessonUpdate.CustomerId;
+            drivingLessonToUpdate.LessonDate = drivingLessonUpdate.LessonDate;
             await _dbContext.SaveChangesAsync();
-            return drivingLesson;
+            return drivingLessonToUpdate;
         }
     }
 }

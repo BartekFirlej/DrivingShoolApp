@@ -13,7 +13,8 @@ namespace DrivingSchoolApp.Services
         public Task<DrivingLessonResponseDTO> PostDrivingLesson(DrivingLessonRequestDTO drivingLessonDetails);
         public Task<DrivingLesson> DeleteDrivingLesson(int drivingLessonId);
         public Task<DrivingLesson> CheckDrivingLesson(int drivingLessonId);
-        public Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate);
+        public Task<DrivingLesson> CheckDrivingLessonTracking(int drivingLessonId);
+        public Task<DrivingLessonResponseDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate);
     }
     public class DrivingLessonService : IDrivingLessonService
     {
@@ -77,17 +78,25 @@ namespace DrivingSchoolApp.Services
             return drivingLesson;
         }
 
-        public async Task<DrivingLessonGetDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate)
+        public async Task<DrivingLesson> CheckDrivingLessonTracking(int drivingLessonId)
         {
-            await CheckDrivingLesson(drivingLessonId);
+            var drivingLesson = await _drivingLessonRepository.CheckDrivingLessonTracking(drivingLessonId);
+            if (drivingLesson == null)
+                throw new NotFoundDrivingLessonException(drivingLessonId);
+            return drivingLesson;
+        }
+
+        public async Task<DrivingLessonResponseDTO> UpdateDrivingLesson(int drivingLessonId, DrivingLessonRequestDTO drivingLessonUpdate)
+        {
+            var drivingLessonToUpdate = await CheckDrivingLessonTracking(drivingLessonId);
             if (drivingLessonUpdate.LessonDate == DateTime.MinValue)
                 throw new DateTimeException("lesson date");
             await _customerService.CheckCustomer(drivingLessonUpdate.CustomerId);
             await _lecturerService.CheckLecturer(drivingLessonUpdate.LecturerId);
             await _addressService.CheckAddress(drivingLessonUpdate.AddressId);
             await _courseService.CheckCourse(drivingLessonUpdate.CourseId);
-            await _drivingLessonRepository.UpdateDrivingLesson(drivingLessonId, drivingLessonUpdate);
-            return await _drivingLessonRepository.GetDrivingLesson(drivingLessonId);
+            var updatedDrivingLesson = await _drivingLessonRepository.UpdateDrivingLesson(drivingLessonToUpdate, drivingLessonUpdate);
+            return _mapper.Map<DrivingLessonResponseDTO>(updatedDrivingLesson);
         }
     }
 }

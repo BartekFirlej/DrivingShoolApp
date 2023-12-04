@@ -111,7 +111,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            DrivingLessonGetDTO updatedDrivingLesson;
+            DrivingLessonResponseDTO updatedDrivingLesson;
             try
             {
                 updatedDrivingLesson = await _drivingLessonService.UpdateDrivingLesson(drivinglessonid, drivingLessonUpdate);

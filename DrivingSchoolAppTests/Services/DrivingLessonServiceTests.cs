@@ -220,7 +220,7 @@ namespace DrivingSchoolAppTests.Services
         {
             var drivingLesson = new DrivingLesson();
             var idOfDrivingLesson = 10;
-            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(10)).ReturnsAsync(drivingLesson);
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
             _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.CheckDrivingLesson(idOfDrivingLesson);
@@ -232,10 +232,146 @@ namespace DrivingSchoolAppTests.Services
         public async Task Check_DrivingLesson_ThrowsNotFoundDrivingLessonException()
         {
             var idOfDrivingLesson = 10;
-            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(10)).ReturnsAsync((DrivingLesson)null);
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLesson(idOfDrivingLesson)).ReturnsAsync((DrivingLesson)null);
             _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.CheckDrivingLesson(idOfDrivingLesson));
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLessonTracking_ReturnsDrivingLesson()
+        {
+            var drivingLesson = new DrivingLesson();
+            var idOfDrivingLesson = 10;
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckDrivingLessonTracking(idOfDrivingLesson);
+
+            Assert.AreEqual(drivingLesson, result);
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLessonTracking_ThrowsNotFoundDrivingLessonException()
+        {
+            var idOfDrivingLesson = 10;
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync((DrivingLesson)null);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.CheckDrivingLessonTracking(idOfDrivingLesson));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ReturnsUpdatedDrivingLesson()
+        {
+            var idOfDrivingLesson = 1;
+            var customer = new Customer { Id = 2, BirthDate = new DateTime(2000, 1, 1), Name = "CustomerName", SecondName = "CustomerSecondName" };
+            var lecturer = new Lecturer { Id = 2, Name = "LecturerName", SecondName = "LecturerSecondName" };
+            var address = new Address { Id = 2, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
+            var courseTypeDTO = new CourseTypeGetDTO { Id = 1, DrivingHours = 10, LecturesHours = 10, MinimumAge = 18, LicenceCategoryId = 1, Name = "Kurs" };
+            var course = new Course { Id = 2, Limit = 10, Price = 1000, Name = "Kurs kat. B", CourseTypeId = courseTypeDTO.Id, BeginDate = new DateTime(2023, 1, 1) };
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var updatedDrivingLesson = new DrivingLessonResponseDTO { Id = 1, AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2, LessonDate = new DateTime(2023, 10, 10) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _customerServiceMock.Setup(service => service.CheckCustomer(drivingLessonUpdate.CustomerId)).ReturnsAsync(customer);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(drivingLessonUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _addressServiceMock.Setup(service => service.CheckAddress(drivingLessonUpdate.AddressId)).ReturnsAsync(address);
+            _courseServiceMock.Setup(service => service.CheckCourse(drivingLessonUpdate.CourseId)).ReturnsAsync(course);
+            _drivingLessonRepositoryMock.Setup(repo => repo.UpdateDrivingLesson(drivingLesson, drivingLessonUpdate)).ReturnsAsync(drivingLesson);
+            _mapperMock.Setup(m => m.Map<DrivingLessonResponseDTO>(It.IsAny<DrivingLesson>())).Returns(updatedDrivingLesson);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate);
+
+            Assert.AreEqual(updatedDrivingLesson, result);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundDrivingLessonException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ThrowsAsync(new NotFoundDrivingLessonException(idOfDrivingLesson));
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundDrivingLessonException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsDateTimeException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundCustomerException()
+        {
+            var idOfDrivingLesson = 1;
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _customerServiceMock.Setup(service => service.CheckCustomer(drivingLessonUpdate.CustomerId)).ThrowsAsync(new NotFoundCustomerException(drivingLessonUpdate.CustomerId));
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCustomerException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundLecturerException()
+        {
+            var idOfDrivingLesson = 1;
+            var customer = new Customer { Id = 2, BirthDate = new DateTime(2000, 1, 1), Name = "CustomerName", SecondName = "CustomerSecondName" };
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _customerServiceMock.Setup(service => service.CheckCustomer(drivingLessonUpdate.CustomerId)).ReturnsAsync(customer);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(drivingLessonUpdate.LecturerId)).ThrowsAsync(new NotFoundLecturerException(drivingLessonUpdate.LecturerId));
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundAddressException()
+        {
+            var idOfDrivingLesson = 1;
+            var customer = new Customer { Id = 2, BirthDate = new DateTime(2000, 1, 1), Name = "CustomerName", SecondName = "CustomerSecondName" }; 
+            var lecturer = new Lecturer { Id = 2, Name = "LecturerName", SecondName = "LecturerSecondName" };
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _customerServiceMock.Setup(service => service.CheckCustomer(drivingLessonUpdate.CustomerId)).ReturnsAsync(customer);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(drivingLessonUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _addressServiceMock.Setup(service => service.CheckAddress(drivingLessonUpdate.AddressId)).ThrowsAsync(new NotFoundAddressException(drivingLessonUpdate.AddressId));
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundAddressException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLesson_ThrowsNotFoundCourseException()
+        {
+            var idOfDrivingLesson = 1;
+            var customer = new Customer { Id = 2, BirthDate = new DateTime(2000, 1, 1), Name = "CustomerName", SecondName = "CustomerSecondName" };
+            var lecturer = new Lecturer { Id = 2, Name = "LecturerName", SecondName = "LecturerSecondName" }; 
+            var address = new Address { Id = 2, City = "TestCity", PostalCode = "22-222", Street = "TestStreet", Number = 1 };
+            var drivingLesson = new DrivingLesson { Id = 1, AddressId = 1, CustomerId = 1, LecturerId = 1, LessonDate = new DateTime(2023, 1, 1) };
+            var drivingLessonUpdate = new DrivingLessonRequestDTO { LessonDate = new DateTime(2023, 10, 10), AddressId = 2, CustomerId = 2, LecturerId = 2, CourseId = 2 };
+            _drivingLessonRepositoryMock.Setup(repo => repo.CheckDrivingLessonTracking(idOfDrivingLesson)).ReturnsAsync(drivingLesson);
+            _customerServiceMock.Setup(service => service.CheckCustomer(drivingLessonUpdate.CustomerId)).ReturnsAsync(customer);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(drivingLessonUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _addressServiceMock.Setup(service => service.CheckAddress(drivingLessonUpdate.AddressId)).ReturnsAsync(address);
+            _courseServiceMock.Setup(service => service.CheckCourse(drivingLessonUpdate.CourseId)).ThrowsAsync(new NotFoundCourseException(drivingLessonUpdate.CourseId));
+            _service = new DrivingLessonService(_drivingLessonRepositoryMock.Object, _customerServiceMock.Object, _lecturerServiceMock.Object, _addressServiceMock.Object, _courseServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.UpdateDrivingLesson(idOfDrivingLesson, drivingLessonUpdate));
         }
     }
 }
