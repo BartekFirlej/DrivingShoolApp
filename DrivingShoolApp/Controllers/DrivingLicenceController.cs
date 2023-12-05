@@ -107,7 +107,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            DrivingLicenceGetDTO updatedDrivingLicence;
+            DrivingLicenceResponseDTO updatedDrivingLicence;
             try
             {
                 updatedDrivingLicence = await _drivingLicenceService.UpdateDrivingLicence(drivinglicenceid, drivingLicenceUpdate);

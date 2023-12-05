@@ -393,6 +393,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(2, result.LicenceCategoryId);
             Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
             Assert.AreEqual(1, await _dbContext.DrivingLicences.CountAsync());
@@ -419,6 +420,7 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(2, result.LicenceCategoryId);
             Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
             Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
 
@@ -442,6 +444,84 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckDrivingLicence(idOfDrivingLicenceToFind);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicenceTracking_ReturnsDrivingLicence()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLicenceToFind = 2;
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.CheckDrivingLicenceTracking(idOfDrivingLicenceToFind);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(2, result.LicenceCategoryId);
+            Assert.AreEqual(new DateTime(2020, 11, 11), result.ReceivedDate);
+            Assert.AreEqual(new DateTime(2025, 11, 11), result.ExpirationDate);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_DrivingLicenceTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfDrivingLicenceToFind = 3;
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.CheckDrivingLicenceTracking(idOfDrivingLicenceToFind);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ReturnsDrivingLicence()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var drivingLicence1 = new DrivingLicence { Id = 1, CustomerId = 1, LicenceCategoryId = 1, ReceivedDate = new DateTime(2020, 1, 1), ExpirationDate = new DateTime(2025, 1, 1) };
+            var drivingLicence2 = new DrivingLicence { Id = 2, CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2020, 11, 11), ExpirationDate = new DateTime(2025, 11, 11) };
+            var drivingLicence1Update = new DrivingLicenceRequestDTO { CustomerId = 2, LicenceCategoryId = 2, ReceivedDate = new DateTime(2021, 10, 10), ExpirationDate = new DateTime(2023, 9, 9) };
+            await _dbContext.DrivingLicences.AddRangeAsync(drivingLicence1, drivingLicence2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new DrivingLicenceRepository(_dbContext);
+
+            var result = await _repository.UpdateDrivingLicence(drivingLicence1, drivingLicence1Update);
+
+            var updatedDrivingLicence = await _repository.CheckDrivingLicence(drivingLicence1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual(2, result.CustomerId);
+            Assert.AreEqual(new DateTime(2021, 10, 10), result.ReceivedDate);
+            Assert.AreEqual(new DateTime(2023, 9, 9), result.ExpirationDate);
+            Assert.IsNotNull(updatedDrivingLicence);
+            Assert.AreEqual(1, updatedDrivingLicence.Id);
+            Assert.AreEqual(2, updatedDrivingLicence.CustomerId);
+            Assert.AreEqual(new DateTime(2021, 10, 10), updatedDrivingLicence.ReceivedDate);
+            Assert.AreEqual(new DateTime(2023, 9, 9), updatedDrivingLicence.ExpirationDate);
 
             await _dbContext.DisposeAsync();
         }

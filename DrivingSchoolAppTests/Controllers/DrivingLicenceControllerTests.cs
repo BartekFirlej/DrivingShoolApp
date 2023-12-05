@@ -197,5 +197,85 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ReturnsOk()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            var updatedDrivingLicence = new DrivingLicenceResponseDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ReturnsAsync(updatedDrivingLicence);
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ThrowsNotFoundDrivingLicence()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ThrowsAsync(new NotFoundDrivingLicenceException(idOfDrivingLicence));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ThrowsNotFoundCustomerException()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ThrowsAsync(new NotFoundCustomerException(1));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ThrowsNotFoundLicenceCategoryException()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ThrowsAsync(new NotFoundLicenceCategoryException(1));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ThrowsCustomerDoesntMeetRequirementException()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ThrowsAsync(new CustomerDoesntMeetRequirementsException(1));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+
+            var result = (ConflictObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(409);
+        }
+
+        [TestMethod]
+        public async Task Update_DrivingLicence_ThrowsDateTimeException()
+        {
+            var idOfDrivingLicence = 1;
+            var drivingLicenceUpdate = new DrivingLicenceRequestDTO();
+            _drivingLicenceServiceMock.Setup(service => service.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate)).ThrowsAsync(new DateTimeException("date"));
+            _controller = new DrivingLicenceController(_drivingLicenceServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateDrivingLicence(idOfDrivingLicence, drivingLicenceUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
     }
 }

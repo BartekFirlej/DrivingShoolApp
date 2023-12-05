@@ -13,7 +13,8 @@ namespace DrivingSchoolApp.Repositories
         public Task<DrivingLicence> PostDrivingLicence(DrivingLicenceRequestDTO drivingLicenceDetails);
         public Task<DrivingLicence> DeleteDrivingLicence(DrivingLicence drivingLicenceToDelete);
         public Task<DrivingLicence> CheckDrivingLicence(int drivingLicenceId);
-        public Task<DrivingLicence> UpdateDrivingLicence(int drivingLicenceId, DrivingLicenceRequestDTO drivingLicenceUpdate);
+        public Task<DrivingLicence> CheckDrivingLicenceTracking(int drivingLicenceId);
+        public Task<DrivingLicence> UpdateDrivingLicence(DrivingLicence drivingLicenceToUpdate, DrivingLicenceRequestDTO drivingLicenceUpdate);
     }
     public class DrivingLicenceRepository : IDrivingLicenceRepository
     {
@@ -128,6 +129,13 @@ namespace DrivingSchoolApp.Repositories
                                    .FirstOrDefaultAsync();
         }
 
+        public async Task<DrivingLicence> CheckDrivingLicenceTracking(int drivingLicenceId)
+        {
+            return await _dbContext.DrivingLicences
+                                   .Where(d => d.Id == drivingLicenceId)
+                                   .FirstOrDefaultAsync();
+        }
+
         public async Task<ICollection<DrivingLicence>> CheckCustomerDrivingLicences(int customerId, DateTime date)
         {
             return await _dbContext.DrivingLicences
@@ -136,17 +144,14 @@ namespace DrivingSchoolApp.Repositories
                                   .ToListAsync();
         }
 
-        public async Task<DrivingLicence> UpdateDrivingLicence(int drivingLicenceId, DrivingLicenceRequestDTO drivingLicenceUpdate)
+        public async Task<DrivingLicence> UpdateDrivingLicence(DrivingLicence drivingLicenceToUpdate, DrivingLicenceRequestDTO drivingLicenceUpdate)
         {
-            var drivingLicence = await _dbContext.DrivingLicences
-                                   .Where(d => d.Id == drivingLicenceId)
-                                   .FirstOrDefaultAsync();
-            drivingLicence.ExpirationDate = drivingLicenceUpdate.ExpirationDate;
-            drivingLicence.ReceivedDate = drivingLicenceUpdate.ReceivedDate;
-            drivingLicence.LicenceCategoryId = drivingLicenceUpdate.LicenceCategoryId;
-            drivingLicence.CustomerId = drivingLicenceUpdate.CustomerId;
+            drivingLicenceToUpdate.ExpirationDate = drivingLicenceUpdate.ExpirationDate;
+            drivingLicenceToUpdate.ReceivedDate = drivingLicenceUpdate.ReceivedDate;
+            drivingLicenceToUpdate.LicenceCategoryId = drivingLicenceUpdate.LicenceCategoryId;
+            drivingLicenceToUpdate.CustomerId = drivingLicenceUpdate.CustomerId;
             await _dbContext.SaveChangesAsync();
-            return drivingLicence;
+            return drivingLicenceToUpdate;
         }
     }
 }
