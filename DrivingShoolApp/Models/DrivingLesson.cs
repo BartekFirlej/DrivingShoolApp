@@ -18,5 +18,6 @@ public partial class DrivingLesson
     public virtual Lecturer Lecturer { get; set; } = null!;
 
     public virtual Customer Customer { get; set; } = null!;
+
     public virtual Course Course { get; set; } = null!;
 }

@@ -7,6 +7,7 @@ public partial class Lecturer
     public string Name { get; set; } = null!;
 
     public string SecondName { get; set; } = null!;
+
     public virtual ICollection<DrivingLesson> DrivingLessons { get; set; } = new List<DrivingLesson>();
 
     public virtual ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();

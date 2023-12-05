@@ -15,5 +15,6 @@ public partial class Customer
     public virtual ICollection<Registration> Registrations { get; set; } = new List<Registration>();
 
     public virtual ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();
+
     public virtual ICollection<DrivingLesson> DrivingLessons { get; set; } = new List<DrivingLesson>();
 }
