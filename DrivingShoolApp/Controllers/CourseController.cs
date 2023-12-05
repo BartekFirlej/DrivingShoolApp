@@ -308,5 +308,36 @@ namespace DrivingSchoolApp.Controllers
             }
             return Ok(updatedCourse);
         }
+
+        [HttpPost("{courseid}/subjects/{subjectid}")]
+        public async Task<IActionResult> UpdateCourseSubject(int courseid, int subjectid, CourseSubjectRequestDTO courseSubjectDetails)
+        {
+            CourseSubjectResponseDTO updatedCourseSubject;
+            try
+            {
+                updatedCourseSubject = await _courseSubjectService.UpdateCourseSubject(courseid, subjectid, courseSubjectDetails);
+            }
+            catch (NotFoundCourseSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundCourseException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (NotFoundSubjectException e)
+            {
+                return NotFound(e.ToJson());
+            }
+            catch (TakenSequenceNumberException e)
+            {
+                return Conflict(e.ToJson());
+            }
+            catch (ValueMustBeGreaterThanZeroException e)
+            {
+                return BadRequest(e.ToJson());
+            }
+            return Ok(updatedCourseSubject);
+        }
     }
 }

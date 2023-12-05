@@ -9,10 +9,12 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<CourseSubjectGetDTO>> GetCoursesSubjects();
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
+        public Task<CourseSubject> CheckCourseSubjectTracking(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<bool> TakenSeqNumber(int courseId, int seqNumber);
         public Task<CourseSubject> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails);
         public Task<CourseSubject> DeleteCourseSubject(CourseSubject courseSubjectToDelete);
+        public Task<CourseSubject> UpdateCourseSubject(CourseSubject courseSubjectToUpdate, CourseSubjectRequestDTO courseSubjectUpdate);
     }
     public class CourseSubjectRepository : ICourseSubjectRepository
     {
@@ -27,6 +29,13 @@ namespace DrivingSchoolApp.Repositories
         {
             return await _dbContext.CourseSubjects
                         .AsNoTracking()
+                        .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
+                        .FirstOrDefaultAsync();
+        }
+
+        public async Task<CourseSubject> CheckCourseSubjectTracking(int courseId, int subjectId)
+        {
+            return await _dbContext.CourseSubjects
                         .Where(s => s.CourseId == courseId && s.SubjectId == subjectId)
                         .FirstOrDefaultAsync();
         }
@@ -126,6 +135,13 @@ namespace DrivingSchoolApp.Repositories
             await _dbContext.CourseSubjects.AddAsync(courseSubjectToAdd);
             await _dbContext.SaveChangesAsync();
             return courseSubjectToAdd;
+        }
+
+        public async Task<CourseSubject> UpdateCourseSubject(CourseSubject courseSubjectToUpdate, CourseSubjectRequestDTO courseSubjectUpdate)
+        {
+            courseSubjectToUpdate.SequenceNumber = courseSubjectUpdate.SequenceNumber;
+            await _dbContext.SaveChangesAsync();
+            return courseSubjectToUpdate;
         }
 
         public async Task<bool> TakenSeqNumber(int courseId, int seqNumber)

@@ -12,8 +12,10 @@ namespace DrivingSchoolApp.Services
         public Task<CourseSubjectGetDTO> GetCourseSubject(int courseId, int subjectId);
         public Task<CourseSubjectsGetDTO> GetCourseSubjects(int courseId);
         public Task<CourseSubject> CheckCourseSubject(int courseId, int subjectId);
+        public Task<CourseSubject> CheckCourseSubjectTracking(int courseId, int subjectId);
         public Task<CourseSubjectResponseDTO> PostCourseSubject(CourseSubjectRequestDTO courseSubjectDetails);
         public Task<CourseSubject> DeleteCourseSubject(int courseId, int subjectId);
+        public Task<CourseSubjectResponseDTO> UpdateCourseSubject(int courseId, int subjectId, CourseSubjectRequestDTO courseSubjectUpdate);
     }
     public class CourseSubjectService : ICourseSubjectService
     {
@@ -85,6 +87,27 @@ namespace DrivingSchoolApp.Services
             if (courseSubject == null)
                 throw new NotFoundCourseSubjectException(courseId, subjectId);
             return courseSubject;
+        }
+
+        public async Task<CourseSubject> CheckCourseSubjectTracking(int courseId, int subjectId)
+        {
+            var course = await _courseService.CheckCourse(courseId);
+            var subject = await _subjectService.CheckSubject(subjectId);
+            var courseSubject = await _courseSubjectRepository.CheckCourseSubjectTracking(courseId, subjectId);
+            if (courseSubject == null)
+                throw new NotFoundCourseSubjectException(courseId, subjectId);
+            return courseSubject;
+        }
+
+        public async Task<CourseSubjectResponseDTO> UpdateCourseSubject(int courseId, int subjectId, CourseSubjectRequestDTO courseSubjectUpdate)
+        {
+            var courseSubjectToUpdate = await CheckCourseSubjectTracking(courseId, subjectId);
+            if (courseSubjectUpdate.SequenceNumber <= 0)
+                throw new ValueMustBeGreaterThanZeroException("sequnce number");
+            if (await _courseSubjectRepository.TakenSeqNumber(courseSubjectUpdate.CourseId, courseSubjectUpdate.SequenceNumber))
+                throw new TakenSequenceNumberException(courseSubjectUpdate.CourseId, courseSubjectUpdate.SequenceNumber);
+            var updatedCourseSubject = await _courseSubjectRepository.UpdateCourseSubject(courseSubjectToUpdate, courseSubjectUpdate);
+            return _mapper.Map<CourseSubjectResponseDTO>(updatedCourseSubject);
         }
     }
 }
