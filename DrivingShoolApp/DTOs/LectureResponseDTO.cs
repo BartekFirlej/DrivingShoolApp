@@ -10,9 +10,9 @@
 
         public int LecturerId { get; set; }
 
-        public int CourseSubjectsSubjectId { get; set; }
+        public int SubjectId { get; set; }
 
-        public int CourseSubjectsCourseId { get; set; }
+        public int CourseId { get; set; }
 
     }
 }

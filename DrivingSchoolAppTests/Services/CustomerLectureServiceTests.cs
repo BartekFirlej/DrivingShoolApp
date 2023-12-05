@@ -257,14 +257,14 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_CustomerLecture_ReturnsAddedCustomerLecture()
         {
-            var lecture = new Lecture { Id = 1, CourseSubjectsCourseId = 1};
+            var lecture = new Lecture { Id = 1, CourseId = 1};
             var customer = new Customer { Id = 1};
             var registration = new Registration { CourseId = 1, CustomerId = 1};
             var customerLectureToAdd = new CustomerLectureRequestDTO { CustomerId =1 , LectureId = 1};
             var addedCustomerLecture = new CustomerLectureResponseDTO { CustomerId = 1, LectureId = 1};
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lectureServiceMock.Setup(service => service.CheckLecture(lecture.Id)).ReturnsAsync(lecture);
-            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseSubjectsCourseId)).ReturnsAsync(registration);
+            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseId)).ReturnsAsync(registration);
             _customerLectureRepositoryMock.Setup(repo => repo.CheckCustomerLecture(customer.Id, lecture.Id)).ReturnsAsync((CustomerLectureCheckDTO)null);
             _customerLectureRepositoryMock.Setup(repo => repo.PostCustomerLecture(customerLectureToAdd)).ReturnsAsync(addedCustomerLecture);
 
@@ -304,13 +304,13 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsNotFoundRegistrationException()
         {
-            var lecture = new Lecture { Id = 1, CourseSubjectsCourseId = 1 };
+            var lecture = new Lecture { Id = 1, CourseId = 1 };
             var customer = new Customer { Id = 1};
             var customerLectureToAdd = new CustomerLectureRequestDTO { CustomerId = 1, LectureId = 1 };
             var addedCustomerLecture = new CustomerLectureGetDTO { CustomerId = 1, LectureId = 1, CustomerName = "Name" };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lectureServiceMock.Setup(service => service.CheckLecture(lecture.Id)).ReturnsAsync(lecture);
-            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseSubjectsCourseId)).ThrowsAsync(new NotFoundRegistrationException());
+            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseId)).ThrowsAsync(new NotFoundRegistrationException());
             _service = new CustomerLectureService(_customerLectureRepositoryMock.Object, _customerServiceMock.Object, _lectureServiceMock.Object, _registrationServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundRegistrationException>(async () => await _service.PostCustomerLecture(customerLectureToAdd));
@@ -319,7 +319,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Post_CustomerLecture_ThrowsCustomerAlreadyAssignedToLectureException()
         {
-            var lecture = new Lecture { Id = 1, CourseSubjectsCourseId = 1};
+            var lecture = new Lecture { Id = 1, CourseId = 1};
             var customer = new Customer { Id = 1};
             var registration = new Registration { CourseId = 1,CustomerId = 1};
             var customerLecture = new CustomerLectureCheckDTO { CustomerId = 1, LectureId = 1};
@@ -327,7 +327,7 @@ namespace DrivingSchoolAppTests.Services
             var addedCustomerLecture = new CustomerLectureGetDTO { CustomerId = 1, LectureId = 1, CustomerName = "Name" };
             _customerServiceMock.Setup(service => service.CheckCustomer(customer.Id)).ReturnsAsync(customer);
             _lectureServiceMock.Setup(service => service.CheckLecture(lecture.Id)).ReturnsAsync(lecture);
-            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseSubjectsCourseId)).ReturnsAsync(registration);
+            _registrationServiceMock.Setup(service => service.CheckRegistration(customer.Id, lecture.CourseId)).ReturnsAsync(registration);
             _customerLectureRepositoryMock.Setup(repo => repo.CheckCustomerLecture(customer.Id, lecture.Id)).ReturnsAsync(customerLecture); 
             _service = new CustomerLectureService(_customerLectureRepositoryMock.Object, _customerServiceMock.Object, _lectureServiceMock.Object, _registrationServiceMock.Object, _mapperMock.Object);
 

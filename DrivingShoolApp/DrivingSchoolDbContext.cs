@@ -248,8 +248,8 @@ public partial class DrivingSchoolDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("ID");
             entity.Property(e => e.ClassroomId).HasColumnName("Classroom_ID");
-            entity.Property(e => e.CourseSubjectsCourseId).HasColumnName("CourseSubjects_Course_ID");
-            entity.Property(e => e.CourseSubjectsSubjectId).HasColumnName("CourseSubjects_SubjectID");
+            entity.Property(e => e.CourseId).HasColumnName("CourseSubjects_Course_ID");
+            entity.Property(e => e.SubjectId).HasColumnName("CourseSubjects_SubjectID");
             entity.Property(e => e.LectureDate).HasColumnType("datetime");
             entity.Property(e => e.LecturerId).HasColumnName("Lecturer_ID");
 
@@ -264,7 +264,7 @@ public partial class DrivingSchoolDbContext : DbContext
                 .HasConstraintName("Lecture_Lecturer_FK");
 
             entity.HasOne(d => d.CourseSubjects).WithMany(p => p.Lectures)
-                .HasForeignKey(d => new { d.CourseSubjectsSubjectId, d.CourseSubjectsCourseId })
+                .HasForeignKey(d => new { d.SubjectId, d.CourseId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Lecture_CourseSubjects_FK");
         });

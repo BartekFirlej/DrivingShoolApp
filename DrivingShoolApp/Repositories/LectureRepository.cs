@@ -11,8 +11,9 @@ namespace DrivingSchoolApp.Repositories
         public Task<Lecture> PostLecture(LectureRequestDTO lectureDetails);
         public Task<Lecture> CheckLectureAtCourseAboutSubject(int courseId, int subjectId);
         public Task<Lecture> CheckLecture(int lectureId);
+        public Task<Lecture> CheckLectureTracking(int lectureId);
         public Task<Lecture> DeleteLecture(Lecture lectureToDelete);
-        public Task<Lecture> UpdateLecture(int lectureId, LectureRequestDTO lectureUpdate);
+        public Task<Lecture> UpdateLecture(Lecture lectureToUpdate, LectureRequestDTO lectureUpdate);
     }
     public class LectureRepository : ILectureRepository
     {
@@ -38,9 +39,9 @@ namespace DrivingSchoolApp.Repositories
                             {
                                 Id = l.Id,
                                 LectureDate = l.LectureDate,
-                                CourseId = l.CourseSubjectsCourseId,
+                                CourseId = l.CourseId,
                                 CourseName = l.CourseSubjects.Course.Name,
-                                SubjectId = l.CourseSubjectsSubjectId,
+                                SubjectId = l.SubjectId,
                                 SubjectName = l.CourseSubjects.Subject.Name,
                                 LecturerId = l.LecturerId,
                                 LecturerName = l.Lecturer.Name,
@@ -67,9 +68,9 @@ namespace DrivingSchoolApp.Repositories
                 {
                     Id = l.Id,
                     LectureDate = l.LectureDate,
-                    CourseId = l.CourseSubjectsCourseId,
+                    CourseId = l.CourseId,
                     CourseName = l.CourseSubjects.Course.Name,
-                    SubjectId = l.CourseSubjectsSubjectId,
+                    SubjectId = l.SubjectId,
                     SubjectName = l.CourseSubjects.Subject.Name,
                     LecturerId = l.LecturerId,
                     LecturerName = l.Lecturer.Name,
@@ -87,8 +88,8 @@ namespace DrivingSchoolApp.Repositories
                 LectureDate = lectureDetails.LectureDate,
                 ClassroomId = lectureDetails.ClassroomId,
                 LecturerId = lectureDetails.LecturerId,
-                CourseSubjectsSubjectId = lectureDetails.SubjectId,
-                CourseSubjectsCourseId = lectureDetails.CourseId
+                SubjectId = lectureDetails.SubjectId,
+                CourseId = lectureDetails.CourseId
             };
             await _dbContext.Lectures.AddAsync(lectureToAdd);
             await _dbContext.SaveChangesAsync();
@@ -99,7 +100,7 @@ namespace DrivingSchoolApp.Repositories
         {
             return await _dbContext.Lectures
                             .AsNoTracking()
-                            .Where(l => l.CourseSubjectsCourseId == courseId && l.CourseSubjectsSubjectId == subjectId)
+                            .Where(l => l.CourseId == courseId && l.SubjectId == subjectId)
                             .FirstOrDefaultAsync();
         }
 
@@ -111,6 +112,13 @@ namespace DrivingSchoolApp.Repositories
                .FirstOrDefaultAsync();
         }
 
+        public async Task<Lecture> CheckLectureTracking(int lectureId)
+        {
+            return await _dbContext.Lectures
+               .Where(l => l.Id == lectureId)
+               .FirstOrDefaultAsync();
+        }
+
         public async Task<Lecture> DeleteLecture(Lecture lectureToDelete)
         {
             var deletedLecture = _dbContext.Lectures.Remove(lectureToDelete);
@@ -118,18 +126,15 @@ namespace DrivingSchoolApp.Repositories
             return deletedLecture.Entity;
         }
 
-        public async Task<Lecture> UpdateLecture(int lectureId, LectureRequestDTO lectureUpdate)
+        public async Task<Lecture> UpdateLecture(Lecture lectureToUpdate, LectureRequestDTO lectureUpdate)
         {
-            var lecture = await _dbContext.Lectures
-                        .Where(l => l.Id == lectureId)
-                        .FirstOrDefaultAsync();
-            lecture.LectureDate = lectureUpdate.LectureDate;
-            lecture.LecturerId = lectureUpdate.LecturerId;
-            lecture.CourseSubjectsSubjectId = lecture.CourseSubjectsSubjectId;
-            lecture.CourseSubjectsCourseId = lecture.CourseSubjectsCourseId;
-            lecture.ClassroomId = lecture.ClassroomId;
+            lectureToUpdate.LectureDate = lectureUpdate.LectureDate;
+            lectureToUpdate.LecturerId = lectureUpdate.LecturerId;
+            lectureToUpdate.SubjectId = lectureUpdate.SubjectId;
+            lectureToUpdate.CourseId = lectureUpdate.CourseId;
+            lectureToUpdate.ClassroomId = lectureUpdate.ClassroomId;
             await _dbContext.SaveChangesAsync();
-            return lecture;
+            return lectureToUpdate;
         }
     }
 }

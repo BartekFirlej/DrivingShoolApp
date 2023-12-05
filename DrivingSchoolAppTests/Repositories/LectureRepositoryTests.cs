@@ -37,8 +37,8 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -135,8 +135,8 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -187,8 +187,8 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -228,8 +228,8 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -248,8 +248,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
             Assert.AreEqual(2, result.LecturerId);
-            Assert.AreEqual(idOfCourseToFind, result.CourseSubjectsCourseId);
-            Assert.AreEqual(idOfSubjectToFind, result.CourseSubjectsSubjectId);
+            Assert.AreEqual(idOfCourseToFind, result.CourseId);
+            Assert.AreEqual(idOfSubjectToFind, result.SubjectId);
 
             await _dbContext.DisposeAsync();
         }
@@ -274,8 +274,8 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -313,7 +313,7 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -334,8 +334,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(retrievedLecture);
             Assert.AreEqual(addedLecture.Id, retrievedLecture.Id);
             Assert.AreEqual(lectureToAdd.ClassroomId, addedLecture.ClassroomId);
-            Assert.AreEqual(lectureToAdd.SubjectId, addedLecture.CourseSubjectsSubjectId);
-            Assert.AreEqual(lectureToAdd.CourseId, addedLecture.CourseSubjectsCourseId);
+            Assert.AreEqual(lectureToAdd.SubjectId, addedLecture.SubjectId);
+            Assert.AreEqual(lectureToAdd.CourseId, addedLecture.CourseId);
             Assert.AreEqual(lectureToAdd.LecturerId, addedLecture.LecturerId);
             Assert.AreEqual(lectureToAdd.LectureDate, addedLecture.LectureDate);
             Assert.AreEqual(1, retrievedLecture.ClassroomNumber);
@@ -361,8 +361,8 @@ namespace DrivingSchoolAppTests.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
@@ -372,8 +372,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual(1, result.ClassroomId);
-            Assert.AreEqual(1, result.CourseSubjectsCourseId);
-            Assert.AreEqual(2, result.CourseSubjectsSubjectId);
+            Assert.AreEqual(1, result.CourseId);
+            Assert.AreEqual(2, result.SubjectId);
             Assert.AreEqual(2, result.LecturerId);
             Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
             Assert.AreEqual(1, await _dbContext.Lectures.CountAsync());
@@ -389,8 +389,8 @@ namespace DrivingSchoolAppTests.Repositories
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
             var idOfLectureToCheck = 2;
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
@@ -400,8 +400,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Id);
             Assert.AreEqual(1, result.ClassroomId);
-            Assert.AreEqual(1, result.CourseSubjectsCourseId);
-            Assert.AreEqual(2, result.CourseSubjectsSubjectId);
+            Assert.AreEqual(1, result.CourseId);
+            Assert.AreEqual(2, result.SubjectId);
             Assert.AreEqual(2, result.LecturerId);
             Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
 
@@ -416,8 +416,8 @@ namespace DrivingSchoolAppTests.Repositories
                 .Options;
             _dbContext = new DrivingSchoolDbContext(options);
             var idOfLectureToCheck = 3;
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
-            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
             await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
             await _dbContext.SaveChangesAsync();
             _repository = new LectureRepository(_dbContext);
@@ -425,6 +425,89 @@ namespace DrivingSchoolAppTests.Repositories
             var result = await _repository.CheckLecture(idOfLectureToCheck);
 
             Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_LectureTracking_ReturnsLecture()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLectureToCheck = 2;
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.CheckLectureTracking(idOfLectureToCheck);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Id);
+            Assert.AreEqual(1, result.ClassroomId);
+            Assert.AreEqual(1, result.CourseId);
+            Assert.AreEqual(2, result.SubjectId);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(new DateTime(2023, 11, 11), result.LectureDate);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Check_LectureTracking_ReturnsNull()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var idOfLectureToCheck = 3;
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.CheckLectureTracking(idOfLectureToCheck);
+
+            Assert.IsNull(result);
+
+            await _dbContext.DisposeAsync();
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ReturnsLecture()
+        {
+            var options = new DbContextOptionsBuilder<DrivingSchoolDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _dbContext = new DrivingSchoolDbContext(options);
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 9, 9) };
+            var lecture2 = new Lecture { Id = 2, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 2, LectureDate = new DateTime(2023, 11, 11) };
+            var lecture1update = new LectureRequestDTO { ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2023, 10, 10) };
+            await _dbContext.Lectures.AddRangeAsync(lecture1, lecture2);
+            await _dbContext.SaveChangesAsync();
+            _repository = new LectureRepository(_dbContext);
+
+            var result = await _repository.UpdateLecture(lecture1, lecture1update);
+
+            var updatedLecture = await _repository.CheckLecture(lecture1.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual(2, result.ClassroomId);
+            Assert.AreEqual(2, result.CourseId);
+            Assert.AreEqual(2, result.SubjectId);
+            Assert.AreEqual(2, result.LecturerId);
+            Assert.AreEqual(new DateTime(2023, 10, 10), result.LectureDate);
+            Assert.IsNotNull(updatedLecture);
+            Assert.AreEqual(1, updatedLecture.Id);
+            Assert.AreEqual(2, updatedLecture.ClassroomId);
+            Assert.AreEqual(2, updatedLecture.CourseId);
+            Assert.AreEqual(2, updatedLecture.SubjectId);
+            Assert.AreEqual(2, updatedLecture.LecturerId);
+            Assert.AreEqual(new DateTime(2023, 10, 10), updatedLecture.LectureDate);
 
             await _dbContext.DisposeAsync();
         }
@@ -447,7 +530,7 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);
@@ -467,8 +550,8 @@ namespace DrivingSchoolAppTests.Repositories
             Assert.IsNotNull(lecture);
             Assert.AreEqual(1, lecture.Id);
             Assert.AreEqual(1, lecture.LecturerId);
-            Assert.AreEqual(1, lecture.CourseSubjectsSubjectId);
-            Assert.AreEqual(1, lecture.CourseSubjectsCourseId);
+            Assert.AreEqual(1, lecture.SubjectId);
+            Assert.AreEqual(1, lecture.CourseId);
             Assert.AreEqual(1, lecture.ClassroomId);
             Assert.AreEqual(new DateTime(2023, 10, 10), lecture.LectureDate);
 
@@ -493,7 +576,7 @@ namespace DrivingSchoolAppTests.Repositories
             var courseSubject2 = new CourseSubject { CourseId = 1, SubjectId = 2, SequenceNumber = 2 };
             var lecturer1 = new Lecturer { Id = 1, Name = "TestName1", SecondName = "TestSName1" };
             var lecturer2 = new Lecturer { Id = 2, Name = "TestName2", SecondName = "TestSName2" };
-            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 1, CourseSubjectsSubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
+            var lecture1 = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2023, 10, 10) };
             await _dbContext.Addresses.AddAsync(address1);
             await _dbContext.Classrooms.AddAsync(classroom1);
             await _dbContext.LicenceCategories.AddAsync(licenceCategory1);

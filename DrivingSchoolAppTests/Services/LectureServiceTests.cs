@@ -119,15 +119,15 @@ namespace DrivingSchoolAppTests.Services
             var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
             var classroom = new Classroom{ Id = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
-            var addedLectureDTO = new LectureResponseDTO { Id = 1, ClassroomId = classroom.Id, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id, LectureDate = new DateTime(2022, 1, 1) };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureResponseDTO { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id, LectureDate = new DateTime(2022, 1, 1) };
             var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
             _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ReturnsAsync(courseSubject);
             _classroomServiceMock.Setup(service => service.CheckClassroom(lectureToAdd.ClassroomId)).ReturnsAsync(classroom);
             _lectureRepositoryMock.Setup(repo => repo.PostLecture(lectureToAdd)).ReturnsAsync(addedLecture);
             _mapperMock.Setup(m => m.Map<LectureResponseDTO>(It.IsAny<Lecture>())).Returns(addedLectureDTO);
-            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ReturnsAsync(new Lecture());
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ReturnsAsync((Lecture)null);
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
 
             var result = await _service.PostLecture(lectureToAdd);
@@ -166,7 +166,7 @@ namespace DrivingSchoolAppTests.Services
             var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
             var classroom = new Classroom { Id = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
@@ -177,12 +177,44 @@ namespace DrivingSchoolAppTests.Services
         }
 
         [TestMethod]
+        public async Task Post_Lecture_ThrowsNotFoundCourseException()
+        {
+            var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
+            var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
+            var classroom = new Classroom { Id = 1 };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ThrowsAsync(new NotFoundCourseException());
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.PostLecture(lectureToAdd));
+        }
+
+        [TestMethod]
+        public async Task Post_Lecture_ThrowsNotFoundSubjectException()
+        {
+            var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
+            var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
+            var classroom = new Classroom { Id = 1 };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ThrowsAsync(new NotFoundSubjectException());
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.PostLecture(lectureToAdd));
+        }
+
+        [TestMethod]
         public async Task Post_Lecture_ThrowsNotFoundClassroomtException()
         {
             var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
             var classroom = new Classroom { Id = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
@@ -199,7 +231,7 @@ namespace DrivingSchoolAppTests.Services
             var lecturer = new Lecturer { Id = 1, Name = "Test", SecondName = "Test" };
             var courseSubject = new CourseSubject { CourseId = 1, SubjectId = 1 };
             var classroom = new Classroom { Id = 1 };
-            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseSubjectsCourseId = courseSubject.CourseId, CourseSubjectsSubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
+            var addedLecture = new Lecture { Id = 1, ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var addedLectureDTO = new LectureGetDTO { Id = 1, ClassroomNumber = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             var lectureToAdd = new LectureRequestDTO { LectureDate = new DateTime(2022, 1, 1), ClassroomId = classroom.Id, CourseId = courseSubject.CourseId, SubjectId = courseSubject.SubjectId, LecturerId = lecturer.Id };
             _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureToAdd.LecturerId)).ReturnsAsync(lecturer);
@@ -207,7 +239,7 @@ namespace DrivingSchoolAppTests.Services
             _classroomServiceMock.Setup(service => service.CheckClassroom(lectureToAdd.ClassroomId)).ReturnsAsync(classroom);
             _lectureRepositoryMock.Setup(repo => repo.PostLecture(lectureToAdd)).ReturnsAsync(addedLecture);
             _lectureRepositoryMock.Setup(repo => repo.GetLecture(addedLecture.Id)).ReturnsAsync(addedLectureDTO);
-            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ReturnsAsync((Lecture)null);
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureToAdd.CourseId, lectureToAdd.SubjectId)).ReturnsAsync(new Lecture());
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<SubjectAlreadyConductedLectureException>(async () => await _service.PostLecture(lectureToAdd));
@@ -217,7 +249,7 @@ namespace DrivingSchoolAppTests.Services
         public async Task Delete_Lecture_ReturnsLecture()
         {
             var idOfLectureToDelete = 1;
-            var deletedlecture = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 2, CourseSubjectsSubjectId = 3, LecturerId = 4};
+            var deletedlecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 2, SubjectId = 3, LecturerId = 4};
             _lectureRepositoryMock.Setup(repo => repo.CheckLecture(idOfLectureToDelete)).ReturnsAsync(deletedlecture);
             _lectureRepositoryMock.Setup(repo => repo.DeleteLecture(deletedlecture)).ReturnsAsync(deletedlecture);
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
@@ -240,7 +272,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Delete_Lecture_PropagatesReferenceConstraintExceptionException()
         {
-            var deletedlecture = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 2, CourseSubjectsSubjectId = 3, LecturerId = 4 };
+            var deletedlecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 2, SubjectId = 3, LecturerId = 4 };
             var idOfLectureToDelete = 1;
             _lectureRepositoryMock.Setup(repo => repo.CheckLecture(idOfLectureToDelete)).ReturnsAsync(deletedlecture);
             _lectureRepositoryMock.Setup(repo => repo.DeleteLecture(deletedlecture)).ThrowsAsync(new ReferenceConstraintException());
@@ -252,7 +284,7 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Check_Lecture_ReturnsLecture()
         {
-            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseSubjectsCourseId = 2, CourseSubjectsSubjectId = 3, LecturerId = 4 };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 2, SubjectId = 3, LecturerId = 4 };
             var idOfLecture = 1; 
             _lectureRepositoryMock.Setup(repo => repo.CheckLecture(idOfLecture)).ReturnsAsync(lecture);
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
@@ -270,6 +302,29 @@ namespace DrivingSchoolAppTests.Services
             _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
 
             await Assert.ThrowsExceptionAsync<NotFoundLectureException>(async () => await _service.CheckLecture(idOfLecture));
+        }
+
+        [TestMethod]
+        public async Task Check_LectureTracking_ReturnsLecture()
+        {
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 2, SubjectId = 3, LecturerId = 4 };
+            var idOfLecture = 1;
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.CheckLectureTracking(idOfLecture);
+
+            Assert.AreEqual(lecture, result);
+        }
+
+        [TestMethod]
+        public async Task Check_LectureTracking_ThrowsNotFoundLectureException()
+        {
+            var idOfLecture = 1;
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync((Lecture)null);
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLectureException>(async () => await _service.CheckLectureTracking(idOfLecture));
         }
 
         [TestMethod]
@@ -299,6 +354,147 @@ namespace DrivingSchoolAppTests.Services
             var result = await _service.CheckLectureAtCourseAboutSubject(idOfCourse, idOfSubject);
 
             Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ReturnsUpdatedLecture()
+        {
+            var idOfLecture = 1;
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var courseSubject = new CourseSubject { CourseId = 2, SubjectId = 2 };
+            var classroom = new Classroom { Id = 2 };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            var updatedLectureDTO = new LectureResponseDTO { Id = 1, ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2, LectureDate = new DateTime(2022, 10, 10) };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ReturnsAsync(courseSubject);
+            _classroomServiceMock.Setup(service => service.CheckClassroom(lectureUpdate.ClassroomId)).ReturnsAsync(classroom);
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ReturnsAsync((Lecture)null);
+            _lectureRepositoryMock.Setup(repo => repo.UpdateLecture(lecture, lectureUpdate)).ReturnsAsync(lecture);
+            _mapperMock.Setup(m => m.Map<LectureResponseDTO>(It.IsAny<Lecture>())).Returns(updatedLectureDTO);
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            var result = await _service.UpdateLecture(idOfLecture, lectureUpdate);
+
+            Assert.AreEqual(updatedLectureDTO, result);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundLectureException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ThrowsAsync(new NotFoundLectureException(idOfLecture));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLectureException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsLectureDateTimeException()
+        {
+            var idOfLecture = 1;
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<DateTimeException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundLecturerException()
+        {
+            var idOfLecture = 1;
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ThrowsAsync(new NotFoundLecturerException(2));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundLecturerException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundCourseSubjectException()
+        {
+            var idOfLecture = 1;
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ThrowsAsync(new NotFoundCourseSubjectException(2,2));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseSubjectException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundCourseException()
+        {
+            var idOfLecture = 1; 
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ThrowsAsync(new NotFoundCourseException(2));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundCourseException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundSubjectException()
+        {
+            var idOfLecture = 1;
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ThrowsAsync(new NotFoundSubjectException(2));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundSubjectException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundClassroomException()
+        {
+            var idOfLecture = 1;
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var courseSubject = new CourseSubject { CourseId = 2, SubjectId = 2 };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ReturnsAsync(courseSubject);
+            _classroomServiceMock.Setup(service => service.CheckClassroom(lectureUpdate.ClassroomId)).ThrowsAsync(new NotFoundClassroomException(lectureUpdate.ClassroomId));
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<NotFoundClassroomException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowSubjectAlreadyConductedLectureException()
+        {
+            var idOfLecture = 1;
+            var classroom = new Classroom { Id = 2 };
+            var lecturer = new Lecturer { Id = 2, Name = "Test", SecondName = "Test" };
+            var courseSubject = new CourseSubject { CourseId = 2, SubjectId = 2 };
+            var lecture = new Lecture { Id = 1, ClassroomId = 1, CourseId = 1, SubjectId = 1, LecturerId = 1, LectureDate = new DateTime(2022, 1, 1) };
+            var lectureUpdate = new LectureRequestDTO { LectureDate = new DateTime(2022, 10, 10), ClassroomId = 2, CourseId = 2, SubjectId = 2, LecturerId = 2 };
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureTracking(idOfLecture)).ReturnsAsync(lecture);
+            _lecturerServiceMock.Setup(service => service.CheckLecturer(lectureUpdate.LecturerId)).ReturnsAsync(lecturer);
+            _courseSubjectServiceMock.Setup(service => service.CheckCourseSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ReturnsAsync(courseSubject);
+            _classroomServiceMock.Setup(service => service.CheckClassroom(lectureUpdate.ClassroomId)).ReturnsAsync(classroom);
+            _lectureRepositoryMock.Setup(repo => repo.CheckLectureAtCourseAboutSubject(lectureUpdate.CourseId, lectureUpdate.SubjectId)).ReturnsAsync(new Lecture());
+            _service = new LectureService(_lectureRepositoryMock.Object, _lecturerServiceMock.Object, _courseSubjectServiceMock.Object, _classroomServiceMock.Object, _mapperMock.Object);
+
+            await Assert.ThrowsExceptionAsync<SubjectAlreadyConductedLectureException>(async () => await _service.UpdateLecture(idOfLecture, lectureUpdate));
         }
     }
 }

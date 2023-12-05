@@ -72,7 +72,7 @@ namespace DrivingSchoolApp.Services
         {
             var customer = await _customerService.CheckCustomer(customerLectureDetails.CustomerId);
             var lecture = await _lectureService.CheckLecture(customerLectureDetails.LectureId);
-            var registration = await _registrationService.CheckRegistration(customer.Id, lecture.CourseSubjectsCourseId);
+            var registration = await _registrationService.CheckRegistration(customer.Id, lecture.CourseId);
             var customerLecture = await _customerLectureRepository.CheckCustomerLecture(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);
             if (customerLecture != null)
                 throw new CustomerAlreadyAssignedToLectureException(customerLectureDetails.CustomerId, customerLectureDetails.LectureId);

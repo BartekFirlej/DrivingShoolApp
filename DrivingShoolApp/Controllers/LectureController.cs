@@ -198,13 +198,13 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{lectureid}")]
-        public async Task<IActionResult> UpdateSubject(int lectureid, LectureRequestDTO lectureUpdate)
+        public async Task<IActionResult> UpdateLecture(int lectureid, LectureRequestDTO lectureUpdate)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            LectureGetDTO updatedLecture;
+            LectureResponseDTO updatedLecture;
             try
             {
                 updatedLecture = await _lectureService.UpdateLecture(lectureid, lectureUpdate);

@@ -436,5 +436,123 @@ namespace DrivingSchoolAppTests.Controllers
 
             result.StatusCode.Should().Be(500);
         }
+
+        [TestMethod]
+        public async Task Update_Lecture_ReturnsUpdatedLecture()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            var updatedLecture = new LectureResponseDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ReturnsAsync(updatedLecture);
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (OkObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundLectureException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundLectureException(idOfLecture));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundCourseException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundCourseException(1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundSubjectException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundSubjectException(1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundClassroomException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundClassroomException(1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundCourseSubjectException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundCourseSubjectException(1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsNotFoundLecturerException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new NotFoundLecturerException(1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (NotFoundObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsDateTimeException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new DateTimeException("lecture date"));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (BadRequestObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(400);
+        }
+
+        [TestMethod]
+        public async Task Update_Lecture_ThrowsSubjectLareadyConductedLectureException()
+        {
+            var idOfLecture = 1;
+            var lectureUpdate = new LectureRequestDTO();
+            _lectureServiceMock.Setup(service => service.UpdateLecture(idOfLecture, lectureUpdate)).ThrowsAsync(new SubjectAlreadyConductedLectureException(1,1));
+            _controller = new LectureController(_lectureServiceMock.Object, _customerLectureServiceMock.Object);
+
+            var result = (ConflictObjectResult)await _controller.UpdateLecture(idOfLecture, lectureUpdate);
+
+            result.StatusCode.Should().Be(409);
+        }
     }
 }
