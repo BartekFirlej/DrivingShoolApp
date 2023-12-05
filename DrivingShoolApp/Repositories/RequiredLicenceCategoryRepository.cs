@@ -10,9 +10,10 @@ namespace DrivingSchoolApp.Repositories
         public Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId);
         public Task<RequiredLicenceCategoryGetDTO> GetRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> CheckRequirement(int licenceCategoryId, int requiredLicenceCategoryId);
+        public Task<RequiredLicenceCategory> CheckRequirementTracking(int licenceCategoryId, int requiredLicenceCategoryId);
         public Task<RequiredLicenceCategory> DeleteRequirement(RequiredLicenceCategory requirementToDelete);
         public Task<RequiredLicenceCategory> PostRequirement(RequiredLicenceCategoryRequestDTO requirementDetails); 
-        public Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryRequestDTO requirementUpdate);
+        public Task<RequiredLicenceCategory> UpdateRequirement(RequiredLicenceCategory requirementToUpdate, RequiredLicenceCategoryRequestDTO requirementUpdate);
     }
     public class RequiredLicenceCategoryRepository : IRequiredLicenceCategoryRepository
     {
@@ -54,8 +55,6 @@ namespace DrivingSchoolApp.Repositories
                           }).FirstOrDefaultAsync();
         }
 
-
-
         public async Task<ICollection<RequiredLicenceCategoryGetDTO>> GetRequirements(int licenceCategoryId)
         {
             return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
@@ -96,6 +95,16 @@ namespace DrivingSchoolApp.Repositories
                           .FirstOrDefaultAsync();
         }
 
+        public async Task<RequiredLicenceCategory> CheckRequirementTracking(int licenceCategoryId, int requiredLicenceCategoryId)
+        {
+            return await (from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
+                          join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
+                          join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
+                          where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
+                          select rlc)
+                          .FirstOrDefaultAsync();
+        }
+
         public async Task<RequiredLicenceCategory> DeleteRequirement(RequiredLicenceCategory requirementToDelete)
         {
             var deletedRequirement = _dbContext.RequiredLicenceCategories.Remove(requirementToDelete);
@@ -103,19 +112,13 @@ namespace DrivingSchoolApp.Repositories
             return deletedRequirement.Entity;
         }
 
-        public async Task<RequiredLicenceCategory> UpdateRequirement(int licenceCategoryId, int requiredLicenceCategoryId, RequiredLicenceCategoryRequestDTO requirementUpdate)
+        public async Task<RequiredLicenceCategory> UpdateRequirement(RequiredLicenceCategory requirementToUpdate, RequiredLicenceCategoryRequestDTO requirementUpdate)
         {
-            var requirement = await(from rlc in _dbContext.RequiredLicenceCategories.AsNoTracking()
-                                    join lc in _dbContext.LicenceCategories on rlc.LicenceCategoryId equals lc.Id
-                                    join rlcRequired in _dbContext.LicenceCategories on rlc.RequiredLicenceCategoryId equals rlcRequired.Id
-                                    where rlc.LicenceCategoryId == licenceCategoryId && rlc.RequiredLicenceCategoryId == requiredLicenceCategoryId
-                                    select rlc)
-                          .FirstOrDefaultAsync();
-            requirement.RequiredYears = requirementUpdate.RequiredYears;
-            requirement.LicenceCategoryId = requirementUpdate.LicenceCategoryId;
-            requirement.RequiredLicenceCategoryId = requirementUpdate.RequiredLicenceCategoryId;
+            requirementToUpdate.RequiredYears = requirementUpdate.RequiredYears;
+            requirementToUpdate.LicenceCategoryId = requirementUpdate.LicenceCategoryId;
+            requirementToUpdate.RequiredLicenceCategoryId = requirementUpdate.RequiredLicenceCategoryId;
             await _dbContext.SaveChangesAsync();
-            return requirement;
+            return requirementToUpdate;
         }
     }
 }

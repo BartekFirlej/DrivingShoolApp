@@ -184,7 +184,7 @@ namespace DrivingSchoolApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            RequiredLicenceCategoryGetDTO updatedRequirerdLicenceCategory;
+            RequiredLicenceCategoryResponseDTO updatedRequirerdLicenceCategory;
             try
             {
                 updatedRequirerdLicenceCategory = await _requirededLicenceCategoryService.UpdateRequirement(licencecategoryid, requiredlicencecategoryid, requirementUpdate);
