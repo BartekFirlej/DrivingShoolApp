@@ -327,6 +327,7 @@ public partial class DrivingSchoolDbContext : DbContext
 
             entity.Property(e => e.LicenceCategoryId).HasColumnName("LicenceCategory_ID");
             entity.Property(e => e.RequiredLicenceCategoryId).HasColumnName("RequiredLicenceCategory_ID");
+            entity.Property(e => e.RequiredYears).HasColumnName("RequiredYears");
 
             entity.HasOne(d => d.LicenceCategory).WithMany(p => p.RequiredDrivingLicenceDrivingLicences)
                 .HasForeignKey(d => d.LicenceCategoryId)

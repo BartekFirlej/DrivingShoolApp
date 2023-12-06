@@ -342,7 +342,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Update_RequiredLicenceCategory_ReturnsOk()
         {
-            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryRequestDTO();
+            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryPutRequestDTO();
             var updatedRequiredLicenceCategory = new RequiredLicenceCategoryResponseDTO();
             var idOfLicenceCategory = 1;
             var idOfRequiredLicenceCategory = 2;
@@ -357,7 +357,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Update_RequiredLicenceCategory_ThrowsNotFoundRequiredLicenceCategoryException()
         {
-            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryRequestDTO();
+            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryPutRequestDTO();
             var idOfLicenceCategory = 1;
             var idOfRequiredLicenceCategory = 2;
             _requiredLicenceCategoryServiceMock.Setup(service => service.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate)).ThrowsAsync(new NotFoundRequiredLicenceCategoryException());
@@ -371,7 +371,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Update_RequiredLicenceCategory_ThrowsNotFoundLicenceCategoryException()
         {
-            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryRequestDTO();
+            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryPutRequestDTO();
             var idOfLicenceCategory = 1;
             var idOfRequiredLicenceCategory = 2;
             _requiredLicenceCategoryServiceMock.Setup(service => service.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate)).ThrowsAsync(new NotFoundLicenceCategoryException());
@@ -385,7 +385,7 @@ namespace DrivingSchoolAppTests.Controllers
         [TestMethod]
         public async Task Update_RequiredLicenceCategory_ThrowsValueMustBeGreaterThanZeroException()
         {
-            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryRequestDTO();
+            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryPutRequestDTO();
             var idOfLicenceCategory = 1;
             var idOfRequiredLicenceCategory = 2;
             _requiredLicenceCategoryServiceMock.Setup(service => service.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate)).ThrowsAsync(new ValueMustBeGreaterThanZeroException("years"));
@@ -394,20 +394,6 @@ namespace DrivingSchoolAppTests.Controllers
             var result = (BadRequestObjectResult)await _controller.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate);
 
             result.StatusCode.Should().Be(400);
-        }
-
-        [TestMethod]
-        public async Task Update_RequiredLicenceCategory_ThrowsRequirementAlreadyExistsException()
-        {
-            var requiredLicenceCategoryUpdate = new RequiredLicenceCategoryRequestDTO();
-            var idOfLicenceCategory = 1;
-            var idOfRequiredLicenceCategory = 2;
-            _requiredLicenceCategoryServiceMock.Setup(service => service.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate)).ThrowsAsync(new RequirementAlreadyExistsException(1, 2));
-            _controller = new LicenceCategoryController(_licenceCategoryServiceMock.Object, _requiredLicenceCategoryServiceMock.Object);
-
-            var result = (ConflictObjectResult)await _controller.UpdateRequirement(idOfLicenceCategory, idOfRequiredLicenceCategory, requiredLicenceCategoryUpdate);
-
-            result.StatusCode.Should().Be(409);
         }
     }
 }

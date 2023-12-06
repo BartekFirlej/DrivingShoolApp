@@ -178,7 +178,7 @@ namespace DrivingSchoolApp.Controllers
         }
 
         [HttpPut("{licencecategoryid}/requirements/{requiredlicencecategoryid}")]
-        public async Task<IActionResult> UpdateRequirement(int licencecategoryid, int requiredlicencecategoryid, RequiredLicenceCategoryRequestDTO requirementUpdate)
+        public async Task<IActionResult> UpdateRequirement(int licencecategoryid, int requiredlicencecategoryid, RequiredLicenceCategoryPutRequestDTO requirementUpdate)
         {
             if (!ModelState.IsValid)
             {
@@ -200,10 +200,6 @@ namespace DrivingSchoolApp.Controllers
             catch (NotFoundLicenceCategoryException e)
             {
                 return NotFound(e.ToJson());
-            }
-            catch (RequirementAlreadyExistsException e)
-            {
-                return Conflict(e.ToJson());
             }
             return Ok(updatedRequirerdLicenceCategory);
         }

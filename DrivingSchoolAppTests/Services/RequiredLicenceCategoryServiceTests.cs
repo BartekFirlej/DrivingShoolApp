@@ -504,20 +504,19 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Update_Requirement_ReturnsRequirement()
         {
+            var licenceCategoryId = 1;
+            var requiredLicenceCategoryId = 2;
             var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
             var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
+            var requirementUpdate = new RequiredLicenceCategoryPutRequestDTO { RequiredYears = 3 };
             var updatedRequirement = new RequiredLicenceCategoryResponseDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
-            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ReturnsAsync(requirementToUpdate);
-            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(licenceCategory.Id)).ReturnsAsync(licenceCategory);
-            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(requiredLicenceCategory.Id)).ReturnsAsync(requiredLicenceCategory);
-            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirement(requirementUpdate.LicenceCategoryId, requirementUpdate.RequiredLicenceCategoryId)).ReturnsAsync((RequiredLicenceCategory)null);
+            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategoryId, requiredLicenceCategoryId)).ReturnsAsync(requirementToUpdate);
             _requiredLicenceCategoryRepositoryMock.Setup(service => service.UpdateRequirement(requirementToUpdate, requirementUpdate)).ReturnsAsync(requirementToUpdate);
             _mapperMock.Setup(m => m.Map<RequiredLicenceCategoryResponseDTO>(It.IsAny<RequiredLicenceCategory>())).Returns(updatedRequirement);
             _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
-            var result = await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate);
+            var result = await _service.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate);
 
             Assert.AreEqual(updatedRequirement, result);
         }
@@ -525,72 +524,63 @@ namespace DrivingSchoolAppTests.Services
         [TestMethod]
         public async Task Update_Requirement_ThrowsNotFoundRequirementException()
         {
+            var licenceCategoryId = 1;
+            var requiredLicenceCategoryId = 2;
             var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
             var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
+            var requirementUpdate = new RequiredLicenceCategoryPutRequestDTO { RequiredYears = 3 };
             _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ThrowsAsync(new NotFoundRequiredLicenceCategoryException(licenceCategory.Id, requiredLicenceCategory.Id));
             _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundRequiredLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate));
+            await Assert.ThrowsExceptionAsync<NotFoundRequiredLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate));
         }
 
         [TestMethod]
         public async Task Update_Requirement_ThrowsValueMustBeGreaterThanZeroException()
         {
+            var licenceCategoryId = 1;
+            var requiredLicenceCategoryId = 2;
             var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
             var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = -3 };
+            var requirementUpdate = new RequiredLicenceCategoryPutRequestDTO { RequiredYears = -3 };
             _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ReturnsAsync(requirementToUpdate);
             _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
-            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate));
+            await Assert.ThrowsExceptionAsync<ValueMustBeGreaterThanZeroException>(async () => await _service.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate));
         }
 
         [TestMethod]
         public async Task Update_Requirement_ThrowsNotFoundLicenceCategoryException()
         {
+            var licenceCategoryId = 1;
+            var requiredLicenceCategoryId = 2;
             var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
             var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
+            var requirementUpdate = new RequiredLicenceCategoryPutRequestDTO { RequiredYears = 3 };
             _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ReturnsAsync(requirementToUpdate);
             _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(licenceCategory.Id)).ThrowsAsync(new NotFoundLicenceCategoryException(licenceCategory.Id));
             _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate));
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate));
         }
 
         [TestMethod]
         public async Task Update_Requirement_ThrowsNotFoundRequiredLicenceCategoryException()
         {
+            var licenceCategoryId = 1;
+            var requiredLicenceCategoryId = 2;
             var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
             var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
             var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
+            var requirementUpdate = new RequiredLicenceCategoryPutRequestDTO { RequiredYears = 3 };
             _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ReturnsAsync(requirementToUpdate);
-            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(requiredLicenceCategory.Id)).ReturnsAsync(licenceCategory);
             _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(requiredLicenceCategory.Id)).Throws(new NotFoundLicenceCategoryException());
             _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
 
-            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate));
-        }
-
-        [TestMethod]
-        public async Task Update_Requirement_ThrowsRequirementAlreadyExistsException()
-        {
-            var licenceCategory = new LicenceCategory { Id = 1, Name = "Test" };
-            var requiredLicenceCategory = new LicenceCategory { Id = 2, Name = "Test" };
-            var requirementToUpdate = new RequiredLicenceCategory { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 2 };
-            var requirementUpdate = new RequiredLicenceCategoryRequestDTO { LicenceCategoryId = licenceCategory.Id, RequiredLicenceCategoryId = requiredLicenceCategory.Id, RequiredYears = 3 };
-            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirementTracking(licenceCategory.Id, requiredLicenceCategory.Id)).ReturnsAsync(requirementToUpdate);
-            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(requiredLicenceCategory.Id)).ReturnsAsync(licenceCategory);
-            _licenceCategoryServiceMock.Setup(service => service.CheckLicenceCategory(requiredLicenceCategory.Id)).ReturnsAsync(requiredLicenceCategory);
-            _requiredLicenceCategoryRepositoryMock.Setup(repo => repo.CheckRequirement(requirementUpdate.LicenceCategoryId, requirementUpdate.RequiredLicenceCategoryId)).ReturnsAsync(new RequiredLicenceCategory());
-            _service = new RequiredLicenceCategoryService(_requiredLicenceCategoryRepositoryMock.Object, _licenceCategoryServiceMock.Object, _mapperMock.Object);
-
-            await Assert.ThrowsExceptionAsync<RequirementAlreadyExistsException>(async () => await _service.UpdateRequirement(licenceCategory.Id, requiredLicenceCategory.Id, requirementUpdate));
+            await Assert.ThrowsExceptionAsync<NotFoundLicenceCategoryException>(async () => await _service.UpdateRequirement(licenceCategoryId, requiredLicenceCategoryId, requirementUpdate));
         }
     }
 }
